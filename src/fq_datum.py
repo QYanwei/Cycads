@@ -11,7 +11,7 @@ def readGCcontent(seq):
     C = seq.count("C")
     G = seq.count("G")
     B = [A, T, C, G]
-    GC = round( (C+G)/sum(B), 3)
+    GC = round( (C+G)/len(seq), 3)
     return GC
 
 def readAvgQscore(quali):

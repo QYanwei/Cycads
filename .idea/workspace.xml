@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="add reports html file">
+    <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="update pyfastx read script.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/fq_datum.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_datum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fq_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_table.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +111,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708246442131</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="update pyfastx read script.">
+      <option name="closed" value="true" />
+      <created>1708249022980</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1708249022980</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -132,7 +141,8 @@
     <MESSAGE value="first upload" />
     <MESSAGE value="add empty src files" />
     <MESSAGE value="add reports html file" />
-    <option name="LAST_COMMIT_MESSAGE" value="add reports html file" />
+    <MESSAGE value="update pyfastx read script." />
+    <option name="LAST_COMMIT_MESSAGE" value="update pyfastx read script." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

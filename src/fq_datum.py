@@ -1,16 +1,13 @@
+#!/usr/bin/env python3
+# coding: utf-8
 
 import pyfastx
-
 import numpy as np
 from collections import Counter
 
 def readGCcontent(seq):
-    seq = seq.upper()
-    A = seq.count("A")
-    T = seq.count("T")
     C = seq.count("C")
     G = seq.count("G")
-    B = [A, T, C, G]
     GC = round( (C+G)/len(seq), 3)
     return GC
 
@@ -22,9 +19,14 @@ def readAvgQscore(quali):
     return read_qscore
 
 def endsBaseDataCapture(seq, qual, shift_length):
-    a = 0
+
 
 def totBaseInfoCapture(seq, qual):
+    b = 0
+
+def kmerSpectrumCapture():
+    a = 0
+def homopolymerCapture():
     b = 0
 
 def random_readnum(seed_num, read_size, sample_num):
@@ -54,5 +56,6 @@ def overall_analyser(fq):
     for read in fq:
         seqdict = readParse(read, seqdict)
     return seqdict
+
 seqdict = overall_analyser(fq)
 print(seqdict)

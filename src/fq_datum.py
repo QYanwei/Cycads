@@ -25,36 +25,40 @@ def endBaseHeadParse(seq, shift_length, endBaseQual_dict):
     for b in seq[:shift_length]:
         endBaseQual_dict['HeadBaseContent_dict'][b][i] += 1
         i += 1
+    endBaseQual_dict['HeadBaseContent_dict']['S'] += 1
     return endBaseQual_dict
 def endBaseTailParse(seq, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[-shift_length:]:
         endBaseQual_dict['TailBaseContent_dict'][b][i] += 1
         i += 1
+    endBaseQual_dict['TailBaseContent_dict']['S'] += 1
     return endBaseQual_dict
 def endQualHeadParse(seq, quali, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[:shift_length]:
         endBaseQual_dict['HeadQualContent_dict'][b][i] += quali[:shift_length][i]
         i += 1
+    endBaseQual_dict['HeadQualContent_dict']['S'] += 1
     return endBaseQual_dict
 def endQualTailParse(seq, quali, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[-shift_length:]:
         endBaseQual_dict['TailQualContent_dict'][b][i] += quali[-shift_length:][i]
         i += 1
+    endBaseQual_dict['TailQualContent_dict']['S'] += 1
     return endBaseQual_dict
 def read_quality_to_bin_score(base_qual_list: list, split_number_of_read_length: int):
     div, mod = divmod(len(base_qual_list), split_number_of_read_length)
     qs_in_percentage_pos = [sum(base_qual_list[i * div + min(i, mod):(i+1) * div + min(i+1, mod)])/len(base_qual_list[i * div + min(i, mod):(i+1) * div + min(i+1, mod)]) for i in range(split_number_of_read_length)]
     return qs_in_percentage_pos
-def allBaseQualParse(seq, quali, split_part_num, allBaseQual_dict):
-    if read_length >= split_part_num:
-        i = 0
-        for b in seq[:shift_length]:
-            allBaseQual_dict['HeadQualContent_dict'][b][i] += quali[:shift_length][i]
-            i += 1
-    return endBaseQual_dict
+def allBaseQualParse(quali, split_part_num, allBaseQual_dict):
+    if len(quali) >= split_part_num:
+        qv_in_percentage_pos = read_quality_to_bin_score(quali, split_part_num)
+        for j in range(split_part_num):
+            allBaseQual_dict['PercentBaseQual_dict']['Q'][j] += qv_in_percentage_pos[j]
+        allBaseQual_dict['PercentBaseQual_dict']['S'] += 1
+    return allBaseQual_dict
 
 def endBaseQualParse(seq, quali, shift_length, endBaseQual_dict):
     if len(seq) > shift_length * 2:
@@ -117,18 +121,23 @@ def sampling_analyser(fq, seed_num, read_num):
     homopolymer_dict = {'A':{}, 'G':{}, 'C':{}, 'T':{}}
     shift_length = 200
     endBaseQual_dict = {
-                    'HeadBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
-                    'TailBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
-                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
-                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    'HeadBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
+                    'TailBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
+                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
+                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
                     }
+    split_part_num = 100
+    allBaseQual_dict = {
+                    'PercentBaseQual_dict': {'Q':[0]* split_part_num, 'S':0} # Q: average quality, S: base count
+    }
     sample_list = random_readnum(seed_num, len(fq), read_num)[0]
     for i in sample_list:
         read = fq[i]
         seqdict = readParse(read, seqdict)
         homopolymer_dict = homopolymerParse(read.seq, homopolymer_size_min, homopolymer_dict)
         endBaseQual_dict = endBaseQualParse(read.seq, read.quali, shift_length, endBaseQual_dict)
-    return seqdict, homopolymer_dict, endBaseQual_dict
+        allBaseQual_dict = allBaseQualParse(read.quali, split_part_num, allBaseQual_dict)
+    return seqdict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict
 
 def overall_analyser(fq):
     seqdict = dict( {'ID': [], 'GC': [], 'LEN': [], 'QUAL1': [], 'QUAL2': []} )  # QUAL1: read basecall Q, QUAL2: read average Q
@@ -136,10 +145,10 @@ def overall_analyser(fq):
     homopolymer_dict = {'A':{}, 'G':{}, 'C':{}, 'T':{}}
     shift_length = 200
     endBaseQual_dict = {
-                    'HeadBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
-                    'TailBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
-                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
-                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    'HeadBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
+                    'TailBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
+                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
+                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
                     }
     for read in fq:
         seqdict = readParse(read, seqdict)
@@ -148,7 +157,7 @@ def overall_analyser(fq):
     return seqdict, homopolymer_dict, endBaseQual_dict
 
 fq = pyfastx.Fastq('../test/ecoli.fq.gz')
-seqdict1, homopolymer_dict1, endBaseQual_dict1  = sampling_analyser(fq, 1, 100)
+seqdict1, homopolymer_dict1, endBaseQual_dict1, allBaseQual_dict1  = sampling_analyser(fq, 1, 100)
 seqdict2, homopolymer_dict2, endBaseQual_dict2 = overall_analyser(fq)
 
 for k, v in endBaseQual_dict1.items():
@@ -158,3 +167,6 @@ for k, v in endBaseQual_dict1.items():
 for k, v in endBaseQual_dict2.items():
     for i, j in v.items():
         print(k, i, j)
+
+for k, v in allBaseQual_dict1.items():
+    print(k,v)

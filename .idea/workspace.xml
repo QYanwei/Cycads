@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="fq_datum and fq_table updated!">
+    <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="fq_datum and fq_table function release!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/fq_datum.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_datum.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fq_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/ecoli.fq.gz.fxi" beforeDir="false" afterPath="$PROJECT_DIR$/test/ecoli.fq.gz.fxi" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708399218598</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="fq_datum and fq_table function release!">
+      <option name="closed" value="true" />
+      <created>1708581588346</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1708581588346</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -169,7 +177,8 @@
     <MESSAGE value="add reports html file" />
     <MESSAGE value="update pyfastx read script." />
     <MESSAGE value="fq_datum and fq_table updated!" />
-    <option name="LAST_COMMIT_MESSAGE" value="fq_datum and fq_table updated!" />
+    <MESSAGE value="fq_datum and fq_table function release!" />
+    <option name="LAST_COMMIT_MESSAGE" value="fq_datum and fq_table function release!" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

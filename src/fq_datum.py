@@ -44,6 +44,17 @@ def endQualTailParse(seq, quali, shift_length, endBaseQual_dict):
         endBaseQual_dict['TailQualContent_dict'][b][i] += quali[-shift_length:][i]
         i += 1
     return endBaseQual_dict
+def read_quality_to_bin_score(base_qual_list: list, split_number_of_read_length: int):
+    div, mod = divmod(len(base_qual_list), split_number_of_read_length)
+    qs_in_percentage_pos = [sum(base_qual_list[i * div + min(i, mod):(i+1) * div + min(i+1, mod)])/len(base_qual_list[i * div + min(i, mod):(i+1) * div + min(i+1, mod)]) for i in range(split_number_of_read_length)]
+    return qs_in_percentage_pos
+def allBaseQualParse(seq, quali, split_part_num, allBaseQual_dict):
+    if read_length >= split_part_num:
+        i = 0
+        for b in seq[:shift_length]:
+            allBaseQual_dict['HeadQualContent_dict'][b][i] += quali[:shift_length][i]
+            i += 1
+    return endBaseQual_dict
 
 def endBaseQualParse(seq, quali, shift_length, endBaseQual_dict):
     if len(seq) > shift_length * 2:
@@ -54,11 +65,7 @@ def endBaseQualParse(seq, quali, shift_length, endBaseQual_dict):
         threads.append(Thread(target=endQualTailParse, args=(seq, quali, shift_length, endBaseQual_dict)))
         for fun in threads:
             fun.start()
-        return endBaseQual_dict
     return endBaseQual_dict
-def allBaseQualParse(seq, quali):
-    b = 0
-
 def kmerSpectrumParse(fq_path, kmer_size, output_dir):
     kmersize = kmer_size
     output = output_dir
@@ -92,8 +99,6 @@ def homopolymerParse(seq, homopolymer_size_min, homopolymer_dict):
                 else:
                     homopolymer_dict[base][homolen] = homofreq
     return homopolymer_dict
-
-fq = pyfastx.Fastq('../test/ecoli.fq.gz')
 
 def readParse(read, seqdict):
     seqdict['ID'].append(read.name)
@@ -136,16 +141,13 @@ def overall_analyser(fq):
                     'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
                     'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
                     }
-    i = 0
     for read in fq:
-        if i == 1033:
-            print(read.seq, read.qual)
         seqdict = readParse(read, seqdict)
         homopolymer_dict = homopolymerParse(read.seq, homopolymer_size_min, homopolymer_dict)
         endBaseQual_dict = endBaseQualParse(read.seq, read.quali, shift_length, endBaseQual_dict)
-        i += 1
     return seqdict, homopolymer_dict, endBaseQual_dict
 
+fq = pyfastx.Fastq('../test/ecoli.fq.gz')
 seqdict1, homopolymer_dict1, endBaseQual_dict1  = sampling_analyser(fq, 1, 100)
 seqdict2, homopolymer_dict2, endBaseQual_dict2 = overall_analyser(fq)
 

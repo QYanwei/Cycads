@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # coding: utf-8
-
+import re,os,sys,time
 import pyfastx
+
 import numpy as np
+from threading import Thread
 from collections import Counter
 
 def readGCcontent(seq):
@@ -18,44 +20,139 @@ def readAvgQscore(quali):
     read_qscore = value_sum / read_length
     return read_qscore
 
-def endsBaseDataCapture(seq, qual, shift_length):
+def endBaseHeadParse(seq, shift_length, endBaseQual_dict):
+    i = 0
+    for b in seq[:shift_length]:
+        endBaseQual_dict['HeadBaseContent_dict'][b][i] += 1
+        i += 1
+    return endBaseQual_dict
+def endBaseTailParse(seq, shift_length, endBaseQual_dict):
+    i = 0
+    for b in seq[-shift_length:]:
+        endBaseQual_dict['TailBaseContent_dict'][b][i] += 1
+        i += 1
+    return endBaseQual_dict
+def endQualHeadParse(seq, quali, shift_length, endBaseQual_dict):
+    i = 0
+    for b in seq[:shift_length]:
+        endBaseQual_dict['HeadQualContent_dict'][b][i] += quali[:shift_length][i]
+        i += 1
+    return endBaseQual_dict
+def endQualTailParse(seq, quali, shift_length, endBaseQual_dict):
+    i = 0
+    for b in seq[-shift_length:]:
+        endBaseQual_dict['TailQualContent_dict'][b][i] += quali[-shift_length:][i]
+        i += 1
+    return endBaseQual_dict
 
-
-def totBaseInfoCapture(seq, qual):
+def endBaseQualParse(seq, quali, shift_length, endBaseQual_dict):
+    if len(seq) > shift_length * 2:
+        threads = []
+        threads.append(Thread(target=endBaseHeadParse, args=(seq, shift_length, endBaseQual_dict)))
+        threads.append(Thread(target=endBaseTailParse, args=(seq, shift_length, endBaseQual_dict)))
+        threads.append(Thread(target=endQualHeadParse, args=(seq, quali, shift_length, endBaseQual_dict)))
+        threads.append(Thread(target=endQualTailParse, args=(seq, quali, shift_length, endBaseQual_dict)))
+        for fun in threads:
+            fun.start()
+        return endBaseQual_dict
+    return endBaseQual_dict
+def allBaseQualParse(seq, quali):
     b = 0
 
-def kmerSpectrumCapture():
-    a = 0
-def homopolymerCapture():
-    b = 0
-
-def random_readnum(seed_num, read_size, sample_num):
-    np.random.seed(seed_num)
-    sample_list = np.random.randint(1, read_size, (1, sample_num) )
-    return sample_list
+def kmerSpectrumParse(fq_path, kmer_size, output_dir):
+    kmersize = kmer_size
+    output = output_dir
+    pwd_config_file = os.path.realpath(__file__)
+    meryl = '/'.join(pwd_config_file.split('/')[:-1]) + '/tools/meryl'
+    if fq_path.endswith('gz'):
+        os.system('gunzip -c {}|awk \'NR %4 == 1 || NR %4 == 2 \'   > {}.fasta '.format(fq_path, output))
+        os.system('{} count  k={} {}.fasta output {}.meryl'.format(meryl, str(kmersize), output, output))
+        os.system('{} print {}.meryl |sort -k2nr > {}_kmer_{}_freq.txt'.format(meryl, output, output, str(kmersize)))
+        os.system('rm -f {}.fasta'.format(output))
+        os.system('rm -rf {}.meryl'.format(output))
+    elif fq_path.endswith('fastq') or self.args.input.endswith('fq'):
+        os.system('awk \'NR %4 == 1 || NR %4 == 2 \'   > {}.fasta '.format(fq_path, output))
+        os.system('{} count  k={} {}.fasta output {}.meryl'.format(meryl, str(kmersize), output, output))
+        os.system('{} print {}.meryl | sort -k2nr > {}_kmer_{}_freq.txt'.format(meryl, output, output, str(kmersize)))
+        os.system('rm -f {}.fasta'.format(output))
+        os.system('rm -rf {}.meryl'.format(output))
+    else:
+        print('please determining the input file suffix is fastq or fq or fq.gz!')
+# kmerSpectrumParse('../test/ecoli.fq.gz', 5, '../test/')
+def homopolymerParse(seq, homopolymer_size_min, homopolymer_dict):
+    ATCG = ['A', 'G', 'C', 'T']
+    for base in ATCG:
+        patterns = re.compile(r"%s{%d,}" % (base, homopolymer_size_min))
+        homostring_dict = dict(Counter(patterns.findall(seq)))
+        if len(homostring_dict ):
+            for homostring, homofreq in homostring_dict.items():
+                homolen = len(homostring)
+                if homolen in  homopolymer_dict[base].keys():
+                    homopolymer_dict[base][homolen] += homofreq
+                else:
+                    homopolymer_dict[base][homolen] = homofreq
+    return homopolymer_dict
 
 fq = pyfastx.Fastq('../test/ecoli.fq.gz')
 
 def readParse(read, seqdict):
-    seqdict['ID'].append(read.name )
-    seqdict['GC'].append( readGCcontent( read.seq ) )
-    seqdict['LEN'].append( len( read.seq ) )
-    seqdict['QUAL1'].append( float(read.name.split('_')[-1]) )
-    seqdict['QUAL2'].append( readAvgQscore( read.quali ) )
+    seqdict['ID'].append(read.name)
+    seqdict['GC'].append(readGCcontent(read.seq))
+    seqdict['LEN'].append(len(read.seq))
+    seqdict['QUAL1'].append(float(read.name.split('_')[-1]))
+    seqdict['QUAL2'].append(readAvgQscore(read.quali))
     return seqdict
-
+def random_readnum(seed_num, read_size, sample_num):
+    np.random.seed(seed_num)
+    sample_list = np.random.randint(1, read_size, (1, sample_num) )
+    return sample_list
 def sampling_analyser(fq, seed_num, read_num):
     seqdict = dict( {'ID': [], 'GC': [], 'LEN': [], 'QUAL1': [], 'QUAL2':[]} ) # QUAL1: read basecall Q, QUAL2: read average Q
-    sample_list = random_readnum(seed_num, len(fq), read_num)
-    for i in sample_list[0]:
+    homopolymer_size_min = 5
+    homopolymer_dict = {'A':{}, 'G':{}, 'C':{}, 'T':{}}
+    shift_length = 200
+    endBaseQual_dict = {
+                    'HeadBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    'TailBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    }
+    sample_list = random_readnum(seed_num, len(fq), read_num)[0]
+    for i in sample_list:
         read = fq[i]
         seqdict = readParse(read, seqdict)
-    return seqdict
+        homopolymer_dict = homopolymerParse(read.seq, homopolymer_size_min, homopolymer_dict)
+        endBaseQual_dict = endBaseQualParse(read.seq, read.quali, shift_length, endBaseQual_dict)
+    return seqdict, homopolymer_dict, endBaseQual_dict
+
 def overall_analyser(fq):
     seqdict = dict( {'ID': [], 'GC': [], 'LEN': [], 'QUAL1': [], 'QUAL2': []} )  # QUAL1: read basecall Q, QUAL2: read average Q
+    homopolymer_size_min = 5
+    homopolymer_dict = {'A':{}, 'G':{}, 'C':{}, 'T':{}}
+    shift_length = 200
+    endBaseQual_dict = {
+                    'HeadBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    'TailBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length},
+                    }
+    i = 0
     for read in fq:
+        if i == 1033:
+            print(read.seq, read.qual)
         seqdict = readParse(read, seqdict)
-    return seqdict
+        homopolymer_dict = homopolymerParse(read.seq, homopolymer_size_min, homopolymer_dict)
+        endBaseQual_dict = endBaseQualParse(read.seq, read.quali, shift_length, endBaseQual_dict)
+        i += 1
+    return seqdict, homopolymer_dict, endBaseQual_dict
 
-seqdict = overall_analyser(fq)
-print(seqdict)
+seqdict1, homopolymer_dict1, endBaseQual_dict1  = sampling_analyser(fq, 1, 100)
+seqdict2, homopolymer_dict2, endBaseQual_dict2 = overall_analyser(fq)
+
+for k, v in endBaseQual_dict1.items():
+    for i, j in v.items():
+        print(k, i, j)
+
+for k, v in endBaseQual_dict2.items():
+    for i, j in v.items():
+        print(k, i, j)

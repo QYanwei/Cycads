@@ -1,8 +1,8 @@
-
+#!/usr/bin/env python3
+# coding: utf-8
 import re,os,sys,time
 import pysam
 import numpy as np
-import argparse
 
 def mutation_summary(cigar_tuples, dict_var, dict_ins, dict_del):
     cigar='''M  BAM_CMATCH      0
@@ -18,7 +18,7 @@ def mutation_summary(cigar_tuples, dict_var, dict_ins, dict_del):
     total_items = 0
     total_match = 0
     read_insertion = 0
-    read_deltion = 0
+    read_deletion = 0
     for i in cigar_tuples:
         if i[0] == 0:
             dict_var['match'][0] += 1

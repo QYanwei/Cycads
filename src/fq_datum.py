@@ -206,5 +206,5 @@ class NpEncoder(json.JSONEncoder):
         return super(NpEncoder, self).default(obj)
 with open( '../test/ecoli.seq.json', 'w') as file:
     json.dump(merged_fq_datum_dict, file, indent=4,
-              separators=(', ', ': '), ensure_ascii=False,
-              cls=NpEncoder)
+              separators=(', ', ': '), ensure_ascii=False)
+#              cls=NpEncoder)

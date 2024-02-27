@@ -18,7 +18,7 @@ def readAvgQscore(quali):
     read_length = len(quali)
     value_list = Counter( list(quali) )
     value_sum = sum([ k * v for k, v in value_list.items() ])
-    read_qscore = value_sum / read_length
+    read_qscore = round(value_sum / read_length, 3)
     return read_qscore
 
 def endBaseHeadParse(seq, shift_length, endBaseQual_dict):
@@ -64,7 +64,7 @@ def allBaseQualParse(quali, split_part_num, allBaseQual_dict):
     return allBaseQual_dict
 
 def endBaseQualParse(seq, quali, shift_length, endBaseQual_dict):
-    if len(seq) > shift_length * 2:
+    if len(seq) > shift_length * 2 and '@' not in seq:
         threads = []
         threads.append(Thread(target=endBaseHeadParse, args=(seq, shift_length, endBaseQual_dict)))
         threads.append(Thread(target=endBaseTailParse, args=(seq, shift_length, endBaseQual_dict)))
@@ -195,16 +195,9 @@ fastq = '../test/ecoli.fq.gz'
 # mode = 'sampling'
 mode = 'overall'
 merged_fq_datum_dict = get_fq_datum(fastq, mode)
-class NpEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        if isinstance(obj, np.floating):
-            return float(obj)
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return super(NpEncoder, self).default(obj)
+
+import pprint
+
 with open( '../test/ecoli.seq.json', 'w') as file:
-    json.dump(merged_fq_datum_dict, file, indent=4,
-              separators=(', ', ': '), ensure_ascii=False)
-#              cls=NpEncoder)
+    filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID'])+ 60
+    pprint.pprint(merged_fq_datum_dict, file, indent=4, width=filewidth, depth = 5, compact=True)

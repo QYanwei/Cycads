@@ -147,7 +147,7 @@ def plot_ends_base_quality_curve(end_base_quality_dict):
 fastq_json_file_path = '../test/ecoli.seq.json'
 
 with open(fastq_json_file_path) as jsonfile:
-    fq_datum_dict = json.load(jsonfile)
+    fq_datum_dict = json.loads(json.dumps(eval(jsonfile.read()))) # pprint: ' -> json: "
     seq_qual_dict = fq_datum_dict['seq_qual_dict']
     homopolymer_dict = fq_datum_dict['homopolymer_dict']
     endBaseQual_dict = fq_datum_dict['endBaseQual_dict']

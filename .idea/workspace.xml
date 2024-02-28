@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="fq_datum and fq_table function release!">
+    <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="fix bug">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fq_datum.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_datum.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +24,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://D:/WechatData/WeChat Files/haitianyizi/FileStorage/File/2024-02/readGCcontent.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -36,17 +39,17 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "E:/Projects/Software_development/Cycads",
-    "settings.editor.selected.configurable": "File.Encoding"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Programs/Anaconda3/Scripts/conda.exe&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -160,7 +163,119 @@
       <option name="project" value="LOCAL" />
       <updated>1708592481369</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="fq_datum finished!">
+      <option name="closed" value="true" />
+      <created>1708599925534</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1708599925534</updated>
+    </task>
+    <task id="LOCAL-00015" summary="add sorted bam and bam index">
+      <option name="closed" value="true" />
+      <created>1708860755304</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1708860755304</updated>
+    </task>
+    <task id="LOCAL-00016" summary="add fq stat json file">
+      <option name="closed" value="true" />
+      <created>1708860780311</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1708860780311</updated>
+    </task>
+    <task id="LOCAL-00017" summary="finished first version tested">
+      <option name="closed" value="true" />
+      <created>1708860805150</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1708860805150</updated>
+    </task>
+    <task id="LOCAL-00018" summary="staring programming">
+      <option name="closed" value="true" />
+      <created>1708860840534</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1708860840534</updated>
+    </task>
+    <task id="LOCAL-00019" summary="staring programming">
+      <option name="closed" value="true" />
+      <created>1708860853607</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1708860853607</updated>
+    </task>
+    <task id="LOCAL-00020" summary="staring programming">
+      <option name="closed" value="true" />
+      <created>1708953136065</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1708953136065</updated>
+    </task>
+    <task id="LOCAL-00021" summary="fix bug">
+      <option name="closed" value="true" />
+      <created>1708953151274</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1708953151274</updated>
+    </task>
+    <task id="LOCAL-00022" summary="released">
+      <option name="closed" value="true" />
+      <created>1708953166896</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1708953166896</updated>
+    </task>
+    <task id="LOCAL-00023" summary="updated fq visualizing figures">
+      <option name="closed" value="true" />
+      <created>1708953238555</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1708953238555</updated>
+    </task>
+    <task id="LOCAL-00024" summary="pretty print json file">
+      <option name="closed" value="true" />
+      <created>1709011947008</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1709011947008</updated>
+    </task>
+    <task id="LOCAL-00025" summary="fix bug in loading pprint json file">
+      <option name="closed" value="true" />
+      <created>1709011985720</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1709011985720</updated>
+    </task>
+    <task id="LOCAL-00026" summary="remove multiple threads on endbasequal_dict function">
+      <option name="closed" value="true" />
+      <created>1709087786199</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1709087786199</updated>
+    </task>
+    <task id="LOCAL-00027" summary="fix bug">
+      <option name="closed" value="true" />
+      <created>1709113217184</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1709113217184</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -185,7 +300,18 @@
     <MESSAGE value="update pyfastx read script." />
     <MESSAGE value="fq_datum and fq_table updated!" />
     <MESSAGE value="fq_datum and fq_table function release!" />
-    <option name="LAST_COMMIT_MESSAGE" value="fq_datum and fq_table function release!" />
+    <MESSAGE value="fq_datum finished!" />
+    <MESSAGE value="add sorted bam and bam index" />
+    <MESSAGE value="add fq stat json file" />
+    <MESSAGE value="finished first version tested" />
+    <MESSAGE value="staring programming" />
+    <MESSAGE value="released" />
+    <MESSAGE value="updated fq visualizing figures" />
+    <MESSAGE value="pretty print json file" />
+    <MESSAGE value="fix bug in loading pprint json file" />
+    <MESSAGE value="remove multiple threads on endbasequal_dict function" />
+    <MESSAGE value="fix bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

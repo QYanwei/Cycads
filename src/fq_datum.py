@@ -40,14 +40,14 @@ def endQualHeadParse(seq, quali, shift_length, endBaseQual_dict):
     for b in seq[:shift_length]:
         endBaseQual_dict['HeadQualContent_dict'][b][i] += quali[:shift_length][i]
         i += 1
-    endBaseQual_dict['HeadQualContent_dict']['S'] += 1
+    endBaseQual_dict['HeadQualContent_dict']['S'][b] += 1
     return endBaseQual_dict
 def endQualTailParse(seq, quali, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[-shift_length:]:
         endBaseQual_dict['TailQualContent_dict'][b][i] += quali[-shift_length:][i]
         i += 1
-    endBaseQual_dict['TailQualContent_dict']['S'] += 1
+    endBaseQual_dict['TailQualContent_dict']['S'][b] += 1
     return endBaseQual_dict
 def read_quality_to_bin_score(base_qual_list: list, split_number_of_read_length: int):
     div, mod = divmod(len(base_qual_list), split_number_of_read_length)
@@ -122,8 +122,8 @@ def sampling_analyser(fq, seed_num, read_num):
     endBaseQual_dict = {
                     'HeadBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
                     'TailBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
-                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
-                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
+                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':{'A':0, 'T':0, 'G':0, 'C':0}},
+                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':{'A':0, 'T':0, 'G':0, 'C':0}},
                     }
     split_part_num = 100
     allBaseQual_dict = {
@@ -146,8 +146,8 @@ def overall_analyser(fq):
     endBaseQual_dict = {
                     'HeadBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
                     'TailBaseContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
-                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
-                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':0},
+                    'HeadQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':{'A':0, 'T':0, 'G':0, 'C':0}},
+                    'TailQualContent_dict': {'A': [0]*shift_length, 'G': [0]*shift_length, 'C': [0]*shift_length, 'T': [0]*shift_length, 'S':{'A':0, 'T':0, 'G':0, 'C':0}},
                     }
     split_part_num = 100
     allBaseQual_dict = {

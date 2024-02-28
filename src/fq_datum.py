@@ -37,8 +37,6 @@ def endBaseTailParse(seq, shift_length, endBaseQual_dict):
     return endBaseQual_dict
 def endQualHeadParse(seq, quali, shift_length, endBaseQual_dict):
     i = 0
-    if '@' in seq:
-        print(seq)
     for b in seq[:shift_length]:
         endBaseQual_dict['HeadQualContent_dict'][b][i] += quali[:shift_length][i]
         i += 1
@@ -65,14 +63,24 @@ def allBaseQualParse(quali, split_part_num, allBaseQual_dict):
 
 def endBaseQualParse(seq, quali, shift_length, endBaseQual_dict):
     if len(seq) > shift_length * 2 and '@' not in seq:
-        threads = []
-        threads.append(Thread(target=endBaseHeadParse, args=(seq, shift_length, endBaseQual_dict)))
-        threads.append(Thread(target=endBaseTailParse, args=(seq, shift_length, endBaseQual_dict)))
-        threads.append(Thread(target=endQualHeadParse, args=(seq, quali, shift_length, endBaseQual_dict)))
-        threads.append(Thread(target=endQualTailParse, args=(seq, quali, shift_length, endBaseQual_dict)))
-        for fun in threads:
-            fun.start()
+        endBaseQual_dict = endBaseHeadParse(seq, shift_length, endBaseQual_dict)
+        endBaseQual_dict = endBaseTailParse(seq, shift_length, endBaseQual_dict)
+        endBaseQual_dict = endQualHeadParse(seq, quali, shift_length, endBaseQual_dict)
+        endBaseQual_dict = endQualTailParse(seq, quali, shift_length, endBaseQual_dict)
     return endBaseQual_dict
+def homopolymerParse(seq, homopolymer_size_min, homopolymer_dict):
+    ATCG = ['A', 'G', 'C', 'T']
+    for base in ATCG:
+        patterns = re.compile(r"%s{%d,}" % (base, homopolymer_size_min))
+        homostring_dict = dict(Counter(patterns.findall(seq)))
+        if len(homostring_dict):
+            for homostring, homofreq in homostring_dict.items():
+                homolen = len(homostring)
+                if homolen in  homopolymer_dict[base].keys():
+                    homopolymer_dict[base][homolen] += homofreq
+                else:
+                    homopolymer_dict[base][homolen] = homofreq
+    return homopolymer_dict
 def kmerSpectrumParse(fq_path, kmer_size, output_dir):
     kmersize = kmer_size
     output = output_dir
@@ -93,19 +101,7 @@ def kmerSpectrumParse(fq_path, kmer_size, output_dir):
     else:
         print('please determining the input file suffix is fastq or fq or fq.gz!')
 # kmerSpectrumParse('../test/ecoli.fq.gz', 5, '../test/')
-def homopolymerParse(seq, homopolymer_size_min, homopolymer_dict):
-    ATCG = ['A', 'G', 'C', 'T']
-    for base in ATCG:
-        patterns = re.compile(r"%s{%d,}" % (base, homopolymer_size_min))
-        homostring_dict = dict(Counter(patterns.findall(seq)))
-        if len(homostring_dict ):
-            for homostring, homofreq in homostring_dict.items():
-                homolen = len(homostring)
-                if homolen in  homopolymer_dict[base].keys():
-                    homopolymer_dict[base][homolen] += homofreq
-                else:
-                    homopolymer_dict[base][homolen] = homofreq
-    return homopolymer_dict
+
 
 def readParse(read, seqdict):
     seqdict['ID'].append(read.id)
@@ -162,6 +158,8 @@ def overall_analyser(fq):
         homopolymer_dict = homopolymerParse(read.seq, homopolymer_size_min, homopolymer_dict)
         endBaseQual_dict = endBaseQualParse(read.seq, read.quali, shift_length, endBaseQual_dict)
         allBaseQual_dict = allBaseQualParse(read.quali, split_part_num, allBaseQual_dict)
+        # print(len(seqdict['GC']))
+        # print(sys.getsizeof(allBaseQual_dict))
     return seqdict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict
 
 # fq = pyfastx.Fastq('../test/ecoli.fq.gz')
@@ -198,6 +196,6 @@ merged_fq_datum_dict = get_fq_datum(fastq, mode)
 
 import pprint
 
-with open( '../test/ecoli.seq.json', 'w') as file:
+with open( '../test/ecoli.seq.json', 'w') as jsonfile:
     filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID'])+ 60
-    pprint.pprint(merged_fq_datum_dict, file, indent=4, width=filewidth, depth = 5, compact=True)
+    pprint.pprint(merged_fq_datum_dict, jsonfile, indent=4, width=filewidth, depth = 5, compact=True)

@@ -141,7 +141,8 @@ def plot_ends_base_quality_curve(end_base_quality_dict):
     plt.xlabel('Position in the tail of read')
     plt.gca().invert_xaxis()
     plt.savefig('_'.join([tech, 'tail', lens]) + '.png')
-# def plot_read_percent_qualtiy_curve(all_base_percent_average_quality_dict):
+def plot_read_percent_qualtiy_curve(allBaseQual_dict):
+    a = 0
 
 
 fastq_json_file_path = '../test/ecoli.seq.json'

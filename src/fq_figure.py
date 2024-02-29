@@ -3,7 +3,7 @@
 import re, os, sys, time
 import numpy as np
 import pandas as pd
-import scipy
+# import scipy
 import matplotlib.pyplot as plt
 import seaborn as sns
 import json
@@ -126,8 +126,6 @@ def plot_ends_base_quality_curve(**endBaseQual_dict):
     plt.clf()
     dataframe = pd.DataFrame([endBaseQual_dict['HeadQualContent_dict']])
     basetotal = dataframe['S'][0]
-    print(basetotal)
-    print(dataframe['A'][0])
     A_quality = np.array(dataframe['A'][0])/basetotal['A']
     T_quality = np.array(dataframe['T'][0])/basetotal['T']
     G_quality = np.array(dataframe['G'][0])/basetotal['G']
@@ -171,15 +169,15 @@ with open(fastq_json_file_path) as jsonfile:
     print(fq_datum_dict['homopolymer_dict'].keys())
     print(fq_datum_dict['endBaseQual_dict'].keys())
     print(fq_datum_dict['allBaseQual_dict'].keys())
-    # plot_length_Nx_average_bar(**seq_qual_dict)
-    # plot_gc_content_frequency_distribution(**seq_qual_dict)
-    # plot_read_quality_frequency_distritution(**seq_qual_dict)
-    # plot_read_length_frequency_distribution(**seq_qual_dict)
-    # plot_read_length_cumulative_distribution(**seq_qual_dict)
-    # plot_length_quality_cross_scatter(**seq_qual_dict)
-    # plot_read_percent_qualtiy_curve(**allBaseQual_dict)
-    # plot_ends_base_content_curve(**endBaseQual_dict)
-    # plot_ends_base_quality_curve(**endBaseQual_dict)
+    plot_length_Nx_average_bar(**seq_qual_dict)
+    plot_gc_content_frequency_distribution(**seq_qual_dict)
+    plot_read_quality_frequency_distritution(**seq_qual_dict)
+    plot_read_length_frequency_distribution(**seq_qual_dict)
+    plot_read_length_cumulative_distribution(**seq_qual_dict)
+    plot_length_quality_cross_scatter(**seq_qual_dict)
+    plot_read_percent_qualtiy_curve(**allBaseQual_dict)
+    plot_ends_base_content_curve(**endBaseQual_dict)
+    plot_ends_base_quality_curve(**endBaseQual_dict)
     plot_homopolymer_frequency(**homopolymer_dict)
 
 

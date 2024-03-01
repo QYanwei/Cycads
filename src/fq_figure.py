@@ -3,11 +3,9 @@
 import re, os, sys, time
 import numpy as np
 import pandas as pd
-# import scipy
 import matplotlib.pyplot as plt
 import seaborn as sns
 import json
-
 import warnings
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
@@ -57,6 +55,7 @@ def plot_read_length_frequency_distribution(**seq_qual_dict):
     plt.savefig('../test/read_length_histplot_nolog' + '.barplot.png')
 def plot_read_length_cumulative_distribution(**seq_qual_dict):
     LengthFrame = pd.DataFrame(np.array(seq_qual_dict['LEN']).astype(int).T, columns=['read_length'])
+    plt.clf()
     sns.displot(LengthFrame, x="read_length")
     sns.displot(LengthFrame, x="read_length", kind='ecdf')
     plt.savefig('../test/read_length_cumulative' + '.barplot.png')
@@ -94,7 +93,7 @@ def plot_homopolymer_frequency(**homopolymer_dict):
     homopolymerRangeFrame = pd.concat([A_dataframe, T_dataframe, G_dataframe, C_dataframe], axis=0)
     sns.lineplot(data=homopolymerRangeFrame.T, dashes=False)
     plt.savefig('../test/read_homopolymer_frequency' + '.lineplot.png')
-    
+
 # def plot_kmer_spectrum_heatmap(kmer_list, kmer_count):
 
 def plot_ends_base_content_curve(**endBaseQual_dict):
@@ -150,12 +149,12 @@ def plot_ends_base_quality_curve(**endBaseQual_dict):
     plt.savefig('../test/read_tail_base_quality' + '.lineplot.png')
 
 def plot_read_percent_qualtiy_curve(**allBaseQual_dict):
+    plt.clf()
     percent_pos_avg_quality = np.array(allBaseQual_dict['PercentBaseQual_dict']['Q'])/ allBaseQual_dict['PercentBaseQual_dict']['S']
     numpyarray = np.array([percent_pos_avg_quality, np.arange(len(percent_pos_avg_quality))+1]).T
     PercentQualityFrame = pd.DataFrame(data=numpyarray, columns=['average_quality', 'relative_position'])
     sns.lineplot(data=PercentQualityFrame, x="relative_position", y="average_quality")
     plt.savefig('../test/read_relative_position_avg_qual' + '.lineplot.png')
-
 
 fastq_json_file_path = '../test/ecoli.seq.json'
 
@@ -165,10 +164,10 @@ with open(fastq_json_file_path) as jsonfile:
     homopolymer_dict = fq_datum_dict['homopolymer_dict']
     endBaseQual_dict = fq_datum_dict['endBaseQual_dict']
     allBaseQual_dict = fq_datum_dict['allBaseQual_dict']
-    print(fq_datum_dict['seq_qual_dict'].keys())
-    print(fq_datum_dict['homopolymer_dict'].keys())
-    print(fq_datum_dict['endBaseQual_dict'].keys())
-    print(fq_datum_dict['allBaseQual_dict'].keys())
+    # print(fq_datum_dict['seq_qual_dict'].keys())
+    # print(fq_datum_dict['homopolymer_dict'].keys())
+    # print(fq_datum_dict['endBaseQual_dict'].keys())
+    # print(fq_datum_dict['allBaseQual_dict'].keys())
     plot_length_Nx_average_bar(**seq_qual_dict)
     plot_gc_content_frequency_distribution(**seq_qual_dict)
     plot_read_quality_frequency_distritution(**seq_qual_dict)
@@ -179,7 +178,3 @@ with open(fastq_json_file_path) as jsonfile:
     plot_ends_base_content_curve(**endBaseQual_dict)
     plot_ends_base_quality_curve(**endBaseQual_dict)
     plot_homopolymer_frequency(**homopolymer_dict)
-
-
-
-

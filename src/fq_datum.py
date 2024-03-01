@@ -9,10 +9,11 @@ from threading import Thread
 from collections import Counter
 
 def readGCcontent(seq):
-    C = seq.count("C")
-    G = seq.count("G")
-    GC = round( (C+G)/len(seq), 3)
-    return GC
+    gc_count = 0
+    for base in seq:
+        if base == 'G' or base == 'C':
+            gc_count += 1
+    return round(gc_count / len(seq),3)
 
 def readAvgQscore(quali):
     read_length = len(quali)
@@ -62,7 +63,7 @@ def allBaseQualParse(quali, split_part_num, allBaseQual_dict):
     return allBaseQual_dict
 
 def endBaseQualParse(seq, quali, shift_length, endBaseQual_dict):
-    if len(seq) > shift_length * 2 and '@' not in seq:
+    if len(seq) > shift_length * 2:
         endBaseQual_dict = endBaseHeadParse(seq, shift_length, endBaseQual_dict)
         endBaseQual_dict = endBaseTailParse(seq, shift_length, endBaseQual_dict)
         endBaseQual_dict = endQualHeadParse(seq, quali, shift_length, endBaseQual_dict)
@@ -198,4 +199,4 @@ import pprint
 
 with open( '../test/ecoli.seq.json', 'w') as jsonfile:
     filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID'])+ 60
-    pprint.pprint(merged_fq_datum_dict, jsonfile, indent=4, width=filewidth, depth = 5, compact=True)
+    pprint.pprint(merged_fq_datum_dict, jsonfile, indent=4, width=filewidth, depth = 6, compact=True)

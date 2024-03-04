@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="fix bug">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="regenerate the bam with &quot;minimap2 --MD -ax map-ont&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fq_datum.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_datum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/ecoli.seq.json" beforeDir="false" afterPath="$PROJECT_DIR$/test/ecoli.seq.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/ecoli.sorted.bam" beforeDir="false" afterPath="$PROJECT_DIR$/test/ecoli.sorted.bam" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/ecoli.sorted.bam.bai" beforeDir="false" afterPath="$PROJECT_DIR$/test/ecoli.sorted.bam.bai" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +25,12 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--follow-tags" />
+        <option name="title" value="Current Branch" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
@@ -46,7 +55,7 @@
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Programs/Anaconda3/Scripts/conda.exe&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/qiyanwei1/Downloads/pyfastx-2.1.0.tar.gz&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
   }
 }</component>
@@ -275,7 +284,79 @@
       <option name="project" value="LOCAL" />
       <updated>1709113217184</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="fix bug">
+      <option name="closed" value="true" />
+      <created>1709113619057</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1709113619057</updated>
+    </task>
+    <task id="LOCAL-00029" summary="finished fq_figure script">
+      <option name="closed" value="true" />
+      <created>1709129525428</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1709129525428</updated>
+    </task>
+    <task id="LOCAL-00030" summary="fix some bugs recall from fq_figure">
+      <option name="closed" value="true" />
+      <created>1709129569927</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1709129569927</updated>
+    </task>
+    <task id="LOCAL-00031" summary="update results">
+      <option name="closed" value="true" />
+      <created>1709129599141</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1709129599141</updated>
+    </task>
+    <task id="LOCAL-00032" summary="updated">
+      <option name="closed" value="true" />
+      <created>1709171622508</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1709171622508</updated>
+    </task>
+    <task id="LOCAL-00033" summary="updated">
+      <option name="closed" value="true" />
+      <created>1709172476000</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1709172476000</updated>
+    </task>
+    <task id="LOCAL-00034" summary="fixed some bugs">
+      <option name="closed" value="true" />
+      <created>1709272078241</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1709272078241</updated>
+    </task>
+    <task id="LOCAL-00035" summary="update figures">
+      <option name="closed" value="true" />
+      <created>1709272112597</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1709272112597</updated>
+    </task>
+    <task id="LOCAL-00036" summary="regenerate the bam with &quot;minimap2 --MD -ax map-ont&quot;">
+      <option name="closed" value="true" />
+      <created>1709292532087</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1709292532087</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -291,8 +372,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="first create" />
-    <MESSAGE value="Initial commit" />
     <MESSAGE value="test upload result" />
     <MESSAGE value="first upload" />
     <MESSAGE value="add empty src files" />
@@ -311,7 +390,14 @@
     <MESSAGE value="fix bug in loading pprint json file" />
     <MESSAGE value="remove multiple threads on endbasequal_dict function" />
     <MESSAGE value="fix bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix bug" />
+    <MESSAGE value="finished fq_figure script" />
+    <MESSAGE value="fix some bugs recall from fq_figure" />
+    <MESSAGE value="update results" />
+    <MESSAGE value="updated" />
+    <MESSAGE value="fixed some bugs" />
+    <MESSAGE value="update figures" />
+    <MESSAGE value="regenerate the bam with &quot;minimap2 --MD -ax map-ont&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="regenerate the bam with &quot;minimap2 --MD -ax map-ont&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

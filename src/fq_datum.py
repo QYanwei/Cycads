@@ -196,5 +196,5 @@ merged_fq_datum_dict = get_fq_datum(fastq, mode)
 import pprint
 
 with open( '../test/ecoli.seq.json', 'w') as jsonfile:
-    filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID'])+ 60
+    filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
     pprint.pprint(merged_fq_datum_dict, jsonfile, indent=4, width=filewidth, depth = 6, compact=True)

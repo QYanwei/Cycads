@@ -154,8 +154,8 @@ def overall_analyser(fq):
     allBaseQual_dict = {
                     'PercentBaseQual_dict': {'Q':[0]* split_part_num, 'S':0} # Q: average quality, S: base count
     }
-    fq = pyfastx.Fastq(fq, build_index=False)
     number = 0
+    fq = pyfastx.Fastq(fq, build_index=False)
     for name, seq, qual in fq:
         number += 1
         quali = [ord(i) for i in qual]

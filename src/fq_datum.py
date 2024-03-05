@@ -8,17 +8,18 @@ import numpy as np
 from threading import Thread
 from collections import Counter
 
-def readGCcontent(seq):
-    C = seq.count("C")
-    G = seq.count("G")
-    return round( (C+G)/len(seq), 3)
+def readGCcontent(seq, seq_len):
+    gc_count = 0
+    for base in seq:
+        if base == 'G' or base == 'C':
+            gc_count+=1
+    return round( gc_count/seq_len, 3)
 
-def readAvgQscore(quali):
-    read_length = len(quali)
+def readAvgQscore(quali, seq_len):
     value_list = Counter( list(quali) )
     value_sum = sum([ k * v for k, v in value_list.items() ])
-    read_qscore = round(value_sum / read_length, 3)
-    return read_qscore
+    seq_qscore = round(value_sum / seq_len, 3)
+    return seq_qscore
 
 def endBaseHeadParse(seq, shift_length, endBaseQual_dict):
     i = 0
@@ -101,13 +102,13 @@ def kmerSpectrumParse(fq_path, kmer_size, output_dir):
         print('please determining the input file suffix is fastq or fq or fq.gz!')
 # kmerSpectrumParse('../test/ecoli.fq.gz', 5, '../test/')
 
-
-def readParse(read, seqdict):
-    seqdict['ID'].append(read.id)
-    seqdict['GC'].append(readGCcontent(read.seq))
-    seqdict['LEN'].append(len(read.seq))
-    seqdict['QUAL1'].append(float(read.name.split('_')[-1]))
-    seqdict['QUAL2'].append(readAvgQscore(read.quali))
+def readParse(number, name, seq, quali, seqdict):
+    seq_len = len(seq)
+    seqdict['ID'].append(number)
+    seqdict['GC'].append(readGCcontent(seq, seq_len))
+    seqdict['LEN'].append(seq_len)
+    seqdict['QUAL1'].append(float(name.split('_')[-1]))
+    seqdict['QUAL2'].append(readAvgQscore(quali, seq_len))
     return seqdict
 def random_readnum(seed_num, read_size, sample_num):
     np.random.seed(seed_num)
@@ -129,9 +130,10 @@ def sampling_analyser(fq, seed_num, read_num):
                     'PercentBaseQual_dict': {'Q':[0]* split_part_num, 'S':0} # Q: average quality, S: base count
     }
     sample_list = random_readnum(seed_num, len(fq), read_num)[0]
+    fq = pyfastx.Fastq(fastq)
     for i in sample_list:
         read = fq[i]
-        seqdict = readParse(read, seqdict)
+        seqdict = readParse(i, read.name, read.seq, read.quali, seqdict)
         homopolymer_dict = homopolymerParse(read.seq, homopolymer_size_min, homopolymer_dict)
         endBaseQual_dict = endBaseQualParse(read.seq, read.quali, shift_length, endBaseQual_dict)
         allBaseQual_dict = allBaseQualParse(read.quali, split_part_num, allBaseQual_dict)
@@ -152,13 +154,15 @@ def overall_analyser(fq):
     allBaseQual_dict = {
                     'PercentBaseQual_dict': {'Q':[0]* split_part_num, 'S':0} # Q: average quality, S: base count
     }
-    for read in fq:
-        seqdict = readParse(read, seqdict)
-        homopolymer_dict = homopolymerParse(read.seq, homopolymer_size_min, homopolymer_dict)
-        endBaseQual_dict = endBaseQualParse(read.seq, read.quali, shift_length, endBaseQual_dict)
-        allBaseQual_dict = allBaseQualParse(read.quali, split_part_num, allBaseQual_dict)
-        # print(len(seqdict['GC']))
-        # print(sys.getsizeof(allBaseQual_dict))
+    fq = pyfastx.Fastq(fq, build_index=False)
+    number = 0
+    for name, seq, qual in fq:
+        number += 1
+        quali = [ord(i) for i in qual]
+        seqdict = readParse(number, name, seq, quali, seqdict)
+        homopolymer_dict = homopolymerParse(seq, homopolymer_size_min, homopolymer_dict)
+        endBaseQual_dict = endBaseQualParse(seq, quali, shift_length, endBaseQual_dict)
+        allBaseQual_dict = allBaseQualParse(quali, split_part_num, allBaseQual_dict)
     return seqdict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict
 
 # fq = pyfastx.Fastq('../test/ecoli.fq.gz')
@@ -167,8 +171,7 @@ def overall_analyser(fq):
 
 def get_fq_datum(fastq, mode):
     if mode == 'sampling':
-        fq = pyfastx.Fastq(fastq)
-        seq_qual_dict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict = sampling_analyser(fq, 1, 100)
+        seq_qual_dict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict = sampling_analyser(fastq, 1, 100)
         sampling_fq_datum_dict = {
             'seq_qual_dict': seq_qual_dict,
             'homopolymer_dict': homopolymer_dict,
@@ -177,8 +180,7 @@ def get_fq_datum(fastq, mode):
         }
         return sampling_fq_datum_dict
     elif mode == 'overall':
-        fq = pyfastx.Fastq(fastq)
-        seq_qual_dict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict = overall_analyser(fq)
+        seq_qual_dict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict = overall_analyser(fastq)
         overall_fq_datum_dict = {
             'seq_qual_dict': seq_qual_dict,
             'homopolymer_dict': homopolymer_dict,

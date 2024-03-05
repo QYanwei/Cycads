@@ -66,7 +66,6 @@ def mapping_summary(bam):
     insertion_frequency_dict, deletion_frequency_dict = {}, {}
     list_read_identity_rate = []
     total_count, uniq_mapped_count = 0, 0
-    f0, f1, f2, f4, f8, f16, f32, f64, f128, f256, f512, f1024, f2048 = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     readprofile = pysam.AlignmentFile(bam, "rb")
     for read in readprofile.fetch():
         name = read.query_name
@@ -106,4 +105,4 @@ import pprint
 
 with open('../test/ecoli.bam.json', 'w') as jsonfile:
     file_width = len(mapping_summary_dict['deletion_frequency_dict'][0]) + 1000
-    pprint.pprint(mapping_summary_dict, jsonfile, indent=4, width=file_width, depth=5, compact=True)
+    pprint.pprint(mapping_summary_dict, jsonfile, indent=4, width=file_width, depth=4, compact=True)

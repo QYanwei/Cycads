@@ -4,18 +4,10 @@ import re
 import pysam
 import pyfastx
 
-
-mismatch_event_dict = {
-    
-}
-
-deletion_event_dict = {
-
-}
-insertion_event_dict = {
-
-
-}
+mismatch_event_dict = { 'AT': 0, 'AC': 0, 'AG': 0, 'TC': 0, 'CG': 0, 'TG': 0,
+                        'TA': 0, 'CA': 0, 'GA': 0, 'CT': 0, 'GC': 0, 'GT': 0}
+deletion_event_dict = { }
+insertion_event_dict = { }
 
 
 def alignment_ref_seq(raw_ref, raw_seq, cigar_tuples, ):
@@ -86,7 +78,7 @@ def mapping_summary(bam):
 bam = '../test/ecoli.sorted.bam'
 fasta = '../ref/Reference_Ecoli.fasta'
 fa = pyfastx.Fasta(fasta)
-mapping_summary_dict = mapping_summary(bam)
+# mapping_summary_dict = mapping_summary(bam)
 # import pprint
 #
 # with open('../test/ecoli.bam.json', 'w') as jsonfile:

@@ -95,8 +95,8 @@ def mapping_summary(bam, aln_event_sum_dict):
                 raw_seq = read.seq
                 raw_ref = read.get_reference_sequence()
                 new_seq, new_ref, aln_event_sum_dict = parsing_alignment_events(raw_ref, raw_seq, cigar_tuples, aln_event_sum_dict)
-                print('new_seq', new_seq[:10], new_seq[-10:], new_seq)
-                print('new_ref', new_ref[:10], new_ref[-10:], new_ref)
+                # print('new_seq', new_seq[:10], new_seq[-10:], new_seq)
+                # print('new_ref', new_ref[:10], new_ref[-10:], new_ref)
             else:
                 pass
         else:
@@ -106,9 +106,8 @@ bam = '../test/ecoli.sorted.bam'
 fasta = '../ref/Reference_Ecoli.fasta'
 fa = pyfastx.Fasta(fasta)
 mapping_summary(bam, aln_event_sum_dict)
-# print(aln_event_sum_dict)
+
 import pprint
-#
 with open('../test/ecoli.bam.json', 'w') as jsonfile:
     file_width = len(aln_event_sum_dict['query_idy_rate'] ) + 60
     pprint.pprint(aln_event_sum_dict, jsonfile, indent=4, width=file_width, depth=3, compact=True)

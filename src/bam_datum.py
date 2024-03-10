@@ -20,6 +20,50 @@ aln_event_sum_dict = {
     'query_del_rate' : list()
 }
 
+# homopolymers regular expression pattern
+homopolymer_pattern= "A{2,}|C{2,}|G{2,}|T{2,}"
+
+def try_extend_reference_homopolymer(start_pos, end_pos, sequence, base_homopolymer):
+    if sequence[start_pos] in ("-", base_homopolymer):
+        while start_pos-1 >= 0 and sequence[start_pos-1] in ("-", base_homopolymer):
+            start_pos -= 1
+    if sequence[end_pos-1] in ("-", base_homopolymer):
+        while end_pos < len(sequence) and sequence[end_pos] in ("-", base_homopolymer):
+            end_pos += 1
+    while sequence[start_pos] == "-":
+        start_pos += 1
+    while sequence[end_pos-1] == "-":
+        end_pos -= 1
+    return start_pos, end_pos
+def try_extend_sequence_homopolymer(start_pos, end_pos, sequence, base_homopolymer):
+    if sequence[start_pos: end_pos].replace("-", "") == "":
+        return start_pos, end_pos
+    if sequence[start_pos] == base_homopolymer:
+        while start_pos-1 >= 0 and sequence[start_pos-1] == base_homopolymer:
+            start_pos -= 1
+    if sequence[end_pos-1] == base_homopolymer:
+        while end_pos < len(sequence) and sequence[end_pos] == base_homopolymer:
+            end_pos += 1
+    return start_pos, end_pos
+
+def parsing_homopolymer_error_event(new_ref, new_seq, aln_event_sum_dict):
+    start_init, end_init = -1, -1
+    for homo_pos in re.finditer(homopolymer_pattern, new_ref):
+        start_loci, end_loci = homo_pos.span()
+        if start_loci in range(start_init, end_init):
+            continue
+        base_homopolymer = homo_pos.group()[0]
+        start_ref, end_ref = try_extend_reference_homopolymer(start_loci, end_loci, new_ref, base_homopolymer)
+        homo_ref = new_ref[start_ref: end_ref]
+        homo_ref_length = len(homo_ref.replace("-", ""))
+        start_seq, end_seq = try_extend_sequence_homopolymer(start_loci, end_loci, new_seq, base_homopolymer)
+        start_init = min( start_ref, start_seq)
+        end_init = max(end_ref, end_seq)
+        homopolymer_ref_segment = new_ref[start_init:end_init]
+        homopolymer_seq_segment = new_seq[start_init:end_init]
+
+        print(homo_ref_length, homopolymer_ref_segment, homopolymer_seq_segment)
+
 def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples, aln_event_sum_dict):
     new_ref, new_seq = '', ''
     new_map, new_mis, new_del, new_ins = 0, 0, 0, 0
@@ -73,6 +117,8 @@ def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples, aln_event_sum_dict)
     aln_event_sum_dict['query_del_rate'].append(query_del_rate)
     aln_event_sum_dict['query_idy_rate'].append(query_idy_rate)
     aln_event_sum_dict['query_dif_rate'].append(query_dif_rate)
+    parsing_homopolymer_error_event(new_ref, new_seq, aln_event_sum_dict)
+
     return new_ref, new_seq, aln_event_sum_dict
 
 def short_softclip_hardclip_discard(cigar_tuples):

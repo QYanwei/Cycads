@@ -164,11 +164,11 @@ def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples, aln_event_sum_dict)
         else:
             pass
     # overall error and identity events
-    query_mis_rate = round(qry_mis/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    query_ins_rate = round(qry_ins/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    query_del_rate = round(qry_del/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    query_idy_rate = round(qry_map/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    query_dif_rate = round(1 - query_idy_rate, 6)
+    query_mis_rate = round(qry_mis/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    query_ins_rate = round(qry_ins/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    query_del_rate = round(qry_del/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    query_idy_rate = round(qry_map/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    query_dif_rate = round(1 - query_idy_rate, 5)
     aln_event_sum_dict['qry_ins_rate'].append(query_mis_rate)
     aln_event_sum_dict['qry_ins_rate'].append(query_ins_rate)
     aln_event_sum_dict['qry_del_rate'].append(query_del_rate)
@@ -180,11 +180,11 @@ def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples, aln_event_sum_dict)
     overall_aln_event_dict['contraction'] += qry_del
     # homopolymer events statistics
     hpm_map, hpm_mis, hpm_del, hpm_ins, aln_event_sum_dict= parsing_homopolymer_error_event(new_ref, new_seq, aln_event_sum_dict)
-    qry_hpm_mis_rate = round(hpm_mis/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    qry_hpm_ins_rate = round(hpm_ins/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    qry_hpm_del_rate = round(hpm_del/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    qry_hpm_idy_rate = round(hpm_map/(hpm_map + hpm_mis + hpm_del + hpm_ins), 6)
-    qry_hpm_dif_rate = round(1-qry_hpm_idy_rate, 6)
+    qry_hpm_mis_rate = round(hpm_mis/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    qry_hpm_ins_rate = round(hpm_ins/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    qry_hpm_del_rate = round(hpm_del/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    qry_hpm_idy_rate = round(hpm_map/(hpm_map + hpm_mis + hpm_del + hpm_ins), 5)
+    qry_hpm_dif_rate = round(1-qry_hpm_idy_rate, 5)
     aln_event_sum_dict['qry_hpm_mis_rate'].append(qry_hpm_mis_rate)
     aln_event_sum_dict['qry_hpm_ins_rate'].append(qry_hpm_ins_rate)
     aln_event_sum_dict['qry_hpm_del_rate'].append(qry_hpm_del_rate)
@@ -195,11 +195,11 @@ def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples, aln_event_sum_dict)
     overall_aln_event_dict['hpm_expansion'] += qry_ins
     overall_aln_event_dict['hpm_contraction'] += qry_del
     # non-homopolymer events statistics
-    qry_non_hpm_mis_rate = round((qry_mis - hpm_mis)/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    qry_non_hpm_ins_rate = round((qry_ins - hpm_ins)/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    qry_non_hpm_del_rate = round((qry_del - hpm_del)/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    qry_non_hpm_idy_rate = round((qry_map - hpm_mis - hpm_ins - hpm_del )/(qry_map + qry_ins + qry_del + qry_mis), 6)
-    qry_non_hpm_dif_rate = round(1-qry_non_hpm_idy_rate, 6)
+    qry_non_hpm_mis_rate = round((qry_mis - hpm_mis)/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    qry_non_hpm_ins_rate = round((qry_ins - hpm_ins)/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    qry_non_hpm_del_rate = round((qry_del - hpm_del)/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    qry_non_hpm_idy_rate = round((qry_map - hpm_mis - hpm_ins - hpm_del )/(qry_map + qry_ins + qry_del + qry_mis), 5)
+    qry_non_hpm_dif_rate = round(1-qry_non_hpm_idy_rate, 5)
     overall_aln_event_dict['non_hpm_substitution'] += qry_mis
     overall_aln_event_dict['non_hpm_expansion'] += qry_ins
     overall_aln_event_dict['non_hpm_contraction'] += qry_del
@@ -247,4 +247,4 @@ print(overall_aln_event_dict)
 import pprint
 with open('../test/ecoli.bam.json', 'w') as jsonfile:
     file_width = len(aln_event_sum_dict['qry_idy_rate'] )  + 60
-    pprint.pprint(aln_event_sum_dict, jsonfile, indent=4, width=file_width, depth=6, compact=False)
+    pprint.pprint(aln_event_sum_dict, jsonfile, indent=4, width=file_width, depth=4, compact=True)

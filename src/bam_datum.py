@@ -5,19 +5,44 @@ import pysam
 import pyfastx
 
 aln_event_sum_dict = {
-    'mis_typ_dict' : { 'AT': 0, 'AC': 0, 'AG': 0, 'TC': 0, 'CG': 0, 'TG': 0, 'TA': 0, 'CA': 0, 'GA': 0, 'CT': 0, 'GC': 0, 'GT': 0},
-    'del_len_dict' : dict(),
-    'ins_len_dict' : dict(),
-    'map_len_dict' : dict(),
-    'mis_len_dict' : dict(),
-    'hpm_len_dict' : dict(),
-    'hpm_mis_len_dict' : dict(),
-    'hpm_ins_len_dict' : dict(),
-    'hpm_del_len_dict' : dict(),
-    'query_idy_rate' : list(),
-    'query_dif_rate' : list(),
-    'query_ins_rate' : list(),
-    'query_del_rate' : list()
+
+    'all_mis_typ_dict' : { 'AT': 0, 'AC': 0, 'AG': 0, 'TC': 0, 'CG': 0, 'TG': 0, 'TA': 0, 'CA': 0, 'GA': 0, 'CT': 0, 'GC': 0, 'GT': 0},
+    'all_map_len_dict' : dict(),
+    'all_mis_len_dict' : dict(),
+    'all_ins_len_dict': dict(),
+    'all_del_len_dict' : dict(),
+    'all_hpm_len_dict' : dict(),
+
+    'qry_idy_rate' : list(),
+    'qry_dif_rate' : list(),
+    'qry_mis_rate': list(),
+    'qry_ins_rate' : list(),
+    'qry_del_rate' : list(),
+
+    'qry_hpm_idy_rate' : list(),
+    'qry_hpm_dif_rate' : list(),
+    'qry_hpm_mis_rate' : list(),
+    'qry_hpm_ins_rate' : list(),
+    'qry_hpm_del_rate' : list(),
+
+    'qry_non_hpm_idy_rate': list(),
+    'qry_non_hpm_dif_rate': list(),
+    'qry_non_hpm_mis_rate': list(),
+    'qry_non_hpm_ins_rate': list(),
+    'qry_non_hpm_del_rate': list(),
+}
+
+overall_aln_event_dict ={
+    'identity': 0,
+    'substitution': 0,
+    'expansion': 0,
+    'contraction': 0,
+    'hpm_substitution': 0,
+    'hpm_expansion':0,
+    'hpm_contraction': 0,
+    'non_hpm_substitution':0,
+    'non_hpm_expansion': 0,
+    'non_hpm_contraction': 0,
 }
 
 # homopolymers regular expression pattern
@@ -48,6 +73,7 @@ def try_extend_sequence_homopolymer(start_pos, end_pos, sequence, base_homopolym
 
 def parsing_homopolymer_error_event(new_ref, new_seq, aln_event_sum_dict):
     start_init, end_init = -1, -1
+    hpm_map, hpm_mis, hpm_del, hpm_ins = 0, 0, 0, 0
     for homo_pos in re.finditer(homopolymer_pattern, new_ref):
         start_loci, end_loci = homo_pos.span()
         if start_loci in range(start_init, end_init):
@@ -55,70 +81,133 @@ def parsing_homopolymer_error_event(new_ref, new_seq, aln_event_sum_dict):
         base_homopolymer = homo_pos.group()[0]
         start_ref, end_ref = try_extend_reference_homopolymer(start_loci, end_loci, new_ref, base_homopolymer)
         homo_ref = new_ref[start_ref: end_ref]
-        homo_ref_length = len(homo_ref.replace("-", ""))
         start_seq, end_seq = try_extend_sequence_homopolymer(start_loci, end_loci, new_seq, base_homopolymer)
         start_init = min( start_ref, start_seq)
         end_init = max(end_ref, end_seq)
         homopolymer_ref_segment = new_ref[start_init:end_init]
         homopolymer_seq_segment = new_seq[start_init:end_init]
+        homo_ref_length = len(homo_ref.replace("-", ""))
+        if homopolymer_ref_segment != homopolymer_seq_segment:
+            if "-" in homopolymer_ref_segment:
+                hpm_ins += 1
+                ins_size = homopolymer_ref_segment.count("-")
+                if homo_ref_length in aln_event_sum_dict['all_hpm_len_dict'].keys():
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length].append(ins_size)
+                else:
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length] = [ins_size]
+            elif "-" in homopolymer_seq_segment:
+                hpm_del += 1
+                del_size = homopolymer_seq_segment.count("-")
+                if homo_ref_length in aln_event_sum_dict['all_hpm_len_dict'].keys():
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length].append(-del_size)
+                else:
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length] = [-del_size]
+            else:
+                hpm_mis += 1
+                if homo_ref_length in aln_event_sum_dict['all_hpm_len_dict'].keys():
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length].append(0.5)
+                else:
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length] = [0.5]
+        else:
+            hpm_map += 1
+            if homo_ref_length in aln_event_sum_dict['all_hpm_len_dict'].keys():
+                aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length].append(0)
+            else:
+                aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length] = [0]
+    return hpm_map, hpm_mis, hpm_del, hpm_ins, aln_event_sum_dict
 
-        print(homo_ref_length, homopolymer_ref_segment, homopolymer_seq_segment)
+
 
 def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples, aln_event_sum_dict):
     new_ref, new_seq = '', ''
-    new_map, new_mis, new_del, new_ins = 0, 0, 0, 0
+    qry_map, qry_mis, qry_del, qry_ins = 0, 0, 0, 0
     for i in cigar_tuples:
         if i[0] == 0: # matched
             new_seq += raw_seq[: i[1]]
             new_ref += raw_seq[: i[1]]
             raw_seq = raw_seq[i[1]:]
             raw_ref = raw_ref[i[1]:]
-            new_map += i[1]
-            if i[1] in aln_event_sum_dict['map_len_dict'].keys():
-                aln_event_sum_dict['map_len_dict'][ i[1] ] += 1
+            qry_map += i[1]
+            if i[1] in aln_event_sum_dict['all_map_len_dict'].keys():
+                aln_event_sum_dict['all_map_len_dict'][ i[1] ] += 1
             else:
-                aln_event_sum_dict['map_len_dict'][ i[1] ] = 1
+                aln_event_sum_dict['all_map_len_dict'][ i[1] ] = 1
         elif i[0] == 1: # insertion
             new_seq += raw_seq[:i[1]]
             new_ref += i[1] * '-'
             raw_seq = raw_seq[i[1]:]
             raw_ref = raw_ref
-            new_ins += 1
-            if i[1] in aln_event_sum_dict['ins_len_dict'].keys():
-                aln_event_sum_dict['ins_len_dict'][ i[1] ] += 1
+            qry_ins += 1
+            if i[1] in aln_event_sum_dict['all_ins_len_dict'].keys():
+                aln_event_sum_dict['all_ins_len_dict'][ i[1] ] += 1
             else:
-                aln_event_sum_dict['ins_len_dict'][ i[1] ] = 1
+                aln_event_sum_dict['all_ins_len_dict'][ i[1] ] = 1
         elif i[0] == 2: # deletion
             new_seq += i[1] * '-'
             new_ref += raw_ref[:i[1]]
             raw_seq = raw_seq
             raw_ref = raw_ref[i[1]:]
-            new_del += 1
-            if i[1] in aln_event_sum_dict['del_len_dict'].keys():
-                aln_event_sum_dict['del_len_dict'][ i[1] ] += 1
+            qry_del += 1
+            if i[1] in aln_event_sum_dict['all_del_len_dict'].keys():
+                aln_event_sum_dict['all_del_len_dict'][ i[1] ] += 1
             else:
-                aln_event_sum_dict['del_len_dict'][ i[1] ] = 1
+                aln_event_sum_dict['all_del_len_dict'][ i[1] ] = 1
         elif i[0] == 8: # mismatch
             new_seq += raw_seq[:i[1]]
             new_ref += raw_ref[:i[1]]
             raw_seq = raw_seq[i[1]:]
             raw_ref = raw_ref[i[1]:]
-            new_mis += 1
-            aln_event_sum_dict['mis_typ_dict'][raw_ref[i[1]:] + raw_seq[i[1]:]] += 1
+            qry_mis += 1
+            aln_event_sum_dict['all_mis_typ_dict'][raw_ref[i[1]:] + raw_seq[i[1]:]] += 1
         elif i[0] == 4 or i[0] == 5:
             raw_seq = raw_seq[i[1]:]
         else:
             pass
-    query_ins_rate = round(new_ins/(new_map + new_ins + new_del + new_mis), 6)
-    query_del_rate = round(new_del/(new_map + new_ins + new_del + new_mis), 6)
-    query_idy_rate = round(new_map/(new_map + new_ins + new_del + new_mis), 6)
+    # overall error and identity events
+    query_mis_rate = round(qry_mis/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    query_ins_rate = round(qry_ins/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    query_del_rate = round(qry_del/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    query_idy_rate = round(qry_map/(qry_map + qry_ins + qry_del + qry_mis), 6)
     query_dif_rate = round(1 - query_idy_rate, 6)
-    aln_event_sum_dict['query_ins_rate'].append(query_ins_rate)
-    aln_event_sum_dict['query_del_rate'].append(query_del_rate)
-    aln_event_sum_dict['query_idy_rate'].append(query_idy_rate)
-    aln_event_sum_dict['query_dif_rate'].append(query_dif_rate)
-    parsing_homopolymer_error_event(new_ref, new_seq, aln_event_sum_dict)
-
+    aln_event_sum_dict['qry_ins_rate'].append(query_mis_rate)
+    aln_event_sum_dict['qry_ins_rate'].append(query_ins_rate)
+    aln_event_sum_dict['qry_del_rate'].append(query_del_rate)
+    aln_event_sum_dict['qry_dif_rate'].append(query_dif_rate)
+    aln_event_sum_dict['qry_idy_rate'].append(query_idy_rate)
+    overall_aln_event_dict['identity'] += qry_map
+    overall_aln_event_dict['substitution'] += qry_mis
+    overall_aln_event_dict['expansion'] += qry_ins
+    overall_aln_event_dict['contraction'] += qry_del
+    # homopolymer events statistics
+    hpm_map, hpm_mis, hpm_del, hpm_ins, aln_event_sum_dict= parsing_homopolymer_error_event(new_ref, new_seq, aln_event_sum_dict)
+    qry_hpm_mis_rate = round(hpm_mis/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    qry_hpm_ins_rate = round(hpm_ins/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    qry_hpm_del_rate = round(hpm_del/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    qry_hpm_idy_rate = round(hpm_map/(hpm_map + hpm_mis + hpm_del + hpm_ins), 6)
+    qry_hpm_dif_rate = round(1-qry_hpm_idy_rate, 6)
+    aln_event_sum_dict['qry_hpm_mis_rate'].append(qry_hpm_mis_rate)
+    aln_event_sum_dict['qry_hpm_ins_rate'].append(qry_hpm_ins_rate)
+    aln_event_sum_dict['qry_hpm_del_rate'].append(qry_hpm_del_rate)
+    aln_event_sum_dict['qry_hpm_idy_rate'].append(qry_hpm_idy_rate)
+    aln_event_sum_dict['qry_hpm_dif_rate'].append(qry_hpm_dif_rate)
+    overall_aln_event_dict['identity'] += qry_map
+    overall_aln_event_dict['hpm_substitution'] += qry_mis
+    overall_aln_event_dict['hpm_expansion'] += qry_ins
+    overall_aln_event_dict['hpm_contraction'] += qry_del
+    # non-homopolymer events statistics
+    qry_non_hpm_mis_rate = round((qry_mis - hpm_mis)/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    qry_non_hpm_ins_rate = round((qry_ins - hpm_ins)/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    qry_non_hpm_del_rate = round((qry_del - hpm_del)/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    qry_non_hpm_idy_rate = round((qry_map - hpm_mis - hpm_ins - hpm_del )/(qry_map + qry_ins + qry_del + qry_mis), 6)
+    qry_non_hpm_dif_rate = round(1-qry_non_hpm_idy_rate, 6)
+    overall_aln_event_dict['non_hpm_substitution'] += qry_mis
+    overall_aln_event_dict['non_hpm_expansion'] += qry_ins
+    overall_aln_event_dict['non_hpm_contraction'] += qry_del
+    aln_event_sum_dict['qry_non_hpm_mis_rate'].append(qry_non_hpm_mis_rate)
+    aln_event_sum_dict['qry_non_hpm_ins_rate'].append(qry_non_hpm_ins_rate)
+    aln_event_sum_dict['qry_non_hpm_del_rate'].append(qry_non_hpm_del_rate)
+    aln_event_sum_dict['qry_non_hpm_dif_rate'].append(qry_non_hpm_dif_rate)
+    aln_event_sum_dict['qry_non_hpm_idy_rate'].append(qry_non_hpm_idy_rate)
     return new_ref, new_seq, aln_event_sum_dict
 
 def short_softclip_hardclip_discard(cigar_tuples):
@@ -153,7 +242,9 @@ fasta = '../ref/Reference_Ecoli.fasta'
 fa = pyfastx.Fasta(fasta)
 mapping_summary(bam, aln_event_sum_dict)
 
+print(overall_aln_event_dict)
+
 import pprint
 with open('../test/ecoli.bam.json', 'w') as jsonfile:
-    file_width = len(aln_event_sum_dict['query_idy_rate'] ) + 60
-    pprint.pprint(aln_event_sum_dict, jsonfile, indent=4, width=file_width, depth=3, compact=True)
+    file_width = len(aln_event_sum_dict['qry_idy_rate'] )  + 60
+    pprint.pprint(aln_event_sum_dict, jsonfile, indent=4, width=file_width, depth=6, compact=False)

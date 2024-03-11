@@ -78,7 +78,7 @@ def plot_homopolymer_frequency(**homopolymer_dict):
             if int(i) < homopolymer_len_max:
                 homopolymer_range_dict[b][int(i)] = homopolymer_dict[b][i]
             elif int(i) >= homopolymer_len_max:
-                homopolymer_range_dict[b][str(homopolymer_len_max)] = homopolymer_dict[b][i]
+                homopolymer_range_dict[b][str(homopolymer_len_max)] += homopolymer_dict[b][i]
             else:
                 pass
     plt.clf()

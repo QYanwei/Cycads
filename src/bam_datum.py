@@ -5,37 +5,34 @@ import pysam
 import pyfastx
 
 aln_event_sum_dict = {
-
     'all_mis_typ_dict' : { 'AT': 0, 'AC': 0, 'AG': 0, 'TC': 0, 'CG': 0, 'TG': 0, 'TA': 0, 'CA': 0, 'GA': 0, 'CT': 0, 'GC': 0, 'GT': 0},
     'all_map_len_dict' : dict(),
     'all_ins_len_dict': dict(),
     'all_del_len_dict' : dict(),
-
     'qry_idy_rate' : list(),
     'qry_dif_rate' : list(),
     'qry_mis_rate': list(),
     'qry_ins_rate' : list(),
     'qry_del_rate' : list(),
-
     'qry_hpm_idy_rate' : list(),
     'qry_hpm_dif_rate' : list(),
     'qry_hpm_mis_rate' : list(),
     'qry_hpm_ins_rate' : list(),
     'qry_hpm_del_rate' : list(),
-
     'qry_non_hpm_idy_rate': list(),
     'qry_non_hpm_dif_rate': list(),
     'qry_non_hpm_mis_rate': list(),
     'qry_non_hpm_ins_rate': list(),
     'qry_non_hpm_del_rate': list(),
 }
+max_hpm_length = 16
 shift_length = 4
 homopolymer_events_dict = {
-    'S_hpm_len_dict': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
-    'A_hpm_len_dict': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
-    'T_hpm_len_dict': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
-    'C_hpm_len_dict': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
-    'G_hpm_len_dict': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
+    'S': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
+    'A': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
+    'T': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
+    'C': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
+    'G': {2: [0]*shift_length, 3: [0]*shift_length, 4: [0]*shift_length},
 }
 
 overall_aln_event_dict ={
@@ -98,9 +95,10 @@ def parsing_homopolymer_error_event(new_ref, new_seq, aln_event_sum_dict):
                 hpm_ins += 1
                 ins_size = homopolymer_ref_segment.count("-")
                 if homo_ref_length in aln_event_sum_dict['all_hpm_len_dict'].keys():
-                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length].append(ins_size)
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length][ins_size] += 1
                 else:
-                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length] = [ins_size]
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length] = [0] * shift_length
+                    aln_event_sum_dict['all_hpm_len_dict'][homo_ref_length][ins_size] = 1
             elif "-" in homopolymer_seq_segment:
                 hpm_del += 1
                 del_size = homopolymer_seq_segment.count("-")

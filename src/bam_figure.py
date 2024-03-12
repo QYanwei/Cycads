@@ -85,6 +85,12 @@ def plot_homopolymer_frequency(**bam_datum_dict):
 
 def overall_length_event_frequency(bam_datum_dict):
     a = 0
+    qry_hpm_event = np.array([homopolymer_events_dict['S'][i] for i in homopolymer_events_dict['S'].keys()])
+
+    hpm_map = np.sum(list(qry_hpm_event[:, shift_length + 1]))
+    hpm_mis = np.sum(qry_hpm_event[:, shift_length])
+    hpm_del = np.sum(qry_hpm_event[:, :shift_length])
+    hpm_ins = np.sum(qry_hpm_event[:, shift_length + 2 :])
 
 bam_json_file_path = '../test/ecoli.bam.json'
 with open(bam_json_file_path) as jsonfile:

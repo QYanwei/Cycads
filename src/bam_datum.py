@@ -4,6 +4,13 @@ import re
 import pysam
 import pprint
 
+def short_softclip_hardclip_discard(cigar_tuples):
+    soft_hard_length = 0
+    for i in cigar_tuples:
+        if i[0] == 4 or i[0] == 5:
+            soft_hard_length += i[1]
+    return soft_hard_length
+
 def try_extend_reference_homopolymer(start_pos, end_pos, sequence, base_homopolymer):
     if sequence[start_pos] in ("-", base_homopolymer):
         while start_pos-1 >= 0 and sequence[start_pos-1] in ("-", base_homopolymer):
@@ -191,13 +198,6 @@ def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples):
     query_aln_event_stat_dict['qry_non_hpm_dif_rate'].append(qry_non_hpm_dif_rate)
     query_aln_event_stat_dict['qry_non_hpm_idy_rate'].append(qry_non_hpm_idy_rate)
 
-def short_softclip_hardclip_discard(cigar_tuples):
-    soft_hard_length = 0
-    for i in cigar_tuples:
-        if i[0] == 4 or i[0] == 5:
-            soft_hard_length += i[1]
-    return soft_hard_length
-
 def mapping_summary(in_bam):
     readprofile = pysam.AlignmentFile(in_bam, "rb")
     for read in readprofile.fetch():
@@ -268,7 +268,7 @@ if __name__ == "__main__":
     }
     # analyzing data
     mapping_summary(bam)
-    # alignment dict
+    # structure write
     merge_alignment_dict = {
         'overall_aln_event_sum_dict': overall_aln_event_sum_dict,
         'overall_aln_event_stat_dict': overall_aln_event_stat_dict,

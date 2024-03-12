@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 # coding: utf-8
-import re,os,sys,time
-import json
+import re
+import os
+import pprint
 import pyfastx
 
 import numpy as np
-from threading import Thread
 from collections import Counter
 
 def readGCcontent(seq, seq_len):
     gc_count = 0
     for base in seq:
         if base == 'G' or base == 'C':
-            gc_count+=1
-    return round( gc_count/seq_len, 3)
+            gc_count += 1
+    return round(gc_count/seq_len, 3)
 
 def readAvgQscore(quali, seq_len):
-    value_list = Counter( list(quali) )
-    value_sum = sum([ k * v for k, v in value_list.items() ])
+    value_list = Counter(list(quali))
+    value_sum = sum([k * v for k, v in value_list.items()])
     seq_qscore = round(value_sum / seq_len, 3)
     return seq_qscore
 
@@ -25,33 +25,35 @@ def endBaseHeadParse(seq, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[:shift_length]:
         endBaseQual_dict['HeadBaseContent_dict'][b][i] += 1
+        endBaseQual_dict['HeadBaseContent_dict']['S'] += 1
         i += 1
-    endBaseQual_dict['HeadBaseContent_dict']['S'] += 1
     return endBaseQual_dict
 def endBaseTailParse(seq, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[-shift_length:]:
         endBaseQual_dict['TailBaseContent_dict'][b][i] += 1
+        endBaseQual_dict['TailBaseContent_dict']['S'] += 1
         i += 1
-    endBaseQual_dict['TailBaseContent_dict']['S'] += 1
     return endBaseQual_dict
 def endQualHeadParse(seq, quali, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[:shift_length]:
         endBaseQual_dict['HeadQualContent_dict'][b][i] += quali[:shift_length][i]
+        endBaseQual_dict['HeadQualContent_dict']['S'][b] += 1
         i += 1
-    endBaseQual_dict['HeadQualContent_dict']['S'][b] += 1
     return endBaseQual_dict
 def endQualTailParse(seq, quali, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[-shift_length:]:
         endBaseQual_dict['TailQualContent_dict'][b][i] += quali[-shift_length:][i]
+        endBaseQual_dict['TailQualContent_dict']['S'][b] += 1
         i += 1
-    endBaseQual_dict['TailQualContent_dict']['S'][b] += 1
     return endBaseQual_dict
 def read_quality_to_bin_score(base_qual_list: list, split_number_of_read_length: int):
     div, mod = divmod(len(base_qual_list), split_number_of_read_length)
-    qs_in_percentage_pos = [sum(base_qual_list[i * div + min(i, mod):(i+1) * div + min(i+1, mod)])/len(base_qual_list[i * div + min(i, mod):(i+1) * div + min(i+1, mod)]) for i in range(split_number_of_read_length)]
+    qs_in_percentage_pos = [sum(base_qual_list[i * div + min(i, mod):(i + 1) * div + min(i + 1, mod)]) / len(
+        base_qual_list[i * div + min(i, mod):(i + 1) * div + min(i + 1, mod)]) for i in
+                            range(split_number_of_read_length)]
     return qs_in_percentage_pos
 def allBaseQualParse(quali, split_part_num, allBaseQual_dict):
     if len(quali) >= split_part_num:
@@ -92,7 +94,7 @@ def kmerSpectrumParse(fq_path, kmer_size, output_dir):
         os.system('{} print {}.meryl |sort -k2nr > {}_kmer_{}_freq.txt'.format(meryl, output, output, str(kmersize)))
         os.system('rm -f {}.fasta'.format(output))
         os.system('rm -rf {}.meryl'.format(output))
-    elif fq_path.endswith('fastq') or self.args.input.endswith('fq'):
+    elif fq_path.endswith('fastq') or fq_path.endswith('fq'):
         os.system('awk \'NR %4 == 1 || NR %4 == 2 \'   > {}.fasta '.format(fq_path, output))
         os.system('{} count  k={} {}.fasta output {}.meryl'.format(meryl, str(kmersize), output, output))
         os.system('{} print {}.meryl | sort -k2nr > {}_kmer_{}_freq.txt'.format(meryl, output, output, str(kmersize)))
@@ -190,13 +192,18 @@ def get_fq_datum(fastq, mode):
         return overall_fq_datum_dict
     else:
         print('please check the mode of parsing target data!')
-fastq = '../test/ecoli.fq.gz'
-# mode = 'sampling'
-mode = 'overall'
-merged_fq_datum_dict = get_fq_datum(fastq, mode)
 
-import pprint
+if __name__ == "__main__" :
+    # parameter list
+    fastq = '../test/ecoli.fq.gz'
+    # mode = 'sampling'
+    mode = 'overall'
+    # initiated dict
 
-with open( '../test/ecoli.seq.json', 'w') as jsonfile:
-    filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
-    pprint.pprint(merged_fq_datum_dict, jsonfile, indent=4, width=filewidth, depth = 6, compact=True)
+    # analyzing data
+    merged_fq_datum_dict = get_fq_datum(fastq, mode)
+
+    # structure write
+    with open( '../test/ecoli.seq.json', 'w') as jsonfile:
+        filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
+        pprint.pprint(merged_fq_datum_dict, jsonfile, indent=4, width=filewidth, depth = 6, compact=True)

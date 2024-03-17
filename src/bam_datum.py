@@ -215,7 +215,6 @@ def mapping_summary(in_bam):
         else:
             continue
 
-
 if __name__ == "__main__":
     # parameter list
     bam = '../test/ecoli.sorted.bam'

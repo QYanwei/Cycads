@@ -3,7 +3,6 @@
 import os
 
 input_fastq = '../test/ecoli.fq.gz'
-
 pyfastx_tool = "../tool/pyfastx"
 
 def pyfastx_stat_fq_and_idx(pyfastx_tool, input_fastq):

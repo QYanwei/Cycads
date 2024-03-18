@@ -75,10 +75,13 @@ def plot_homopolymer_frequency(**homopolymer_dict):
     homopolymer_range_dict = {'A': {}, 'G': {}, 'C': {}, 'T': {} }
     for b in homopolymer_dict.keys():
         for i in homopolymer_dict[b].keys():
-            if int(i) < homopolymer_len_max:
+            if int(i) <= homopolymer_len_max:
                 homopolymer_range_dict[b][int(i)] = homopolymer_dict[b][i]
-            elif int(i) >= homopolymer_len_max:
-                homopolymer_range_dict[b][str(homopolymer_len_max)] += homopolymer_dict[b][i]
+            elif int(i) > homopolymer_len_max:
+                if i in homopolymer_dict[b].keys():
+                    homopolymer_range_dict[b][homopolymer_len_max] += homopolymer_dict[b][i]
+                else:
+                    pass
             else:
                 pass
     plt.clf()
@@ -125,11 +128,12 @@ def plot_ends_base_quality_curve(**endBaseQual_dict):
     plt.clf()
     dataframe = pd.DataFrame([endBaseQual_dict['HeadQualContent_dict']])
     basetotal = dataframe['S'][0]
-    A_quality = np.array(dataframe['A'][0])/basetotal['A']
-    T_quality = np.array(dataframe['T'][0])/basetotal['T']
-    G_quality = np.array(dataframe['G'][0])/basetotal['G']
-    C_quality = np.array(dataframe['C'][0])/basetotal['C']
-    Mean_quality = np.array( np.array(dataframe['A'][0]) + np.array(dataframe['T'][0]) + np.array(dataframe['G'][0]) + np.array(dataframe['C'][0]))/sum(basetotal.values())
+    A_quality = np.array(dataframe['A'][0])/np.array(basetotal['A'])
+    T_quality = np.array(dataframe['T'][0])/np.array(basetotal['T'])
+    G_quality = np.array(dataframe['G'][0])/np.array(basetotal['G'])
+    C_quality = np.array(dataframe['C'][0])/np.array(basetotal['C'])
+    base_total = np.array(basetotal['A']) + np.array(basetotal['T']) + np.array(basetotal['G']) + np.array(basetotal['C'])
+    Mean_quality = np.array( np.array(dataframe['A'][0]) + np.array(dataframe['T'][0]) + np.array(dataframe['G'][0]) + np.array(dataframe['C'][0]))/np.array(base_total)
     numpyarray = np.array([A_quality, T_quality, G_quality, C_quality, Mean_quality]).T
     PercentQualityFrame = pd.DataFrame(data=numpyarray, columns=['A', 'T', 'C', 'G', 'Mean'])
     sns.lineplot(data=PercentQualityFrame, dashes=False)
@@ -138,11 +142,12 @@ def plot_ends_base_quality_curve(**endBaseQual_dict):
     plt.clf()
     dataframe = pd.DataFrame([endBaseQual_dict['TailQualContent_dict']])
     basetotal = dataframe['S'][0]
-    A_quality = np.array(dataframe['A'][0])/basetotal['A']
-    T_quality = np.array(dataframe['T'][0])/basetotal['T']
-    G_quality = np.array(dataframe['G'][0])/basetotal['G']
-    C_quality = np.array(dataframe['C'][0])/basetotal['C']
-    Mean_quality = np.array( np.array(dataframe['A'][0]) + np.array(dataframe['T'][0]) + np.array(dataframe['G'][0]) + np.array(dataframe['C'][0]))/sum(basetotal.values())
+    A_quality = np.array(dataframe['A'][0])/np.array(basetotal['A'])
+    T_quality = np.array(dataframe['T'][0])/np.array(basetotal['T'])
+    G_quality = np.array(dataframe['G'][0])/np.array(basetotal['G'])
+    C_quality = np.array(dataframe['C'][0])/np.array(basetotal['C'])
+    base_total = np.array(basetotal['A']) + np.array(basetotal['T']) + np.array(basetotal['G']) + np.array(basetotal['C'])
+    Mean_quality = np.array( np.array(dataframe['A'][0]) + np.array(dataframe['T'][0]) + np.array(dataframe['G'][0]) + np.array(dataframe['C'][0]))/np.array(base_total)
     numpyarray = np.array([A_quality, T_quality, G_quality, C_quality, Mean_quality]).T
     PercentQualityFrame = pd.DataFrame(data=numpyarray, columns=['A', 'T', 'C', 'G', 'Mean'])
     sns.lineplot(data=PercentQualityFrame, dashes=False)

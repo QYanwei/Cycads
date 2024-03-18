@@ -5,11 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="42c1f74b-5fa4-4f29-a8b6-57c202b236f4" name="Changes" comment="regenerate the bam with &quot;minimap2 --MD -ax map-ont&quot;">
+      <change afterPath="$PROJECT_DIR$/config/bam_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/fq_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/cycads_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024_2_18_16_47__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024_2_18_16_47__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024_2_18_16_50__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024_2_18_16_50__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_2_28__17_47___Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_2_28,_17_47_取消提交了更改_[Changes]/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/template.html" beforeDir="false" afterPath="$PROJECT_DIR$/config/template.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/bam_datum-v1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/bam_datum.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/bam_datum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/bam_figure.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/bam_figure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/bam_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/bam_report.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/fq_datum.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_datum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fq_figure.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_figure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fq_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fq_table.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/ecoli.seq.json" beforeDir="false" afterPath="$PROJECT_DIR$/test/ecoli.seq.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/ecoli.sorted.bam" beforeDir="false" afterPath="$PROJECT_DIR$/test/ecoli.sorted.bam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/ecoli.sorted.bam.bai" beforeDir="false" afterPath="$PROJECT_DIR$/test/ecoli.sorted.bam.bai" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_gc_histplot.barplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_gc_histplot.barplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_head_base_content.lineplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_head_base_content.lineplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_head_base_quality.lineplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_head_base_quality.lineplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_homopolymer_frequency.lineplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_homopolymer_frequency.lineplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_length_biostat.barplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_length_biostat.barplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_length_cumulative.barplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_length_cumulative.barplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_length_histplot_nolog.barplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_length_histplot_nolog.barplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_length_quality_cross.scatterplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_length_quality_cross.scatterplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_quality_histplot.barplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_quality_histplot.barplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_relative_position_avg_qual.lineplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_relative_position_avg_qual.lineplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_tail_base_content.lineplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_tail_base_content.lineplot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/read_tail_base_quality.lineplot.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/read_tail_base_quality.lineplot.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +63,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2cWCJAlCL01SNSeSm5YUMBKBedM" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -48,17 +75,25 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/qiyanwei1/Downloads/pyfastx-2.1.0.tar.gz&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "E:/Projects/Software_development/pycoQC",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-d68999036c7f-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.14475.56" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

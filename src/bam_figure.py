@@ -20,32 +20,22 @@ def plot_query_event_rate_overlapping_densities(**bam_datum_dict):
     qry_idy_rate = np.array(bam_datum_dict['qry_idy_rate'])
     qry_hpm_idy_rate = np.array(bam_datum_dict['qry_hpm_idy_rate'])
     qry_non_hpm_idy_rate = np.array(bam_datum_dict['qry_non_hpm_idy_rate'])
-    plt.style.use('ggplot')
-    sns.distplot()
-    sns.distplot(qry_idy_rate, hist=False, kde=False, fit=stats.norm,
-                 fit_kws={'color': 'red', 'label': 'overall identity rate', 'linestyle': '-'})
-    sns.distplot(qry_hpm_idy_rate, hist=False, kde=False, fit=stats.norm,
-                 fit_kws={'color': 'purple', 'label': 'homopolymer identity rate', 'linestyle': '-'})
-    sns.distplot(qry_non_hpm_idy_rate, hist=False, kde=False, fit=stats.norm,
-                 fit_kws={'color': 'green', 'label': 'non-homopolymer identity rate', 'linestyle': '-'})
-    plt.legend()
-    plt.savefig('../test/query_events_curve_idy_dif.' + '.distpplot.png')
+    qry_idy_df = pd.DataFrame([qry_idy_rate,qry_hpm_idy_rate, qry_non_hpm_idy_rate])
+    qry_idy_df.index = ['overall identity rate', 'homopolymer identity rate', 'non-homopolymer identity rate']
+    plt.clf()
+    sns.displot(data=qry_idy_df.T, kind="kde")
+    plt.savefig('../test/query_events_curve_idy' + '.dispplot.png')
     # error rate
     qry_dif_rate = np.array(bam_datum_dict['qry_dif_rate'])
     qry_hpm_dif_rate = np.array(bam_datum_dict['qry_hpm_dif_rate'])
     qry_non_hpm_dif_rate = np.array(bam_datum_dict['qry_non_hpm_dif_rate'])
+    qry_dif_df = pd.DataFrame([qry_dif_rate,qry_hpm_dif_rate, qry_non_hpm_dif_rate])
+    qry_dif_df.index = ['overall error rate', 'homopolymer error rate', 'non-homopolymer error rate']
     plt.clf()
-    sns.distplot(qry_dif_rate, hist=False, kde=False, fit=stats.norm,
-                 fit_kws={'color': 'red', 'label': 'overall error rate', 'linestyle': ':'})
-    sns.distplot(qry_hpm_dif_rate, hist=False, kde=False, fit=stats.norm,
-                 fit_kws={'color': 'purple', 'label': 'homopolymer error rate', 'linestyle': ':'})
-    sns.distplot(qry_non_hpm_dif_rate, hist=False, kde=False, fit=stats.norm,
-                 fit_kws={'color': 'green', 'label': 'non-homopolymer error rate', 'linestyle': ':'})
-    plt.legend()
-    plt.savefig('../test/query_events_curve_dif.' + '.distpplot.png')
-    
+    sns.displot(data=qry_dif_df.T, kind="kde")
+    plt.savefig('../test/query_events_curve_dif' + '.dispplot.png')
 
-def plot_homopolymer_frequency(**bam_datum_dict):
+def plot_insertion_deletion_frequency(**bam_datum_dict):
     indel_len_max = 10
     indel_range_dict = {'Insertion': {}, 'Deletion':{} }
     ins_sum = sum(bam_datum_dict['all_ins_len_dict'].values())
@@ -83,21 +73,57 @@ def plot_homopolymer_frequency(**bam_datum_dict):
     sns.barplot(data=Del_dataframe)
     plt.savefig('../test/query_deletion_frequency' + '.barplot.png')
 
-def overall_length_event_frequency(bam_datum_dict):
-    a = 0
-    qry_hpm_event = np.array([homopolymer_events_dict['S'][i] for i in homopolymer_events_dict['S'].keys()])
+def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_dict):
+    qry_hpm_event = np.array([homopolymer_aln_event_stat_dict['S'][i] for i in homopolymer_aln_event_stat_dict['S'].keys()])
+    qry_hpm_event2= []
+    for i in qry_hpm_event:
+        lt = []
+        p = 0
+        for j in i /sum(i):
+            p += j
+            lt.append(p)
+        qry_hpm_event2.append(lt)
+    homopolymer_dataframe = pd.DataFrame(qry_hpm_event2)
+    homopolymer_dataframe.index = range(2,len(qry_hpm_event2)+2,1)
+    homopolymer_dataframe.columns = ["contraction 4bp+", "contraction 3bp", "contraction 2bp", "contraction 1bp",
+                                     "correct segment",  "mismatch segment",
+                                     "expansion 1bp", "expansion 2bp", "expansion 3bp", "expansion 4bp+"]
+    plt.clf()
+    sns.lineplot(data=homopolymer_dataframe)
+    plt.savefig('../test/query_homopolymer_length_event' + '.lineplot.png')
 
-    hpm_map = np.sum(list(qry_hpm_event[:, shift_length + 1]))
-    hpm_mis = np.sum(qry_hpm_event[:, shift_length])
-    hpm_del = np.sum(qry_hpm_event[:, :shift_length])
-    hpm_ins = np.sum(qry_hpm_event[:, shift_length + 2 :])
+def plot_overall_alignment_frequency(**overall_aln_event_sum_dict):
+    all_event = overall_aln_event_sum_dict['identity'] + overall_aln_event_sum_dict['substitution'] + overall_aln_event_sum_dict['contraction'] + overall_aln_event_sum_dict['expansion']
+    all_dif_event = overall_aln_event_sum_dict['substitution'] + overall_aln_event_sum_dict['contraction'] + overall_aln_event_sum_dict['expansion']
+    all_dif = all_dif_event / all_event *100
+    all_mis = overall_aln_event_sum_dict['substitution'] / all_event *100
+    all_del = overall_aln_event_sum_dict['contraction'] / all_event *100
+    all_ins = overall_aln_event_sum_dict['expansion'] / all_event *100
+
+    non_hpm_dif_event = overall_aln_event_sum_dict['non_hpm_substitution'] + overall_aln_event_sum_dict['non_hpm_contraction'] + overall_aln_event_sum_dict['non_hpm_expansion']
+    non_hpm_dif = non_hpm_dif_event / all_event *100
+    non_hpm_mis = overall_aln_event_sum_dict['non_hpm_substitution'] / all_event *100
+    non_hpm_del = overall_aln_event_sum_dict['non_hpm_contraction'] / all_event *100
+    non_hpm_ins = overall_aln_event_sum_dict['non_hpm_expansion'] / all_event *100
+    plt.clf()
+    all_aln_rates = [all_dif, all_mis, all_del, all_ins]
+    non_hpm_aln_rates = [non_hpm_dif, non_hpm_mis, non_hpm_del, non_hpm_ins]
+    labels = ['Error rate', 'Mismatch', 'Deletion', 'Insertion']
+    x = np.arange(len(labels))  # the label locations
+    width = 0.35  # the width of the bars
+    fig, ax = plt.subplots()
+    ax.bar(x - width/2, all_aln_rates, width, label='Total error rate')
+    ax.bar(x + width/2, non_hpm_aln_rates, width, label='Non-homopolymer error rate')
+    ax.set_ylabel('Percentage(%)')
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.legend()
+    plt.savefig('../test/query_all_error_item' + '.barplot.png')
 
 bam_json_file_path = '../test/ecoli.bam.json'
 with open(bam_json_file_path) as jsonfile:
     bam_datum_dict = json.loads(json.dumps(eval(jsonfile.read()))) # pprint: ' -> json: "
-    all_ins_len_dict = bam_datum_dict['all_ins_len_dict']
-    all_del_len_dict = bam_datum_dict['all_del_len_dict']
-    plot_query_event_rate_overlapping_densities(**bam_datum_dict)
-    plot_homopolymer_frequency(**bam_datum_dict)
-
-
+    plot_query_event_rate_overlapping_densities(**bam_datum_dict['query_aln_event_stat_dict'])
+    plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'])
+    plot_insertion_deletion_frequency(**bam_datum_dict['overall_aln_event_stat_dict'])
+    plot_overall_alignment_frequency(**bam_datum_dict['overall_aln_event_sum_dict'])

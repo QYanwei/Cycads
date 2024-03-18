@@ -10,7 +10,6 @@ def short_softclip_hardclip_discard(cigar_tuples):
         if i[0] == 4 or i[0] == 5:
             soft_hard_length += i[1]
     return soft_hard_length
-
 def try_extend_reference_homopolymer(start_pos, end_pos, sequence, base_homopolymer):
     if sequence[start_pos] in ("-", base_homopolymer):
         while start_pos-1 >= 0 and sequence[start_pos-1] in ("-", base_homopolymer):

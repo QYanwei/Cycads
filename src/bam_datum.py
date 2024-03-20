@@ -108,11 +108,13 @@ def parsing_homopolymer_error_event(new_ref, new_seq):
     return hpm_map, hpm_mis, hpm_ins, hpm_del
 def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples):
     new_ref, new_seq = '', ''
+    raw_seq, raw_ref = raw_seq.upper(), raw_ref.upper()
     qry_map, qry_mis, qry_del, qry_ins = 0, 0, 0, 0
     for i in cigar_tuples:
-        if i[0] == 0:  # matched
+        if i[0] == 7:  # matched
             new_seq += raw_seq[: i[1]]
             new_ref += raw_seq[: i[1]]
+            # print(raw_seq[: i[1]], raw_seq[: i[1]])
             raw_seq = raw_seq[i[1]:]
             raw_ref = raw_ref[i[1]:]
             qry_map += i[1]
@@ -143,10 +145,11 @@ def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples):
         elif i[0] == 8:  # mismatch
             new_seq += raw_seq[:i[1]]
             new_ref += raw_ref[:i[1]]
+            if i[1] == 1 and (raw_ref[:i[1]] + raw_seq[:i[1]]) in overall_aln_event_stat_dict['all_mis_typ_dict'].keys():
+                overall_aln_event_stat_dict['all_mis_typ_dict'][raw_ref[:i[1]] + raw_seq[:i[1]]] += 1
             raw_seq = raw_seq[i[1]:]
             raw_ref = raw_ref[i[1]:]
             qry_mis += 1
-            overall_aln_event_stat_dict['all_mis_typ_dict'][raw_ref[i[1]:] + raw_seq[i[1]:]] += 1
         elif i[0] == 4 or i[0] == 5:
             raw_seq = raw_seq[i[1]:]
         else:

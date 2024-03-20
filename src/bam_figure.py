@@ -99,7 +99,6 @@ def plot_overall_alignment_frequency(**overall_aln_event_sum_dict):
     all_mis = overall_aln_event_sum_dict['substitution'] / all_event *100
     all_del = overall_aln_event_sum_dict['contraction'] / all_event *100
     all_ins = overall_aln_event_sum_dict['expansion'] / all_event *100
-
     non_hpm_dif_event = overall_aln_event_sum_dict['non_hpm_substitution'] + overall_aln_event_sum_dict['non_hpm_contraction'] + overall_aln_event_sum_dict['non_hpm_expansion']
     non_hpm_dif = non_hpm_dif_event / all_event *100
     non_hpm_mis = overall_aln_event_sum_dict['non_hpm_substitution'] / all_event *100

@@ -182,7 +182,7 @@ def plot_overall_alignment_frequency(**overall_aln_event_sum_dict):
     plt.savefig('../test/query_all_error_item' + '.barplot.png')
 
 fontsize=16
-ticksize=16
+ticksize=18
 
 bam_json_file_path = '../test/ecoli.bam.json'
 with open(bam_json_file_path) as jsonfile:

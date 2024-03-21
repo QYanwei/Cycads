@@ -4,10 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
-	<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
-	<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
-
     <title>Cycads: CycloneSEQ quality reporter</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
@@ -20,246 +16,44 @@
     	}
     </style>
   </head>
+<body>
 
-  <body>
-	<div class="container">
-		<div class="columns">
-			<div class="column col-12 col-mx-auto tf">
-				<header class="navbar">
-					<section class="navbar-section">
-								<a href="https://github.com/QYanwei/Cycads" class="navbar-brand mr-2" target="_blank">Cycads</a>
-								<a href="https://github.com/QYanwei/Cycads" class="btn btn-link" target="_blank">Docs</a>
-								<a href="https://github.com/QYanwei/Cycads" class="btn btn-link" target="_blank">GitHub</a>
-					</section>
-					<section class="navbar-section">
-						<div class="dropdown dropdown-right">
-							<a href="#/" class="btn btn-link dropdown-toggle" tabindex="0">Menu <i class="icon icon-menu"></i></a>
-							<ul class="menu">
-								<li class="menu-item">
-									<a href="#Sequence summary">Sequence summary</a>
-									<a href="#Mapping summary">Sequence summary</a>
-								</li>
-							</ul>
-						</div>
-					</section>
-				</header>
-				</div>
-		</div>
-		<div class="columns">
-			<div class="column col-9 col-mx-auto">
-				<div class="text-center">
-					<h1>CycloneSEQ quality reporter</h1>
-					<div class="divider"></div>
-					<h3>Generated on 17/03/24 with Cycads V0.1.0 </h3>
-					<div class="divider"></div>
-				</div>
-				<div class="columns">
-					<div id="Sequence summary" class="column col-11 col-mx-auto text-center">
-						<h4 style="margin-top: 50px;">Sequence summary</h4>
-						<table>
-							<tr>
-								<td> <img
-								src="../test/read_length_quality_cross.scatterplot.png"
-								width="300"
-								height="280" />
-								<figcaption class="figure-caption text-center">
-									Read length vs quality scatter</figcaption>
-									</td>
-								<td> <img
-									src="../test/read_relative_position_avg_qual.lineplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read relative position average q score</figcaption>
-									</td>
-								<td> <img
-								src="../test/read_length_histplot_nolog.barplot.png"
-								width="300"
-								height="280" />
-								<figcaption class="figure-caption text-center">
-									Read length distribution</figcaption>
-									</td>
-								<td> <img
-									src="../test/read_length_cumulative.barplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read length cumulative curve</figcaption>
-									</td>
-							</tr>
-							<tr>
-								<td> <img
-									src="../test/read_gc_histplot.barplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read GC content histgram</figcaption>
-									</td>
-								<td> <img
-									src="../test/read_quality_histplot.barplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read quality score</figcaption>
-									</td>
-								<td> <img
-									src="../test/read_length_biostat.barplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read Nx and average length bar</figcaption>
-									</td>
-								<td> <img
-									src="../test/read_homopolymer_frequency.lineplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read homopolymer frequency</figcaption>
-									</td>
-							</tr>
-							<tr>
-								<td><img
-									src="../test/read_head_base_quality.lineplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-											Read head base quality curves</figcaption>
-								</td>
-								<td><img
-									src="../test/read_tail_base_quality.lineplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read tail base quality curves</figcaption>
-								</td>
-								<td> <img
-									src="../test/read_head_base_content.lineplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read head base content histgram</figcaption>
-									</td>
-								<td><img
-									src="../test/read_tail_base_content.lineplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read tail base content curves</figcaption>
-								</td>
+<div class="container">
+	<div class="columns">
+		<div class="column col-12 col-mx-auto tf">
+			<header class="navbar">
+				<section class="navbar-section">
+    	    				<a href="https://github.com/QYanwei/Cycads" class="navbar-brand mr-2" target="_blank">Cycads</a>
+    	    				<a href="https://github.com/QYanwei/Cycads" class="btn btn-link" target="_blank">Docs</a>
+    	    				<a href="https://github.com/QYanwei/Cycads" class="btn btn-link" target="_blank">GitHub</a>
+	  			</section>
+  	  			<section class="navbar-section">
+					<div class="dropdown dropdown-right">
+						<a href="#/" class="btn btn-link dropdown-toggle" tabindex="0">Menu <i class="icon icon-menu"></i></a>
+						<ul class="menu">
+							<li class="menu-item">
+								
+							</li>
+						</ul>
+					</div>
+				</section>
+			</header>
+      		</div>
+	</div>
+	<div class="columns">
 
-							</tr>
-						</table>
-						<div class="divider"></div>
-					</div>
-				</div>
-				<div class="columns">
-					<div id="Mapping summary" class="column col-11 col-mx-auto text-center">
-						<h4 style="margin-top: 50px;">Mapping summary</h4>
-						<table>
-							<tr>
-								<td> <img
-								src="../test/query_all_error_item.barplot.png"
-								width="300"
-								height="280" />
-								<figcaption class="figure-caption text-center">
-									Sequencing error rate</figcaption>
-									</td>
-								<td> <img
-									src="../test/query_insertion_frequency.barplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Insertion frequency</figcaption>
-									</td>
-								<td> <img
-								src="../test/query_deletion_frequency.barplot.png"
-								width="300"
-								height="280" />
-								<figcaption class="figure-caption text-center">
-									Deletion frequency</figcaption>
-									</td>
-								<td> <img
-									src="../test/query_all_substitution_errors.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Substitution type error frequency </figcaption>
-									</td>
-							</tr>
-							<tr>
-								<td> <img
-									src="../test/query_events_curve_idy.dispplot.png"
-									width="300"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Read quality score</figcaption>
-									</td>
-								<td> <img
-									src="../test/query_homopolymer_length_event.lineplot.png"
-									width="500"
-									height="280" />
-									<figcaption class="figure-caption text-center">
-										Homopolymer error type with its length</figcaption>
-									</td>
-							</tr>
-						</table>
-						<div class="divider"></div>
-					</div>
-				</div>
+		<div class="column col-9 col-mx-auto">
+			<div class="text-center">
+				<h1>Cycads report</h1>
+				<div class="divider"></div>
+				<h3>Generated on 20/03/24 with  </h3>
+                <div class="divider"></div>
+			</div>
+			<div class="columns">
+				
 			</div>
 		</div>
-	</div>
-      <table>
-      <caption>
-        How I chose to spend my money
-      </caption>
-      <thead>
-        <tr>
-          <th>Purchase</th>
-          <th>Location</th>
-          <th>Date</th>
-          <th>Evaluation</th>
-          <th>Cost (€)</th>
-        </tr>
-      </thead>
-      <tfoot>
-        <tr>
-          <td colspan="4">SUM</td>
-          <td>118</td>
-        </tr>
-      </tfoot>
-      <tbody>
-        <tr>
-          <td>Haircut</td>
-          <td>Hairdresser</td>
-          <td>12/09</td>
-          <td>Great idea</td>
-          <td>30</td>
-        </tr>
-        <tr>
-          <td>Lasagna</td>
-          <td>Restaurant</td>
-          <td>12/09</td>
-          <td>Regrets</td>
-          <td>18</td>
-        </tr>
-        <tr>
-          <td>Shoes</td>
-          <td>Shoeshop</td>
-          <td>13/09</td>
-          <td>Big regrets</td>
-          <td>65</td>
-        </tr>
-        <tr>
-          <td>Toothpaste</td>
-          <td>Supermarket</td>
-          <td>13/09</td>
-          <td>Good</td>
-          <td>5</td>
-        </tr>
-      </tbody>
-    </table>
-	</body>
+    </div>
+</div>
+</body>
 </html>
-
-

@@ -24,7 +24,7 @@ def plotting(config_dict):
             method_args["plot_title"] = ""
             
             # Get method and generate plot
-            method = getattr(self.plotter, method_name)
+            method = getattr(plotter, method_name)
             fig = method(**method_args)
             plot = py.plot(
                 fig,

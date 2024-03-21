@@ -79,9 +79,12 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
     for i in qry_hpm_event:
         lt = []
         p = 0
-        for j in i /sum(i):
-            p += j
-            lt.append(p)
+        if sum(i) > 0:
+            for j in i /sum(i):
+                p += j
+                lt.append(p)
+        else:
+            pass
         qry_hpm_event2.append(lt)
     homopolymer_dataframe = pd.DataFrame(qry_hpm_event2)
     homopolymer_dataframe.index = range(2,len(qry_hpm_event2)+2,1)

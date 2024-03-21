@@ -32,8 +32,25 @@ def plot_query_event_rate_overlapping_densities(**bam_datum_dict):
     qry_dif_df = pd.DataFrame([qry_dif_rate,qry_hpm_dif_rate, qry_non_hpm_dif_rate])
     qry_dif_df.index = ['overall error rate', 'homopolymer error rate', 'non-homopolymer error rate']
     plt.clf()
+    fig, ax = plt.subplots()
     sns.displot(data=qry_dif_df.T, kind="kde")
-    plt.savefig('../test/query_events_curve_dif' + '.dispplot.png')
+    ax.set_xlabel('x', fontsize=fontsize)
+    ax.set_ylabel('y', fontsize=fontsize)
+    ax.set_title('Title', fontsize=fontsize)
+    plt.savefig('../test/query_events_curve_dif.dispplot.png')
+
+def plot_substitution_frequency(**overall_aln_event_stat_dict):
+    substitution = np.array(list(overall_aln_event_stat_dict['all_mis_typ_dict'].values()))
+    all_mis_typ_dict = dict(zip(overall_aln_event_stat_dict['all_mis_typ_dict'], substitution * 100 / sum(substitution) ))
+    substitution_type = pd.DataFrame(all_mis_typ_dict, index=[0])
+    substitution_type.index = ['Substitution']
+    plt.clf()
+    fig, ax = plt.subplots()
+    sns.barplot(data=substitution_type)
+    ax.set_xlabel('x', fontsize=fontsize)
+    ax.set_ylabel('y', fontsize=fontsize)
+    ax.set_title('Title', fontsize=fontsize)
+    plt.savefig('../test/query_all_substitution_errors.barplot.png')
 
 def plot_insertion_deletion_frequency(**bam_datum_dict):
     indel_len_max = 10
@@ -63,14 +80,23 @@ def plot_insertion_deletion_frequency(**bam_datum_dict):
     indel_range_dict['Insertion'][indel_len_max] = indel_range_dict['Insertion'][indel_len_max] * 100 / ins_sum
     indel_range_dict['Deletion'][indel_len_max] = indel_range_dict['Deletion'][indel_len_max] * 100 / del_sum
     plt.clf()
-    Ins_dataframe = pd.DataFrame([ indel_range_dict['Insertion'] ])
+    fig, ax = plt.subplots()
+    Ins_dataframe = pd.DataFrame(indel_range_dict['Insertion'], index=[0])
     Ins_dataframe.index = ['Insertion']
     sns.barplot(data=Ins_dataframe)
+    plt.tight_layout()
     plt.savefig('../test/query_insertion_frequency' + '.barplot.png')
+    # plt.show()
     plt.clf()
-    Del_dataframe = pd.DataFrame([ indel_range_dict['Deletion'] ])
+    fig, ax = plt.subplots()
+    Del_dataframe = pd.DataFrame(indel_range_dict['Deletion'], index=[0])
     Del_dataframe.index = ['Deletion']
     sns.barplot(data=Del_dataframe)
+    plt.tight_layout()
+    # plt.show()
+    ax.set_xlabel('x', fontsize=fontsize)
+    ax.set_ylabel('y', fontsize=fontsize)
+    ax.set_title('Title', fontsize=fontsize)
     plt.savefig('../test/query_deletion_frequency' + '.barplot.png')
 
 def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_dict):
@@ -92,7 +118,11 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
                                      "correct segment",  "mismatch segment",
                                      "expansion 1bp", "expansion 2bp", "expansion 3bp", "expansion 4bp+"]
     plt.clf()
+    fig, ax = plt.subplots()
     sns.lineplot(data=homopolymer_dataframe)
+    ax.set_xlabel('x', fontsize=fontsize)
+    ax.set_ylabel('y', fontsize=fontsize)
+    ax.set_title('Title', fontsize=fontsize)
     plt.savefig('../test/query_homopolymer_length_event' + '.lineplot.png')
 
 def plot_overall_alignment_frequency(**overall_aln_event_sum_dict):
@@ -119,8 +149,14 @@ def plot_overall_alignment_frequency(**overall_aln_event_sum_dict):
     ax.set_ylabel('Percentage(%)')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
+    ax.set_xlabel('x', fontsize=fontsize)
+    ax.set_ylabel('y', fontsize=fontsize)
+    ax.set_title('Title', fontsize=fontsize)
     ax.legend()
     plt.savefig('../test/query_all_error_item' + '.barplot.png')
+
+fontsize= 12
+
 
 bam_json_file_path = '../test/ecoli.bam.json'
 with open(bam_json_file_path) as jsonfile:
@@ -129,3 +165,4 @@ with open(bam_json_file_path) as jsonfile:
     plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'])
     plot_insertion_deletion_frequency(**bam_datum_dict['overall_aln_event_stat_dict'])
     plot_overall_alignment_frequency(**bam_datum_dict['overall_aln_event_sum_dict'])
+    plot_substitution_frequency(**bam_datum_dict['overall_aln_event_stat_dict'])

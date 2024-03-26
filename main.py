@@ -1,8 +1,7 @@
-
 #!/usr/bin/env python3
 # coding: utf-8
 
-# Copyright (C) 2021, Yanwei Qi.
+# Copyright (C) 2024, CycloneSEQ.
 # qiyanwei1@genomics.cn, or qiyanweii@icloud.com.
 
 # Cycads is free software: you can redistribute it and/or modify
@@ -31,16 +30,18 @@ change log:
     2024/01/18  Project created.
 """
 
-import sys
+import os,re,sys,time
 import argparse
 
-# from cycad import fq_datum
-# from cycad import fq_figure
-# from cycad import fq_report
-# from cycad import fq_filter
-# from cycad import bam_datum
-# from cycad import bam_figure
-# from cycad import bam_report
+from cycad import fq_index
+from cycad import fq_datum
+from cycad import fq_figure
+#from cycad import fq_report
+from cycad import fq_filter
+from cycad import fq_align
+from cycad import bam_datum
+from cycad import bam_figure
+#from cycad import bam_report
 
 # basic stent function
 ## check file
@@ -51,16 +52,11 @@ def file_checkin(infile, func):
     else:
         print(func + ': check...' + infile + ' file not found.')
         return 0
-##/
-
+## version control
 def version():
     version_file = open('%sVERSION.txt' % './')
     return version_file.readline().strip()
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
+## help document
 def print_helpdoc():
     help_message = """
               ........:::=== Cycads V%s ===:::........
@@ -71,32 +67,25 @@ def print_helpdoc():
     """ % version()
     print(help_message)
 
-
-
-
-
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     ############################################## initialize subparsers ###############################################
 
     # initialize the options parser
     parser = argparse.ArgumentParser(description='Cycads:Long reads sequencing quality analyzer')
-    parser.add_argument("-i",    "--fastq",     required=True,  help="sequences data.fq/fq.gz")
-    parser.add_argument("-bam",  "--alignment", required=False, help="alignment data.bam")
-    parser.add_argument("-ref",  "--reference", required=False, help="alignment data.fasta")
-    parser.add_argument("-list", "--fqlist",    required=False, help="fastq path list.txt")
-    parser.add_argument("-name", "--sample_name", default='cycad', required=False, help="prefix of output file name")
+    parser.add_argument("-fq",   "--fastq",     required=False,  help="sequences.fq/fq.gz")
+    parser.add_argument("-bam",  "--alignment", required=False, help="alignment.bam")
+    parser.add_argument("-ref",  "--reference", required=False, help="reference.fasta")
     
     # for quality control.
-
     parser.add_argument("-P", "--platform", required=False, help="cyclone")
-    parser.add_argument("-K", "--kmersize", type=int, required=False, help="5")
-    parser.add_argument("-BQH", "--base_quality_head", type=int, default=200, required=False, help="200")
-    parser.add_argument("-BQT", "--base_quality_tail", type=int, default=200, required=False, help="200")
-    parser.add_argument("-BCH", "--base_content_head", type=int, default=200, required=False, help="200")
-    parser.add_argument("-BCT", "--base_content_tail", type=int, default=200, required=False, help="200")
-    parser.add_argument("-hpmin", "--homopolymer_min_length", type=int, required=False, help="2")
-    parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, required=False, help="16")
+    parser.add_argument("-M", "--mode", type=str, default="overall", required=False, help="if you want fast, please set to sampling")
+    parser.add_argument("-Hshift", "--head_shift_length", type=int, default=200, required=False, help="check head bases quality")
+    parser.add_argument("-Tshift", "--tail_shift_length", type=int, default=200, required=False, help="check tail bases quality")
+    parser.add_argument("-kmer", "--kmer_size_frequency",     type=int, default=5, required=False, help="observe kmer size specturm")
+    parser.add_argument("-hpmin", "--homopolymer_min_length", type=int, default=2, required=False, help="observe minium homopolymer")
+    parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
+
     # for data filtering.
     parser.add_argument("-filter", "--filtering", required=False, help="get clean data")
     parser.add_argument("-Qmin", "--minium_quality",  type=float, default='10',   required=False, help="filter low quality reads")
@@ -108,13 +97,13 @@ if __name__ == '__main__':
     parser.add_argument("-Ttrim", "--trim_tail_homopolymer", type=int, default='200', required=False, help="trim head sequences homopolymer")
     parser.add_argument("-Dx", "--downsampling_dx", type=str, default='10', required=False, help="depth")
     parser.add_argument("-Dg", "--downsampling_gs", type=str, default='4m', required=False, help="genome size")
-    
+    # third party tool
     # for error analysis.
-    
-    # parser.add_argument("-hpmin", "--homopolymer_min_length", type=int, required=False, help="2")
-    # parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, required=False, help="16")
+    parser.add_argument("-hpmindelmax", "--homopolymer_indel_max", type=int, default=4, required=False, help="homopolymer max indel shift")
+    # for storing result.
+    parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
     ############################## parse provided arguments and run corresponding function #############################
-    
+
     # get and check options
     #    args = None
     args = parser.parse_args()
@@ -123,7 +112,61 @@ if __name__ == '__main__':
         sys.exit(0)
     else:
         args = vars(parser.parse_args())
-    print(args)
-    
-    
+    if os.path.exists("./" + args["sample_name"]):
+        print("output folder exists!")
+    else:
+        os.mkdir("./" + args["sample_name"])
+    pwd_config_file = os.path.realpath(__file__)
+    args["pyfastx"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/pyfastx'
+    args["minimap2"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/minimap2'
+    args["samtools"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/samtools'
+    if not os.path.exists(args["pyfastx"]):
+        print("pyfastx: not found in the ./tool/")
+    else:
+        pass
+    if not os.path.exists(args["minimap2"]):
+        print("minimap2: not found in the ./tool/")
+    else:
+        pass
+    if not os.path.exists(args["samtools"]):
+        print("samtools: not found in the ./tool/")
+    else:
+        pass
+    if args["fastq"] and not args["filtering"] and not args["alignment"] and not args["reference"] :
+        if os.path.exists(args["fastq"]):
+            fq_index.fq_index_action(args)           
+            fq_datum.fq_datum_action(args)
+            fq_figure.fq_figure_action(args)
+        else:
+            print(args["fastq"] + " is not exists!")
+    elif args["fastq"] and args["filtering"] and not args["alignment"] and not args["reference"]:
+        if os.path.exists(args["fastq"]):
+            fq_index.fq_index_action(args)
+            fq_datum.fq_datum_action(args)
+            fq_figure.fq_figure_action(args)
+            fq_filter.fq_filter_action(args)
+        else:
+            print(args["fastq"] + " is not exists!")
+    elif args["fastq"] and args["reference"] and not args["filtering"] and not args["alignment"]:
+        if os.path.exists(args["fastq"]) and os.path.exists(args["reference"]):
+            fq_index.fq_index_action(args)
+            fq_datum.fq_datum_action(args)
+            fq_figure.fq_figure_action(args)
+            fq_align.fq_align_action(args)
+            bam_datum.bam_datum_action(args)
+            bam_figure.bam_figure_action(args)
+        elif not os.path.exists(args["fastq"]) and os.path.exists(args["reference"]):
+            print(args["fastq"] + " is not exists!")  
+        elif os.path.exists(args["fastq"]) and not os.path.exists(args["reference"]):
+            print(args["reference"] + " is not exists!")
+        else:
+            print( "Both " + args["fastq"] + " " +args["reference"] + " are not exist!")
+    elif args["alignment"] and not args["fastq"] and not args["reference"] and not args["filtering"]:
+        if os.path.exists(args["alignment"]):
+            bam_datum.bam_datum_action(args)
+            bam_figure.bam_figure_action(args)
+        else:
+            print(args["alignment"] + " is not exists!")
+    else:
+        print("please input correct file: fq/fastq/fq.gz & fastq+referecence.fasta & alignment.bam")
 

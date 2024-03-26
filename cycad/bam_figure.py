@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import re, os, sys, time
+import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -15,7 +16,7 @@ plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['figure.dpi'] = 300
 palette = dict(A="tab:red", T="tab:green", C="tab:blue", G="tab:purple", S='tab:black')
 
-def plot_query_event_rate_overlapping_densities(**bam_datum_dict):
+def plot_query_event_rate_overlapping_densities(bam_datum_dict, output):
     # identity rate
     qry_idy_rate = np.array(bam_datum_dict['qry_idy_rate'])
     qry_hpm_idy_rate = np.array(bam_datum_dict['qry_hpm_idy_rate'])
@@ -25,13 +26,13 @@ def plot_query_event_rate_overlapping_densities(**bam_datum_dict):
     plt.clf()
     fig, ax = plt.subplots()
     sns.displot(data=qry_idy_df.T, kind="kde")
-    plt.yticks(fontproperties='Times New Roman', size=ticksize)
-    plt.xticks(fontproperties='Times New Roman', size=ticksize)
+    plt.yticks(size=ticksize)
+    plt.xticks(size=ticksize)
     # ax.set_xlabel('x', fontsize=fontsize)
     # ax.set_ylabel('y', fontsize=fontsize)
     # ax.set_title('Title', fontsize=fontsize)
     plt.tight_layout()
-    plt.savefig('../test/query_events_curve_idy' + '.dispplot.png')
+    plt.savefig(f'{output}/query_events_curve_idy.dispplot.png')
     # error rate
     qry_dif_rate = np.array(bam_datum_dict['qry_dif_rate'])
     qry_hpm_dif_rate = np.array(bam_datum_dict['qry_hpm_dif_rate'])
@@ -41,15 +42,15 @@ def plot_query_event_rate_overlapping_densities(**bam_datum_dict):
     plt.clf()
     fig, ax = plt.subplots()
     sns.displot(data=qry_dif_df.T, kind="kde")
-    plt.yticks(fontproperties='Times New Roman', size=ticksize)
-    plt.xticks(fontproperties='Times New Roman', size=ticksize)
+    plt.yticks(size=ticksize)
+    plt.xticks(size=ticksize)
     # ax.set_xlabel('x', fontsize=fontsize)
     # ax.set_ylabel('y', fontsize=fontsize)
     # ax.set_title('Title', fontsize=fontsize)
     plt.tight_layout()
-    plt.savefig('../test/query_events_curve_dif.dispplot.png')
+    plt.savefig(f'{output}/query_events_curve_dif.dispplot.png')
 
-def plot_substitution_frequency(**overall_aln_event_stat_dict):
+def plot_substitution_frequency(overall_aln_event_stat_dict, output):
     substitution = np.array(list(overall_aln_event_stat_dict['all_mis_typ_dict'].values()))
     all_mis_typ_dict = dict(zip(overall_aln_event_stat_dict['all_mis_typ_dict'], substitution * 100 / sum(substitution) ))
     substitution_type = pd.DataFrame(all_mis_typ_dict, index=[0])
@@ -57,15 +58,15 @@ def plot_substitution_frequency(**overall_aln_event_stat_dict):
     plt.clf()
     fig, ax = plt.subplots()
     sns.barplot(data=substitution_type)
-    plt.yticks(fontproperties='Times New Roman', size=ticksize)
-    plt.xticks(fontproperties='Times New Roman', size=ticksize)
+    plt.yticks(size=ticksize)
+    plt.xticks(size=ticksize)
     # ax.set_xlabel('x', fontsize=fontsize)
     # ax.set_ylabel('y', fontsize=fontsize)
     # ax.set_title('Title', fontsize=fontsize)
     plt.tight_layout()
-    plt.savefig('../test/query_all_substitution_errors.barplot.png')
+    plt.savefig(f'{output}/query_all_substitution_errors.barplot.png')
 
-def plot_insertion_deletion_frequency(**bam_datum_dict):
+def plot_insertion_deletion_frequency(bam_datum_dict, output):
     indel_len_max = 10
     indel_range_dict = {'Insertion': {}, 'Deletion':{} }
     ins_sum = sum(bam_datum_dict['all_ins_len_dict'].values())
@@ -98,28 +99,28 @@ def plot_insertion_deletion_frequency(**bam_datum_dict):
     plt.clf()
     fig, ax = plt.subplots()
     sns.barplot(data=Ins_dataframe)
-    plt.yticks(fontproperties='Times New Roman', size=ticksize)
-    plt.xticks(fontproperties='Times New Roman', size=ticksize)
+    plt.yticks(size=ticksize)
+    plt.xticks(size=ticksize)
     # ax.set_xlabel('x', fontsize=fontsize)
     # ax.set_ylabel('y', fontsize=fontsize)
     # ax.set_title('Title', fontsize=fontsize)
     plt.tight_layout()
-    plt.savefig('../test/query_insertion_frequency' + '.barplot.png')
+    plt.savefig(f'{output}/query_insertion_frequency.barplot.png')
     # Deletion
     Del_dataframe = pd.DataFrame(indel_range_dict['Deletion'], index=[0])
     Del_dataframe.index = ['Deletion']
     plt.clf()
     fig, ax = plt.subplots()
     sns.barplot(data=Del_dataframe)
-    plt.yticks(fontproperties='Times New Roman', size=ticksize)
-    plt.xticks(fontproperties='Times New Roman', size=ticksize)
+    plt.yticks(size=ticksize)
+    plt.xticks(size=ticksize)
     # ax.set_xlabel('x', fontsize=fontsize)
     # ax.set_ylabel('y', fontsize=fontsize)
     # ax.set_title('Title', fontsize=fontsize)
     plt.tight_layout()
-    plt.savefig('../test/query_deletion_frequency' + '.barplot.png')
+    plt.savefig(f'{output}/query_deletion_frequency.barplot.png')
 
-def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_dict):
+def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_dict, output):
     qry_hpm_event = np.array([homopolymer_aln_event_stat_dict['S'][i] for i in homopolymer_aln_event_stat_dict['S'].keys()])
     qry_hpm_event2= []
     for i in qry_hpm_event:
@@ -140,15 +141,15 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
     plt.clf()
     fig, ax = plt.subplots()
     sns.lineplot(data=homopolymer_dataframe)
-    plt.yticks(fontproperties='Times New Roman', size=ticksize)
-    plt.xticks(fontproperties='Times New Roman', size=ticksize)
+    plt.yticks(size=ticksize)
+    plt.xticks(size=ticksize)
     # ax.set_xlabel('x', fontsize=fontsize)
     # ax.set_ylabel('y', fontsize=fontsize)
     # ax.set_title('Title', fontsize=fontsize)
     plt.tight_layout()
-    plt.savefig('../test/query_homopolymer_length_event' + '.lineplot.png')
+    plt.savefig(f'{output}/query_homopolymer_length_event.lineplot.png')
 
-def plot_overall_alignment_frequency(**overall_aln_event_sum_dict):
+def plot_overall_alignment_frequency(overall_aln_event_sum_dict, output):
     all_event = overall_aln_event_sum_dict['identity'] + overall_aln_event_sum_dict['substitution'] + overall_aln_event_sum_dict['contraction'] + overall_aln_event_sum_dict['expansion']
     all_dif_event = overall_aln_event_sum_dict['substitution'] + overall_aln_event_sum_dict['contraction'] + overall_aln_event_sum_dict['expansion']
     all_dif = all_dif_event / all_event *100
@@ -172,23 +173,29 @@ def plot_overall_alignment_frequency(**overall_aln_event_sum_dict):
     ax.set_ylabel('Percentage(%)')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    plt.yticks(fontproperties='Times New Roman', size=ticksize)
-    plt.xticks(fontproperties='Times New Roman', size=ticksize)
+    plt.yticks(size=ticksize)
+    plt.xticks(size=ticksize)
     # ax.set_xlabel('x', fontsize=fontsize)
     # ax.set_ylabel('y', fontsize=fontsize)
     # ax.set_title('Title', fontsize=fontsize)
     ax.legend()
     plt.tight_layout()
-    plt.savefig('../test/query_all_error_item' + '.barplot.png')
-
+    plt.savefig(f'{output}/query_all_error_item.barplot.png')
+def bam_figure_action(args):
+    bam_json_file_path = args["sample_name"] + '/' + args["sample_name"] + '_bam.json'
+    output=args["sample_name"]
+    with open(bam_json_file_path) as jsonfile:
+        bam_datum_dict = json.loads(json.dumps(eval(jsonfile.read()))) # pprint: ' -> json: "
+        plot_query_event_rate_overlapping_densities(bam_datum_dict['query_aln_event_stat_dict'], output)
+        plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'], output)
+        plot_insertion_deletion_frequency(bam_datum_dict['overall_aln_event_stat_dict'], output)
+        plot_overall_alignment_frequency(bam_datum_dict['overall_aln_event_sum_dict'], output)
+        plot_substitution_frequency(bam_datum_dict['overall_aln_event_stat_dict'], output)
 fontsize=16
 ticksize=18
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+    args = vars(parser.parse_args())
+    bam_figure_action(args)
 
-bam_json_file_path = '../test/ecoli.bam.json'
-with open(bam_json_file_path) as jsonfile:
-    bam_datum_dict = json.loads(json.dumps(eval(jsonfile.read()))) # pprint: ' -> json: "
-    plot_query_event_rate_overlapping_densities(**bam_datum_dict['query_aln_event_stat_dict'])
-    plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'])
-    plot_insertion_deletion_frequency(**bam_datum_dict['overall_aln_event_stat_dict'])
-    plot_overall_alignment_frequency(**bam_datum_dict['overall_aln_event_sum_dict'])
-    plot_substitution_frequency(**bam_datum_dict['overall_aln_event_stat_dict'])

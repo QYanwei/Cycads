@@ -7,11 +7,11 @@ import json
 import datetime
 import os
 
-import plotly.express as px
+#import plotly.express as px
 import pandas as pd
 
 # Third party imports
-import plotly.offline as py
+#import plotly.offline as py
 import jinja2
 
 def plotting(config_dict):

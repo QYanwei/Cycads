@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+
+    <title>Cycads: CycloneSEQ quality reporter</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+    	.tf {
+    		position: fixed;
+    		top: 0;
+    		left: 50%;
+    		transform: translateX(-50%);
+		z-index: 99 !important;
+    	}
+    </style>
+  </head>
+
+  <body>
+	<div class="container">
+		<div class="columns">
+			<div class="column col-12 col-mx-auto tf">
+				<header class="navbar">
+					<section class="navbar-section">
+								<a href="https://github.com/QYanwei/Cycads" class="navbar-brand mr-2" target="_blank">Cycads</a>
+								<a href="https://github.com/QYanwei/Cycads" class="btn btn-link" target="_blank">Docs</a>
+								<a href="https://github.com/QYanwei/Cycads" class="btn btn-link" target="_blank">GitHub</a>
+					</section>
+					<section class="navbar-section">
+						<div class="dropdown dropdown-right">
+							<a href="#/" class="btn btn-link dropdown-toggle" tabindex="0">Menu <i class="icon icon-menu"></i></a>
+							<ul class="menu">
+								<li class="menu-item">
+									<a href="#Sequencing summary table">Sequencing summary table</a>
+									<a href="#Sequencing summary plots">Sequencing summary plots</a>
+								</li>
+							</ul>
+						</div>
+					</section>
+				</header>
+				</div>
+		</div>
+		<div class="columns">
+			<div class="column col-9 col-mx-auto">
+				<div class="text-center">
+					<h1>{{report_title}}</h1>
+					<div class="divider"></div>
+					<h3>{{report_subtitle}} </h3>
+					<div class="divider"></div>
+				</div>
+				<div class="columns">
+					<div id="Sequencing summary" class="column col-11 col-mx-auto text-center">
+						<h3 style="margin-top: 50px;">Sequencing summary</h3>
+						<div style="text-align:center">
+							<h4 style="margin-top: 50px;">Sequencing summary table</h4>
+							<table border="1" cellpadding="3" cellspacing="0" style="width: 60%;margin:auto">
+							<thead>
+							<tr>
+								<th>FileName</th>
+								<th>ReadCounts</th>
+								<th>TotalBases</th>
+								<th>GC%</th>
+								<th>AvgLen</th>
+								<th>MaxLen</th>
+								<th>MinLen</th>
+								<th>MaxQual</th>
+								<th>MinQual</th>
+							</tr>
+							</thead>
+							<tr>
+							    {{fq_table}}
+							</tr>
+						</table>
+						</div>
+						<div style="text-align:center">
+							<h4 style="margin-top: 50px;">Sequencing summary plots</h4>
+							<table cellpadding="3" cellspacing="0" style="width: 60%;margin:auto">
+							{{fq_plots}}
+							</table>
+							</div>
+					</div>
+				</div>
+				<div class="divider"></div>
+                <div class="columns">
+					<div id="Mapping summary" class="column col-11 col-mx-auto text-center">
+						<h3 style="margin-top: 50px;">Mapping summary</h3>
+						<div style="text-align:center">
+							<h4 style="margin-top: 50px;">Mapping summary table</h4>
+							<table border="1" cellpadding="3" cellspacing="0" style="width: 60%;margin:auto">
+							<thead>
+							<tr>
+								<th>FileName</th>
+								<th>MappingReads</th>
+								<th>MappingBases</th>
+								<th>Identity%</th>
+								<th>TotalError%</th>
+								<th>MisError%</th>
+								<th>InsError%</th>
+								<th>DelError%</th>
+								<th>HomopolymerError%</th>
+								<th>Non-HomopolymerError%</th>
+							</tr>
+							</thead>
+							<tr>
+                                {{bam_table}}
+							</tr>
+						</table>
+						</div>
+
+					<div id="Mapping summary plots" class="column col-11 col-mx-auto text-center">
+						<h4 style="margin-top: 50px;">Mapping summary plots</h4>
+						<table cellpadding="3" cellspacing="0" style="width: 60%;margin:auto">
+                            {{bam_plots}}
+						</table>
+						    <div class="divider"></div>
+					    </div>
+				    </div>
+			    </div>
+			</div>
+		</div>
+	</div>
+  </body>
+</html>
+
+

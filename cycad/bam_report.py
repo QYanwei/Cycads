@@ -1,85 +1,73 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-
-# Basic library imports
-import json
+import os, re, sys, time
 import datetime
-import os
-
-#import plotly.express as px
-import pandas as pd
-
-# Third party imports
-#import plotly.offline as py
+import argparse
 import jinja2
 
-def plotting(config_dict):
-    plots = list()
-    titles = list()
-    for method_name, method_args in config_dict.items():
+
+def import_jinja_template(template_file):
+    # get template_fq_report.html
+    if template_file:
+        print("Try to load provided jinja template file\n")
         try:
-            # Store plot title for HTML title and remove from data passed to plotly
-            plot_title = method_args["plot_title"]
-            method_args["plot_title"] = ""
-            
-            # Get method and generate plot
-            method = getattr(plotter, method_name)
-            fig = method(**method_args)
-            plot = py.plot(
-                fig,
-                output_type='div',
-                include_plotlyjs=False,
-                image_width='',
-                image_height='',
-                show_link=False,
-                auto_open=False)
-            
-            plots.append(plot)
-            titles.append(plot_title)
-        except AttributeError as E:
-            print("\t\t{} is not a valid plotting method".format(method_name))
-    return plots, titles
-# Set a subtitle for the HTML report
+            with open(template_file) as fp:
+                template = jinja2.Template(fp.read())
+                return template
+        except (FileNotFoundError, IOError, jinja2.exceptions.TemplateNotFound, jinja2.exceptions.TemplateSyntaxError):
+            print("File not found, non-readable or invalid\n")
 
-# Define source files list
-src_files = ""
-fq_json_file = "../config/fq_config.json"
-bam_json_file = "../config/bam_config.json"
-for json_file_list, name in ((bam_json_file, "Alignments"), (fq_json_file, "Sequences")):
-    if json_file_list:
-        src_files += "<h4>Source {} files</h4><ul>".format(name)
-        for f in json_file_list:
-            f = os.path.abspath(f)
-            src_files += "<li>{}</li>".format(f)
-        src_files += "</ul>"
 
-package_name=""
-package_version=""
-report_subtitle="Generated on {} with {} {}".format( datetime.datetime.now().strftime("%d/%m/%y"), package_name, package_version)
+def generate_fq_report_html(args):
+    table_list = ["TB2000B609-202403200954240_read.bam","2399","3939982","95.02","3.98","1.53","1.32","1.13","2.3","1.68"]
+    table_string = ""
+    for i in table_list:
+        table_string += "<th>{}</th>".format(i)
+    
+    plots_list = [["query_all_error_item.barplot.png",
+                   "query_insertion_frequency.barplot.png"],
+                  ["query_deletion_frequency.barplot.png",
+                   "query_all_substitution_errors.barplot.png"],
+                  ["query_events_curve_idy.dispplot.png",
+                   "query_events_curve_dif.dispplot.png"],
+                  ["query_homopolymer_length_event.lineplot.png",""]]
+    plots_src = [["Sequencing error rate",
+                  "Insertion frequency"],
+                 ["Deletion frequency",
+                  "Substitution type error frequency"],
+                 ["Read identity rate distribution",
+                  "Read error rate distribution"],
+                 ["Homopolymer error type with its length", ""]]
+    
+    plots_string = ""
+    for i in range(4):
+        plots_string += "<tr>"
+        for j in range(2):
+            plots_string += "<td><figure>"
+            plots_string += "<img src=\"./{}\" width=\"600\" height=\"580\" />".format(plots_list[i][j])
+            plots_string += "<figcaption class=\"figure-caption text-center\">{}</figcaption>".format(plots_src[i][j])
+            plots_string += "</td>"
+        plots_string += "</tr>"
+    report_title = "CycloneSEQ quality reporter"
+    report_subtitle = "Created on {} with {} {}".format(datetime.datetime.now().strftime("%d/%m/%y"), "Cycads",
+                                                          "0.3.0")
+    pwd_config_file = os.path.realpath(__file__)
+    template_file = '/'.join(pwd_config_file.split('/')[:-1]) + "../config/template_bam_report.j2"
+    template = import_jinja_template(template_file)
+    rendering = template.render(
+        table=table_string,
+        plots=plots_string,
+        report_title=report_title,
+        report_subtitle=report_subtitle)
+    
+    # Write to HTML file
+    outfile = "../" + args["sample_name"] + "/" + args["sample_name"] + "_error_report.html"
+    with open(outfile, "w") as fp:
+        fp.write(rendering)
 
-report_title="Cycads report"
 
-# Load HTML template for Jinja
-template_file="../config/template.html"
-with open(template_file) as fp:
-    template = jinja2.Template(fp.read())
-
-# Render plots, Rendering plots in d3js
-config_dict = {}
-plots, titles=plotting(config_dict)
-rendering = template.render(
-    plots=plots,
-    titles=titles,
-    plotlyjs=py.get_plotlyjs(),
-    report_title=report_title,
-    report_subtitle=report_subtitle,
-    src_files=src_files
-)
-
-# Write to HTML file
-outfile='../test/cycads_report.html'
-print("Writing to HTML file")
-
-with open(outfile, "w") as fp:
-    fp.write(rendering)
+args = {"sample_name": "test"}
+generate_fq_report_html(args)
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+#     args = vars(parser.parse_args())
+#     generate_fq_report_html(args)

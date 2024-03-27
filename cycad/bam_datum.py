@@ -176,7 +176,7 @@ def parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq,
     qry_hpm_mis_rate = round(hpm_mis/(qry_map + qry_ins + qry_del + qry_mis), 5)
     qry_hpm_ins_rate = round(hpm_ins/(qry_map + qry_ins + qry_del + qry_mis), 5)
     qry_hpm_del_rate = round(hpm_del/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    qry_hpm_idy_rate = round(hpm_map/(hpm_map + hpm_mis + hpm_del + hpm_ins), 5)
+    qry_hpm_idy_rate = round(hpm_map/(qry_map + qry_ins + qry_del + qry_mis), 5)
     qry_hpm_dif_rate = round(1-qry_hpm_idy_rate, 5)
     query_aln_event_stat_dict['qry_hpm_mis_rate'].append(qry_hpm_mis_rate)
     query_aln_event_stat_dict['qry_hpm_ins_rate'].append(qry_hpm_ins_rate)

@@ -37,29 +37,29 @@ def plot_length_Nx_average_bar(seq_qual_dict, output):
     plt.clf()
     g = sns.barplot(LengthFrame, x='nx_and_average', y='read_length')
     g.bar_label(g.containers[0], fontsize=10)
-    plt.savefig(output+'/read_length_biostat' + '.barplot.png')
+    plt.savefig(output+'/report_html/read_length_biostat' + '.barplot.png')
 def plot_gc_content_frequency_distribution(seq_qual_dict, output):
     gcFrame = pd.DataFrame( np.array( seq_qual_dict['GC'] ).astype(float), columns=['GC'])
     plt.clf()
     sns.displot(gcFrame, color="steelblue", bins=50, stat="percent")
-    plt.savefig(output+'/read_gc_histplot' + '.barplot.png')
+    plt.savefig(output+'/report_html/read_gc_histplot' + '.barplot.png')
 def plot_read_quality_frequency_distritution(seq_qual_dict, output):
     QualityFrame = pd.DataFrame( np.array( seq_qual_dict['QUAL1'] ).astype(int).T, columns=['read_quality'])
     plt.clf()
     sns.displot(data=QualityFrame, x="read_quality", color="steelblue", stat="percent")
-    plt.savefig(output+'/read_quality_histplot' + '.barplot.png')
+    plt.savefig(output+'/report_html/read_quality_histplot' + '.barplot.png')
 def plot_read_length_frequency_distribution(seq_qual_dict, output):
     LengthFrame = pd.DataFrame( np.array( seq_qual_dict['LEN'] ).astype(int).T, columns=['read_length'])
     plt.clf()
     sns.histplot(data=LengthFrame, x="read_length", color="steelblue", stat="percent")
     # sns.histplot(data = LengthFrame, x="read_length", stat="percent", log_scale=True)
-    plt.savefig(output+'/read_length_histplot_nolog' + '.barplot.png')
+    plt.savefig(output+'/report_html/read_length_histplot_nolog' + '.barplot.png')
 def plot_read_length_cumulative_distribution(seq_qual_dict, output):
     LengthFrame = pd.DataFrame(np.array(seq_qual_dict['LEN']).astype(int).T, columns=['read_length'])
     plt.clf()
     sns.displot(LengthFrame, x="read_length")
     sns.displot(LengthFrame, x="read_length", kind='ecdf')
-    plt.savefig(output+'/read_length_cumulative' + '.barplot.png')
+    plt.savefig(output+'/report_html/read_length_cumulative' + '.barplot.png')
 
 def plot_length_quality_cross_scatter(seq_qual_dict, output):
     LenQualFrame = pd.DataFrame( np.array([ seq_qual_dict['LEN'], seq_qual_dict['QUAL1'] ] ).T, columns = [ 'read_length', 'read_averageQ' ])
@@ -69,7 +69,7 @@ def plot_length_quality_cross_scatter(seq_qual_dict, output):
     bottom, top = ax.get_ylim()
     ax.set_ylim(bottom + 0.2, top - 0.2)
     # sns.scatterplot(data=LenQualFrame, x="read_length", y="read_averageQ", linewidth=0, size=2, alpha=0.3, legend=None)
-    plt.savefig(output+'/read_length_quality_cross' + '.scatterplot.png')
+    plt.savefig(output+'/report_html/read_length_quality_cross' + '.scatterplot.png')
 
 def plot_homopolymer_frequency(homopolymer_dict, output):
     homopolymer_len_max = 10
@@ -96,7 +96,7 @@ def plot_homopolymer_frequency(homopolymer_dict, output):
     C_dataframe.index = ['C']
     homopolymerRangeFrame = pd.concat([A_dataframe, T_dataframe, G_dataframe, C_dataframe], axis=0)
     sns.lineplot(data=homopolymerRangeFrame.T, dashes=False)
-    plt.savefig(output+'/read_homopolymer_frequency' + '.lineplot.png')
+    plt.savefig(output+'/report_html/read_homopolymer_frequency' + '.lineplot.png')
 
 # def plot_kmer_spectrum_heatmap(kmer_list, kmer_count):
 
@@ -112,7 +112,7 @@ def plot_ends_base_content_curve(endBaseQual_dict, output):
     numpyarray = np.array([A_ratio, T_ratio, G_ratio, C_ratio, GC_ratio]).T
     PercentQualityFrame = pd.DataFrame(data=numpyarray, columns=['A', 'T', 'C', 'G', 'GC'])
     sns.lineplot(data=PercentQualityFrame, dashes=False)
-    plt.savefig(output+'/read_head_base_content' + '.lineplot.png')
+    plt.savefig(output+'/report_html/read_head_base_content' + '.lineplot.png')
     # tail base content
     plt.clf()
     dataframe = pd.DataFrame([endBaseQual_dict['TailBaseContent_dict']])
@@ -124,7 +124,7 @@ def plot_ends_base_content_curve(endBaseQual_dict, output):
     numpyarray = np.array([A_ratio, T_ratio, G_ratio, C_ratio, GC_ratio]).T
     PercentQualityFrame = pd.DataFrame(data=numpyarray, columns=['A', 'T', 'C', 'G', 'GC'])
     sns.lineplot(data=PercentQualityFrame, dashes=False).invert_xaxis()
-    plt.savefig(output+'/read_tail_base_content' + '.lineplot.png')
+    plt.savefig(output+'/report_html/read_tail_base_content' + '.lineplot.png')
 
 def plot_ends_base_quality_curve(endBaseQual_dict, output):
     # head base content
@@ -140,7 +140,7 @@ def plot_ends_base_quality_curve(endBaseQual_dict, output):
     numpyarray = np.array([A_quality, T_quality, G_quality, C_quality, Mean_quality]).T
     PercentQualityFrame = pd.DataFrame(data=numpyarray, columns=['A', 'T', 'C', 'G', 'Mean'])
     sns.lineplot(data=PercentQualityFrame, dashes=False)
-    plt.savefig(output+'/read_head_base_quality' + '.lineplot.png')
+    plt.savefig(output+'/report_html/read_head_base_quality' + '.lineplot.png')
     # tail base content
     plt.clf()
     dataframe = pd.DataFrame([endBaseQual_dict['TailQualContent_dict']])
@@ -154,7 +154,7 @@ def plot_ends_base_quality_curve(endBaseQual_dict, output):
     numpyarray = np.array([A_quality, T_quality, G_quality, C_quality, Mean_quality]).T
     PercentQualityFrame = pd.DataFrame(data=numpyarray, columns=['A', 'T', 'C', 'G', 'Mean'])
     sns.lineplot(data=PercentQualityFrame, dashes=False)
-    plt.savefig(output+'/read_tail_base_quality' + '.lineplot.png')
+    plt.savefig(output+'/report_html/read_tail_base_quality' + '.lineplot.png')
 
 def plot_read_percent_qualtiy_curve(allBaseQual_dict, output):
     plt.clf()
@@ -162,12 +162,12 @@ def plot_read_percent_qualtiy_curve(allBaseQual_dict, output):
     numpyarray = np.array([percent_pos_avg_quality, np.arange(len(percent_pos_avg_quality))+1]).T
     PercentQualityFrame = pd.DataFrame(data=numpyarray, columns=['average_quality', 'relative_position'])
     sns.lineplot(data=PercentQualityFrame, x="relative_position", y="average_quality")
-    plt.savefig(output+'/read_relative_position_avg_qual' + '.lineplot.png')
+    plt.savefig(output+'/report_html/read_relative_position_avg_qual' + '.lineplot.png')
 
 def fq_figure_action(args):
     output = args["sample_name"]
-    if os.path.exists(output + "/" + output +"_seq.json"):
-        fastq_json_file_path = args["sample_name"]+"/" + args["sample_name"]+"_seq.json"
+    if os.path.exists(output + "/" + output +"_fq.json"):
+        fastq_json_file_path = args["sample_name"]+"/" + args["sample_name"]+"_fq.json"
         with open(fastq_json_file_path) as jsonfile:
             fq_datum_dict = json.loads(json.dumps(eval(jsonfile.read()))) # pprint: ' -> json: "
             seq_qual_dict = fq_datum_dict['seq_qual_dict']

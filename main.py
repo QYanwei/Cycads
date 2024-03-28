@@ -20,8 +20,8 @@
 """
 @name: Cycads long reads quality analyser
 @description: All-in-one parsing fasta format file
-@author: Yanwei Qi
-@email: qiyanwei1@genomics.cn
+@author: Yanwei Qi & Jiayuan Zhang
+@email: qiyanwei1@genomics.cn, zhangjiayuan@genomics.cn
 @last modified by: qiyanwei
 
 change log:
@@ -36,13 +36,11 @@ import argparse
 from cycad import fq_index
 from cycad import fq_datum
 from cycad import fq_figure
-#from cycad import fq_report
 from cycad import fq_filter
 from cycad import fq_align
 from cycad import bam_datum
 from cycad import bam_figure
-#from cycad import bam_report
-
+from cycad import all_report
 # basic stent function
 ## check file
 def file_checkin(infile, func):
@@ -99,6 +97,7 @@ if __name__ == '__main__':
     parser.add_argument("-Dg", "--downsampling_gs", type=str, default='4m', required=False, help="genome size")
     # third party tool
     # for error analysis.
+    parser.add_argument("-t", "--thread", required=False, default=4, help="thread number")
     parser.add_argument("-hpmindelmax", "--homopolymer_indel_max", type=int, default=4, required=False, help="homopolymer max indel shift")
     # for storing result.
     parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
@@ -113,9 +112,13 @@ if __name__ == '__main__':
     else:
         args = vars(parser.parse_args())
     if os.path.exists("./" + args["sample_name"]):
-        print("output folder exists!")
+        print("output folder existed!")
     else:
         os.mkdir("./" + args["sample_name"])
+    if os.path.exists("./" + args["sample_name"] + "/report_html"):
+        print("report folder existed")
+    else:
+        os.mkdir("./" + args["sample_name"] + "/report_html")
     pwd_config_file = os.path.realpath(__file__)
     args["pyfastx"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/pyfastx'
     args["minimap2"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/minimap2'
@@ -137,6 +140,7 @@ if __name__ == '__main__':
             fq_index.fq_index_action(args)           
             fq_datum.fq_datum_action(args)
             fq_figure.fq_figure_action(args)
+            all_report.generate_html(args)
         else:
             print(args["fastq"] + " is not exists!")
     elif args["fastq"] and args["filtering"] and not args["alignment"] and not args["reference"]:
@@ -145,6 +149,7 @@ if __name__ == '__main__':
             fq_datum.fq_datum_action(args)
             fq_figure.fq_figure_action(args)
             fq_filter.fq_filter_action(args)
+            all_report.generate_html(args)
         else:
             print(args["fastq"] + " is not exists!")
     elif args["fastq"] and args["reference"] and not args["filtering"] and not args["alignment"]:
@@ -155,6 +160,7 @@ if __name__ == '__main__':
             fq_align.fq_align_action(args)
             bam_datum.bam_datum_action(args)
             bam_figure.bam_figure_action(args)
+            all_report.generate_html(args)
         elif not os.path.exists(args["fastq"]) and os.path.exists(args["reference"]):
             print(args["fastq"] + " is not exists!")  
         elif os.path.exists(args["fastq"]) and not os.path.exists(args["reference"]):
@@ -165,6 +171,7 @@ if __name__ == '__main__':
         if os.path.exists(args["alignment"]):
             bam_datum.bam_datum_action(args)
             bam_figure.bam_figure_action(args)
+            all_report.generate_html(args)
         else:
             print(args["alignment"] + " is not exists!")
     else:

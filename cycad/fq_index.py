@@ -8,7 +8,9 @@ def fq_index_action(args):
     pyfastx = args['pyfastx']
     infastq = args['fastq']
     os.system(pyfastx + ' index ' + infastq)
-    os.system(pyfastx + ' stat ' +  infastq  + ' |awk \'BEGIN{OFS="\t"}{NF=9}1\' > '+ output + '/' + output + '_data_summary.txt')
+#    os.system(pyfastx + ' stat ' +  infastq  + ' |awk \'BEGIN{OFS="\t"}{NF=7}1\' > '+ output + '/' + output + '_data_summary.txt')
+    print("##data overview")
+    os.system(pyfastx + ' stat ' +  infastq  + ' |awk \'BEGIN{OFS="\t"}{NF=7}1\' ' )
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

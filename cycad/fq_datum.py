@@ -202,7 +202,7 @@ def fq_datum_action(args):
     if os.path.exists(args["fastq"]):
         merged_fq_datum_dict = get_fq_datum(args)
         output = args["sample_name"]
-        with open( output + "/" + args["sample_name"]+"_seq.json", "w") as jsonfile:
+        with open( output + "/" + args["sample_name"]+"_fq.json", "w") as jsonfile:
             filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
             pprint.pprint(merged_fq_datum_dict, jsonfile, indent=4, width=filewidth, depth = 6, compact=True)
 if __name__ == "__main__" :

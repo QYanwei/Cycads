@@ -38,7 +38,7 @@ Cycads long reads quality analyser
 
 ## Example
 
-* quickly use
+* Quick start with a demo dataset
   ```
   cd /path/to/workdir/ 
   python Cycads.py -fq test/ecoli.fq.gz -ref ref/Reference_Ecoli.fasta -name test 

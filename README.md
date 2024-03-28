@@ -5,8 +5,10 @@ Cycads long reads quality analyser
 
 ## Dependencies
 
-* system requirement: 
+* System requirement:
+  
   Lunix/Unix, MacOS
+  
   python3.8+ 
 
 * python dependencies: 

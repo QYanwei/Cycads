@@ -1,11 +1,10 @@
 # Cycads
 
 ## Description
----
 Cycads long reads quality analyser
 
 ## Dependencies
----
+
 * system requirement: 
 
   python3.8+ 
@@ -36,14 +35,14 @@ Cycads long reads quality analyser
 
 
 ## Example
----
+
 * quickly use
   ```
   cd /path/to/workdir/ 
   python Cycads.py -fq test/ecoli.fq.gz -ref ref/Reference_Ecoli.fasta -name test 
   ```
 ## Usages
----
+
 * 1. only fastq quality control 
   ``` 
   python Cycads.py -fq test/ecoli.fq.gz -name test
@@ -66,11 +65,11 @@ Cycads long reads quality analyser
   python Cycads.py -bam test/bam -name test 
   ```
 ## Parameters details
----
+
 
 ## Demo
----
+
 
 ## Copyright
----
+
 

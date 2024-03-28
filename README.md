@@ -13,10 +13,15 @@ python3.8+
 * python dependencies: 
 
 pyfastx==2.1.0 
+
 pysam==0.22.0 
+
 numpy==1.26.4 
+
 pandas==2.2.1 
+
 seaborn=0.13.2 
+
 jinja2=3.1.3 
 
 * third-party tools: 
@@ -32,8 +37,9 @@ pyfastx (version 2.1.0)
 
 ## Example
 ---
-cd /path/to/workdir/ 
+* quickly use
   ```
+  cd /path/to/workdir/ 
   python Cycads.py -fq test/ecoli.fq.gz -ref ref/Reference_Ecoli.fasta -name test 
   ```
 ## Usages

@@ -1,21 +1,31 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import re, os, sys, time
+from math import floor, ceil
 import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 import seaborn as sns
 import json
 import warnings
+
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
 
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['figure.dpi'] = 300
 palette = dict(A="tab:red", T="tab:green", C="tab:blue", G="tab:purple", S='tab:black')
+figsize = (5, 4)
+hist_kw = dict(facecolor='tab:blue', edgecolor='k', linewidth=0.5)
+grid_kw = dict(color='k', alpha=0.1)
 
-def plot_length_Nx_average_bar(seq_qual_dict, output):
+
+def post_process_ax(ax):
+    ax.spines[['right', 'top']].set_visible(False)
+
+def plot_length_Nx_average_bar(seq_qual_dict):
     def Nx_reads_length(list_read_length):
         # Calculate the total length of the sequences
         total_length = sum(list_read_length)
@@ -31,35 +41,75 @@ def plot_length_Nx_average_bar(seq_qual_dict, output):
                     n_values.append(length)
                     break
         return n_values
-    average_length = round(sum(seq_qual_dict['LEN']) / len(seq_qual_dict['LEN']), 3)
-    LengthFrame = pd.DataFrame( np.array( Nx_reads_length( seq_qual_dict['LEN'])  + [ average_length ] ).astype(int).T, columns=['read_length'])
-    LengthFrame.loc[: , 'nx_and_average'] = [ 'N10', 'N20', 'N30', 'N40', 'N50', 'N60', 'N70', 'N80', 'N90', 'Average']
-    plt.clf()
-    g = sns.barplot(LengthFrame, x='nx_and_average', y='read_length')
-    g.bar_label(g.containers[0], fontsize=10)
-    plt.savefig(output+'/report_html/read_length_biostat' + '.barplot.png')
-def plot_gc_content_frequency_distribution(seq_qual_dict, output):
-    gcFrame = pd.DataFrame( np.array( seq_qual_dict['GC'] ).astype(float), columns=['GC'])
-    plt.clf()
-    sns.displot(gcFrame, color="steelblue", bins=50, stat="percent")
-    plt.savefig(output+'/report_html/read_gc_histplot' + '.barplot.png')
-def plot_read_quality_frequency_distritution(seq_qual_dict, output):
-    QualityFrame = pd.DataFrame( np.array( seq_qual_dict['QUAL1'] ).astype(int).T, columns=['read_quality'])
-    plt.clf()
-    sns.displot(data=QualityFrame, x="read_quality", color="steelblue", stat="percent")
-    plt.savefig(output+'/report_html/read_quality_histplot' + '.barplot.png')
-def plot_read_length_frequency_distribution(seq_qual_dict, output):
-    LengthFrame = pd.DataFrame( np.array( seq_qual_dict['LEN'] ).astype(int).T, columns=['read_length'])
-    plt.clf()
-    sns.histplot(data=LengthFrame, x="read_length", color="steelblue", stat="percent")
-    # sns.histplot(data = LengthFrame, x="read_length", stat="percent", log_scale=True)
-    plt.savefig(output+'/report_html/read_length_histplot_nolog' + '.barplot.png')
-def plot_read_length_cumulative_distribution(seq_qual_dict, output):
-    LengthFrame = pd.DataFrame(np.array(seq_qual_dict['LEN']).astype(int).T, columns=['read_length'])
-    plt.clf()
-    sns.displot(LengthFrame, x="read_length")
-    sns.displot(LengthFrame, x="read_length", kind='ecdf')
-    plt.savefig(output+'/report_html/read_length_cumulative' + '.barplot.png')
+    average_length = sum(seq_qual_dict['LEN']) / len(seq_qual_dict['LEN'])
+    LengthFrame = pd.DataFrame( np.array( Nx_reads_length( seq_qual_dict['LEN']) ).astype(int).T, columns=['read_length'])
+    LengthFrame.loc[: , 'nx'] = [ 'N10', 'N20', 'N30', 'N40', 'N50', 'N60', 'N70', 'N80', 'N90']
+    
+    fig, ax = plt.subplots(figsize=figsize)
+    g = sns.barplot(LengthFrame, ax=ax, x='nx', y='read_length', color='steelblue')
+    ax.axhline(average_length, color='k', ls='--', label='Mean read length')
+    ax.legend(loc='upper right')
+    ax.set_xlabel("")
+    ax.set_ylabel("Read length (bp)")
+    ax.grid(axis='y', **grid_kw)
+    post_process_ax(ax)
+    return fig
+
+def plot_gc_content_frequency_distribution(seq_qual_dict):
+    gc_percentage = np.array( seq_qual_dict['GC'] ).astype(float) * 100
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.hist(gc_percentage, bins=np.arange(0, 100, 2), density=True, **hist_kw)
+    ax.xaxis.set_major_formatter(mtick.PercentFormatter())
+    ax.set_xlim(0, 100)
+    ax.set_xlabel("Read GC content")
+    ax.set_xticks(list(range(0, 101, 10)))
+    ax.set_ylabel("Density")
+    ax.set_yticks([])
+    post_process_ax(ax)
+    return fig
+
+def plot_read_quality_frequency_distritution(seq_qual_dict):
+    quality_values = np.array( seq_qual_dict['QUAL1'] )
+    fig, ax = plt.subplots(figsize=figsize)
+    xmin = floor(quality_values.min())
+    xmax = ceil(quality_values.max())
+    bins = np.arange(xmin, xmax + 1, 0.5)
+    ax.hist(quality_values, bins=bins, density=True, **hist_kw)
+    ax.set_xlabel("Mean per-read base quality")
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylabel("Density")
+    ax.set_yticks([])
+    post_process_ax(ax)
+    return fig
+
+def plot_read_length_frequency_distribution(seq_qual_dict):
+    lengths = np.array( seq_qual_dict['LEN'] )
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.hist(lengths / 1000, bins=50, **hist_kw)
+    ax.set_xlim(left=0)
+    ax.set_xlabel("Read length (kb)")
+    ax.set_ylabel("Density")
+    ax.set_yticks([])
+    post_process_ax(ax)
+    return fig
+
+def plot_read_length_cumulative_distribution(seq_qual_dict):
+    lengths = np.array( seq_qual_dict['LEN'] )
+    total_bases = lengths.sum()
+    xs = np.arange(lengths.min(), lengths.max() + 100, 100) / 1000
+    ys = [lengths[lengths >= x * 1000].sum() * 100 / total_bases for x in xs]
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(xs, ys)
+    ax.set_ylim(0, 100)
+    ax.set_xlim(left=0)
+    ax.set_xlabel("Min. read length (kb)")
+    ax.set_ylabel("Cumulative fraction of bases")
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter())
+    ax.grid(axis='both', **grid_kw)
+    post_process_ax(ax)
+    return fig
 
 def plot_length_quality_cross_scatter(seq_qual_dict, output):
     LenQualFrame = pd.DataFrame( np.array([ seq_qual_dict['LEN'], seq_qual_dict['QUAL1'] ] ).T, columns = [ 'read_length', 'read_averageQ' ])
@@ -174,18 +224,29 @@ def fq_figure_action(args):
             homopolymer_dict = fq_datum_dict['homopolymer_dict']
             endBaseQual_dict = fq_datum_dict['endBaseQual_dict']
             allBaseQual_dict = fq_datum_dict['allBaseQual_dict']
-            plot_length_Nx_average_bar(seq_qual_dict, output)
-            plot_gc_content_frequency_distribution(seq_qual_dict, output)
-            plot_read_quality_frequency_distritution(seq_qual_dict, output)
-            plot_read_length_frequency_distribution(seq_qual_dict, output)
-            plot_read_length_cumulative_distribution(seq_qual_dict, output)
-            plot_length_quality_cross_scatter(seq_qual_dict, output)
-            plot_read_percent_qualtiy_curve(allBaseQual_dict, output)
-            plot_ends_base_content_curve(endBaseQual_dict, output)
-            plot_ends_base_quality_curve(endBaseQual_dict, output)
-            plot_homopolymer_frequency(homopolymer_dict, output)
+
+        fig = plot_length_Nx_average_bar(seq_qual_dict)
+        fig.savefig(output+'/report_html/read_length_biostat' + '.barplot.png')
+
+        fig = plot_gc_content_frequency_distribution(seq_qual_dict)
+        fig.savefig(output+'/report_html/read_gc_histplot' + '.barplot.png')
+
+        fig = plot_read_quality_frequency_distritution(seq_qual_dict)
+        fig.savefig(output+'/report_html/read_quality_histplot' + '.barplot.png')
+
+        fig = plot_read_length_frequency_distribution(seq_qual_dict)
+        fig.savefig(output+'/report_html/read_length_histplot_nolog' + '.barplot.png')
+
+        fig = plot_read_length_cumulative_distribution(seq_qual_dict)
+        fig.savefig(output+'/report_html/read_length_cumulative' + '.barplot.png')
+
+        plot_length_quality_cross_scatter(seq_qual_dict, output)
+        plot_read_percent_qualtiy_curve(allBaseQual_dict, output)
+        plot_ends_base_content_curve(endBaseQual_dict, output)
+        plot_ends_base_quality_curve(endBaseQual_dict, output)
+        plot_homopolymer_frequency(homopolymer_dict, output)
     else:
-        print("fastq stat json file not found!")
+        raise IOError("FASTQ stat JSON file not found!")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -59,23 +59,8 @@
 						<div style="text-align:center">
 							<h4 style="margin-top: 50px;">Sequencing summary table</h4>
 							<table border="1" cellpadding="3" cellspacing="0" style="width: 60%;margin:auto">
-							<thead>
-							<tr>
-								<th>FileName</th>
-								<th>ReadCounts</th>
-								<th>TotalBases</th>
-								<th>GC%</th>
-								<th>AvgLen</th>
-								<th>MaxLen</th>
-								<th>MinLen</th>
-								<th>MaxQual</th>
-								<th>MinQual</th>
-							</tr>
-							</thead>
-							<tr>
 							    {{fq_table}}
-							</tr>
-						</table>
+						        </table>
 						</div>
 						<div style="text-align:center">
 							<h4 style="margin-top: 50px;">Sequencing summary plots</h4>
@@ -92,30 +77,14 @@
 						<div style="text-align:center">
 							<h4 style="margin-top: 50px;">Mapping summary table</h4>
 							<table border="1" cellpadding="3" cellspacing="0" style="width: 60%;margin:auto">
-							<thead>
-							<tr>
-								<th>FileName</th>
-								<th>MappingReads</th>
-								<th>MappingBases</th>
-								<th>Identity%</th>
-								<th>TotalError%</th>
-								<th>MisError%</th>
-								<th>InsError%</th>
-								<th>DelError%</th>
-								<th>HomopolymerError%</th>
-								<th>Non-HomopolymerError%</th>
-							</tr>
-							</thead>
-							<tr>
-                                {{bam_table}}
-							</tr>
-						</table>
+                                                        {{bam_table}}
+			       			        </table>
 						</div>
 
 					<div id="Mapping summary plots" class="column col-11 col-mx-auto text-center">
 						<h4 style="margin-top: 50px;">Mapping summary plots</h4>
 						<table cellpadding="3" cellspacing="0" style="width: 60%;margin:auto">
-                            {{bam_plots}}
+                                                {{bam_plots}}
 						</table>
 						    <div class="divider"></div>
 					    </div>

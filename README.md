@@ -25,15 +25,14 @@ Cycads long reads quality analyser
   
   jinja2=3.1.3 
 
-* third-party tools: 
+  scipy
+
+* binary tools: 
 
   minimap2 (version 2.17-r941) 
   
   samtools (version 1.11,using htslib 1.11) 
-  
-  pyfastx (version 2.1.0) 
 
-(tips: Please alias the full path of those tools into the Cycads/tool/ folder, which can be found by Cycads easily.) 
 
 
 ## Example

@@ -184,7 +184,7 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict, output):
 def bam_figure_action(args):
     bam_pickle_file_path = args["sample_name"] + '/' + args["sample_name"] + '_bam.pickle'
     output=args["sample_name"]
-    with open(bam_pickle_file_path) as picklefile:
+    with open(bam_pickle_file_path, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
         plot_query_event_rate_overlapping_densities(bam_datum_dict['query_aln_event_stat_dict'], output)
         plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'], output)

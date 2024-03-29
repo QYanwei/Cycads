@@ -7,7 +7,7 @@ import jinja2
 def import_jinja_template(template_file):
     # get template_fq_report.html
     if template_file:
-        print("Try to load provided jinja template file\n")
+        print(f"Loading jinja template file {template_file}\n")
         try:
             with open(template_file) as fp:
                 template = jinja2.Template(fp.read())
@@ -110,8 +110,9 @@ def generate_report_html(args, flag):
            report_title=report_title,
            report_subtitle=report_subtitle)
         # Write to HTML file
-        outfile = args["sample_name"] + "/report_html/" + args["sample_name"] + "_fq_report.html"
-        with open(outfile, "w") as fp:
+        output_folder = args["sample_name"]
+        output_path = os.path.join(output_folder, "report_html", "FASTQ_report.html")
+        with open(output_path, "w") as fp:
             fp.write(rendering)
     elif flag == 1:
         bam_table_string, bam_plots_string = generate_bam_report_string(args)
@@ -146,17 +147,17 @@ def generate_report_html(args, flag):
             fp.write(rendering)
 
 def generate_html(args):
-    sample_name = args["sample_name"]
-    fq_pickle = sample_name+'/'+sample_name+'_fq.pickle'
-    bam_pickle = sample_name + '/' + sample_name+'_bam.pickle'
-    if os.path.exists(fq_pickle) and os.path.exists(bam_pickle):
+    output_folder = args["sample_name"]
+    fq_pickle = os.path.join(output_folder, 'fq.pickle')
+    bam_pickle = os.path.join(output_folder, 'bam.pickle')
+    if os.path.isfile(fq_pickle) and os.path.isfile(bam_pickle):
         generate_report_html(args, 2)
-    elif os.path.exists(fq_pickle) and not os.path.exists(bam_pickle):
+    elif os.path.isfile(fq_pickle) and not os.path.isfile(bam_pickle):
         generate_report_html(args, 0)
-    elif not os.path.exists(fq_pickle) and os.path.exists(bam_pickle):
+    elif not os.path.isfile(fq_pickle) and os.path.isfile(bam_pickle):
         generate_report_html(args, 1)
     else:
-        raise IOError("please checking the _seq.pickle file and _bam.pickle file!")
+        raise IOError(f"Unable to find {fq_pickle} or {bam_pickle}")
 
 
 if __name__ == '__main__':

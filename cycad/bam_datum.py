@@ -279,7 +279,7 @@ def bam_datum_action(args):
         'query_aln_event_stat_dict': query_aln_event_stat_dict,
         'homopolymer_aln_event_stat_dict': homopolymer_aln_event_stat_dict
     }
-    with open(args["sample_name"] + '/' + args["sample_name"] + '_bam.pickle', 'w') as picklefile:
+    with open(args["sample_name"] + '/' + args["sample_name"] + '_bam.pickle', 'wb') as picklefile:
         pickle.dump(merge_alignment_dict, picklefile)
 
 if __name__ == '__main__':

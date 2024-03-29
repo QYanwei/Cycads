@@ -52,12 +52,13 @@ def file_checkin(infile, func):
         return 0
 ## version control
 def version():
-    version_file = open('%sVERSION.txt' % './')
-    return version_file.readline().strip()
+    return "0.3.0" # TODO: fetch version automatically
+    # version_file = open('%sVERSION.txt' % './')
+    # return version_file.readline().strip()
 ## help document
 def print_helpdoc():
     help_message = """
-              ........:::=== Cycads V%s ===:::........
+              ........:::=== Cycads v%s ===:::........
     ============================================================================
                 Quality control & Data filtering & Error analysis
                              for Long-read sequencing
@@ -111,30 +112,17 @@ if __name__ == '__main__':
         sys.exit(0)
     else:
         args = vars(parser.parse_args())
-    if os.path.exists("./" + args["sample_name"]):
-        print("output folder existed!")
+    output_folder = args["sample_name"]
+    if os.path.exists(output_folder):
+        raise IOError(f"Output folder {output_folder} already exists.")
     else:
-        os.mkdir("./" + args["sample_name"])
+        os.makedirs(output_folder)
     if os.path.exists("./" + args["sample_name"] + "/report_html"):
         print("report folder existed")
     else:
         os.mkdir("./" + args["sample_name"] + "/report_html")
     pwd_config_file = os.path.realpath(__file__)
-    args["pyfastx"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/pyfastx'
-    args["minimap2"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/minimap2'
-    args["samtools"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/samtools'
-    if not os.path.exists(args["pyfastx"]):
-        print("pyfastx: not found in the ./tool/")
-    else:
-        pass
-    if not os.path.exists(args["minimap2"]):
-        print("minimap2: not found in the ./tool/")
-    else:
-        pass
-    if not os.path.exists(args["samtools"]):
-        print("samtools: not found in the ./tool/")
-    else:
-        pass
+    
     if args["fastq"] and not args["filtering"] and not args["alignment"] and not args["reference"] :
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)           

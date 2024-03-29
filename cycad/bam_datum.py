@@ -275,11 +275,9 @@ def bam_datum_action(args):
         flag = read.flag
         cigar_tuples = read.cigartuples
         query_length = read.qlen
+        overall_aln_event_sum_dict['total_reads'] += 1
         if read.is_mapped:
             overall_aln_event_sum_dict['mapped_reads'] += 1
-            overall_aln_event_sum_dict['total_reads'] += 1
-        else:
-            overall_aln_event_sum_dict['total_reads'] += 1
         # reverse HP compute
         if read.is_reverse:
             skipped_length = short_softclip_hardclip_discard(cigar_tuples)

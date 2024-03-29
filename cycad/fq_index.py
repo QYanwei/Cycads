@@ -8,8 +8,9 @@ def fq_index_action(args):
     output = args['sample_name']
     infastq = args['fastq']
     subprocess.run(['pyfastx', 'index', infastq])
-    print("## Data overview")
-    os.system('pyfastx stat ' +  infastq  + ' |awk \'BEGIN{OFS="\t"}{NF=7}1\' ' ) # TODO: use subprocess.run()
+    os.system('pyfastx stat ' +  infastq  + ' |awk \'BEGIN{OFS="\t"}{NF=7}1\' > ' + output+'/'+output + '_sum.txt ') #
+    print("##sequencing summary overview")
+    os.system('cat ' + sample_name + '/' + sample_name + '_sum.txt')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

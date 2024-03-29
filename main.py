@@ -109,25 +109,44 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--thread", required=False, default=4, help="thread number")
     parser.add_argument("-hpmindelmax", "--homopolymer_indel_max", type=int, default=4, required=False, help="homopolymer max indel shift")
     # for storing result.
-    parser.add_argument("-O", "--output_dir", default='cycads_report', required=False, help="Output direcotry")
+    parser.add_argument("-o", "--output_dir", default='cycads_report', required=False, help="Output direcotry")
+    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
     ############################## parse provided arguments and run corresponding function #############################
 
     # get and check options
     #    args = None
     print(banner)
     args = parser.parse_args()
-    if args.help:
+    if (len(sys.argv) == 1) or (sys.argv[1] == '-h') or (sys.argv[1] == '-help') or (sys.argv[1] == '--help'):
         print_helpdoc()
         sys.exit(0)
-    
-    args = vars(parser.parse_args())
-    output_folder = args["output_dir"]
+    else:
+        args = vars(parser.parse_args())
+    output_folder = args["sample_name"]
     if os.path.exists(output_folder):
         warn(f"Output folder {output_folder} already exists.")
     os.makedirs(output_folder, exist_ok=True)
     html_folder = os.path.join(output_folder, "HTML_report")
     os.makedirs(html_folder, exist_ok=True)
     
+    pwd_config_file = os.path.realpath(__file__)
+    args["pyfastx"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/pyfastx'
+    args["minimap2"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/minimap2'
+    args["samtools"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/samtools'
+    if not os.path.exists(args["pyfastx"]):
+        print("pyfastx: not found in the ./tool/")
+    else:
+        pass
+    if not os.path.exists(args["minimap2"]):
+        print("minimap2: not found in the ./tool/")
+    else:
+        pass
+    if not os.path.exists(args["samtools"]):
+        print("samtools: not found in the ./tool/")
+    else:
+        pass
+
+
     if args["fastq"] and not args["filtering"] and not args["alignment"] and not args["reference"] :
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)           

@@ -52,24 +52,24 @@ conda activate cycads_env
 
 * 1. only fastq quality control 
   ``` 
-  python Cycads.py -fq test/ecoli.fq.gz -name test
+  python main.py -fq test/ecoli.fq.gz -name test
   ```
 * 2. fastq quality control and data filter
   ```
-  python Cycads.py -fq test/ecoli.fq.gz -filter -name test
+  python main.py -fq test/ecoli.fq.gz -filter -name test
   ```
 * 3. fastq quality control and error analysis
   ```
-  python Cycads.py -fq test/ecoli.fq.gz -ref ref/Reference_Ecoli.fasta -name test
+  python main.py -fq test/ecoli.fq.gz -ref ref/Reference_Ecoli.fasta -name test
   ```
    
 * 4. fastq quality control and data filter and error analysis
   ```
-  python Cycads.py -fq test/ecoli.fq.gz -fitler -ref ref/Reference_Ecoli.fasta -name test
+  python main.py -fq test/ecoli.fq.gz -fitler -ref ref/Reference_Ecoli.fasta -name test
   ```
 * 5. only bam error analysis
   ```
-  python Cycads.py -bam test/bam -name test 
+  python main.py -bam test/bam -name test 
   ```
 ## Parameters details
 

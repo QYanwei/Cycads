@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-import os,re,sys,time
+import os,re,sys,time, pickle
 import argparse
 import pysam
 import pprint
@@ -279,9 +279,8 @@ def bam_datum_action(args):
         'query_aln_event_stat_dict': query_aln_event_stat_dict,
         'homopolymer_aln_event_stat_dict': homopolymer_aln_event_stat_dict
     }
-    with open(args["sample_name"] + '/' + args["sample_name"] + '_bam.json', 'w') as jsonfile:
-        file_width = len(merge_alignment_dict['query_aln_event_stat_dict']['qry_idy_rate']) * 6 + 60
-        pprint.pprint(merge_alignment_dict, jsonfile, indent=4, width=file_width, depth=6, compact=True)
+    with open(args["sample_name"] + '/' + args["sample_name"] + '_bam.pickle', 'w') as picklefile:
+        pickle.dump(merge_alignment_dict, picklefile)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

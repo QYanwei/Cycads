@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import seaborn as sns
-import json
+import pickle
 import warnings
 
 warnings.filterwarnings("ignore", "is_categorical_dtype")
@@ -258,12 +258,12 @@ def plot_read_percent_qualtiy_curve(allBaseQual_dict):
 
 def fq_figure_action(args):
     output = args["sample_name"]
-    if not os.path.exists(output + "/" + output +"_fq.json"):
-        raise IOError("FASTQ stat JSON file not found!")
-        
-    fastq_json_file_path = args["sample_name"]+"/" + args["sample_name"]+"_fq.json"
-    with open(fastq_json_file_path) as jsonfile:
-        fq_datum_dict = json.loads(json.dumps(eval(jsonfile.read()))) # pprint: ' -> json: "
+    if not os.path.exists(output + "/" + output +"_fq.pickle"):
+        raise IOError("FASTQ stat pickle file not found!")
+
+    fastq_pickle_file_path = args["sample_name"]+"/" + args["sample_name"]+"_fq.pickle"
+    with open(fastq_pickle_file_path) as picklefile:
+        fq_datum_dict = pickle.load(picklefile)
         seq_qual_dict = fq_datum_dict['seq_qual_dict']
         homopolymer_dict = fq_datum_dict['homopolymer_dict']
         endBaseQual_dict = fq_datum_dict['endBaseQual_dict']

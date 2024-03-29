@@ -19,8 +19,8 @@ def generate_fq_report_strings(args):
     #fq
     table_list = ["TB2000B609-202403200954240_read.fq.gz", "873663", "138045423", "54.542", "158.008", "31187", "1", "27.5", "7"]
     sample_name = args["sample_name"]
-    fq_json = sample_name+'/'+sample_name+'_seq.json'
-    bam_json = sample_name + '/' + sample_name+'_bam.json'
+    fq_pickle = sample_name+'/'+sample_name+'_seq.pickle'
+    bam_pickle = sample_name + '/' + sample_name+'_bam.pickle'
 
     fq_table_string = ""
     for i in table_list:
@@ -62,7 +62,7 @@ def generate_fq_report_strings(args):
 # bam report data
 def generate_bam_report_string(args):
     sample_name = args["sample_name"]
-    bam_json = sample_name + '/' + sample_name+'_bam.json'
+    bam_pickle = sample_name + '/' + sample_name+'_bam.pickle'
 
     # bam
     table_list = ["TB2000B609-202403200954240_read.bam", "2399", "3939982", "95.02", "3.98", "1.53", "1.32", "1.13", "2.3", "1.68"]
@@ -147,16 +147,16 @@ def generate_report_html(args, flag):
 
 def generate_html(args):
     sample_name = args["sample_name"]
-    fq_json = sample_name+'/'+sample_name+'_fq.json'
-    bam_json = sample_name + '/' + sample_name+'_bam.json'
-    if os.path.exists(fq_json) and os.path.exists(bam_json):
+    fq_pickle = sample_name+'/'+sample_name+'_fq.pickle'
+    bam_pickle = sample_name + '/' + sample_name+'_bam.pickle'
+    if os.path.exists(fq_pickle) and os.path.exists(bam_pickle):
         generate_report_html(args, 2)
-    elif os.path.exists(fq_json) and not os.path.exists(bam_json):
+    elif os.path.exists(fq_pickle) and not os.path.exists(bam_pickle):
         generate_report_html(args, 0)
-    elif not os.path.exists(fq_json) and os.path.exists(bam_json):
+    elif not os.path.exists(fq_pickle) and os.path.exists(bam_pickle):
         generate_report_html(args, 1)
     else:
-        print("please checking the _seq.json file and _bam.json file!")
+        raise IOError("please checking the _seq.pickle file and _bam.pickle file!")
 
 
 if __name__ == '__main__':

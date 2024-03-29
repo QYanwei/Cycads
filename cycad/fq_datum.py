@@ -5,6 +5,7 @@ import os
 import pprint
 import pyfastx
 import argparse
+import pickle
 import numpy as np
 from collections import Counter
 
@@ -95,7 +96,7 @@ def kmerSpectrumParse(fq_path, kmer_size, output_dir):
         os.system('rm -f {}.fasta'.format(output))
         os.system('rm -rf {}.meryl'.format(output))
     elif fq_path.endswith('fastq') or fq_path.endswith('fq'):
-        os.system('awk \'NR %4 == 1 || NR %4 == 2 \'   > {}.fasta '.format(fq_path, output))
+        os.system('cat {} | awk \'NR %4 == 1 || NR %4 == 2 \'   > {}.fasta '.format(fq_path, output))
         os.system('{} count  k={} {}.fasta output {}.meryl'.format(meryl, str(kmersize), output, output))
         os.system('{} print {}.meryl | sort -k2nr > {}_kmer_{}_freq.txt'.format(meryl, output, output, str(kmersize)))
         os.system('rm -f {}.fasta'.format(output))
@@ -202,9 +203,10 @@ def fq_datum_action(args):
     if os.path.exists(args["fastq"]):
         merged_fq_datum_dict = get_fq_datum(args)
         output = args["sample_name"]
-        with open( output + "/" + args["sample_name"]+"_fq.json", "w") as jsonfile:
+        with open( output + "/" + args["sample_name"]+"_fq.pickle", "w") as f:
             filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
-            pprint.pprint(merged_fq_datum_dict, jsonfile, indent=4, width=filewidth, depth = 6, compact=True)
+            pickle.dump(merged_fq_datum_dict, f)
+
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser()
     parser.add_argument("-fq",    "--fastq",     required=True,  help="sequences.fq/fq.gz")

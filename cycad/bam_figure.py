@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
-import json
+import pickle
 import warnings
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
@@ -182,10 +182,10 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict, output):
     plt.tight_layout()
     plt.savefig(f'{output}/report_html/query_all_error_item.barplot.png')
 def bam_figure_action(args):
-    bam_json_file_path = args["sample_name"] + '/' + args["sample_name"] + '_bam.json'
+    bam_pickle_file_path = args["sample_name"] + '/' + args["sample_name"] + '_bam.pickle'
     output=args["sample_name"]
-    with open(bam_json_file_path) as jsonfile:
-        bam_datum_dict = json.loads(json.dumps(eval(jsonfile.read()))) # pprint: ' -> json: "
+    with open(bam_pickle_file_path) as picklefile:
+        bam_datum_dict = pickle.load(picklefile)
         plot_query_event_rate_overlapping_densities(bam_datum_dict['query_aln_event_stat_dict'], output)
         plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'], output)
         plot_insertion_deletion_frequency(bam_datum_dict['overall_aln_event_stat_dict'], output)

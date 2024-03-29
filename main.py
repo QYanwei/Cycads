@@ -142,7 +142,7 @@ if __name__ == '__main__':
             fq_figure.fq_figure_action(args)
             all_report.generate_html(args)
         else:
-            print(args["fastq"] + " is not exists!")
+            print(args["fastq"] + " does not exist!")
     elif args["fastq"] and args["filtering"] and not args["alignment"] and not args["reference"]:
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)
@@ -151,7 +151,7 @@ if __name__ == '__main__':
             fq_filter.fq_filter_action(args)
             all_report.generate_html(args)
         else:
-            print(args["fastq"] + " is not exists!")
+            print(args["fastq"] + " does not exist!")
     elif args["fastq"] and args["reference"] and not args["filtering"] and not args["alignment"]:
         if os.path.exists(args["fastq"]) and os.path.exists(args["reference"]):
             fq_index.fq_index_action(args)
@@ -162,9 +162,9 @@ if __name__ == '__main__':
             bam_figure.bam_figure_action(args)
             all_report.generate_html(args)
         elif not os.path.exists(args["fastq"]) and os.path.exists(args["reference"]):
-            print(args["fastq"] + " is not exists!")  
+            print(args["fastq"] + " does not exist!")  
         elif os.path.exists(args["fastq"]) and not os.path.exists(args["reference"]):
-            print(args["reference"] + " is not exists!")
+            print(args["reference"] + " does not exist!")
         else:
             print( "Both " + args["fastq"] + " " +args["reference"] + " are not exist!")
     elif args["alignment"] and not args["fastq"] and not args["reference"] and not args["filtering"]:
@@ -173,7 +173,7 @@ if __name__ == '__main__':
             bam_figure.bam_figure_action(args)
             all_report.generate_html(args)
         else:
-            print(args["alignment"] + " is not exists!")
+            print(args["alignment"] + " does not exist!")
     else:
         print("please input correct file: fq/fastq/fq.gz & fastq+referecence.fasta & alignment.bam")
 

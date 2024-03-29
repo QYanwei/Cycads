@@ -1,30 +1,55 @@
 import os,re,sys,time
 import datetime
 import argparse
+import pickle
 import jinja2
-
+from statistics import mean
 # import html template
 def import_jinja_template(template_file):
     # get template_fq_report.html
     if template_file:
-        print(f"Loading jinja template file {template_file}\n")
         try:
             with open(template_file) as fp:
                 template = jinja2.Template(fp.read())
                 return template
         except (FileNotFoundError, IOError, jinja2.exceptions.TemplateNotFound, jinja2.exceptions.TemplateSyntaxError):
             print("File not found, non-readable or invalid\n")
+def N50(list_read_length):
+    # Calculate the total length of the sequences
+    total_length = sum(list_read_length)
+    list_read_length.sort(reverse=True)
+    base_sum = 0
+    for length in list_read_length:
+        base_sum += length
+        if base_sum/total_length == 0.5:
+           return length
 # fq report data
 def generate_fq_report_strings(args):
     #fq
-    table_list = ["TB2000B609-202403200954240_read.fq.gz", "873663", "138045423", "54.542", "158.008", "31187", "1", "27.5", "7"]
     sample_name = args["sample_name"]
+    table_name = ["FileName", "TotalRead", "TotalBases", "GC%", "AvgLen", "MaxLen", "MinLen", "N50", "AvgReadQ", "MaxReadQ", "MinReadQ"]
+    #table_list = ["TB2000B609-202403200954240_read.fq.gz", "873663", "138045423", "54.542", "158.008", "31187", "1", "27.5", "7", "0"]
+    fq_sum = sample_name+'/'+sample_name+'_sum.txt'
+    with open(fq_sum) as txtfile:
+        txtfile.readline()
+        fq_info = txtfile.readline().strip().split()
+    table_list = fq_info[:7]
     fq_pickle = sample_name+'/'+sample_name+'_seq.pickle'
-    bam_pickle = sample_name + '/' + sample_name+'_bam.pickle'
-
-    fq_table_string = ""
+    with open(fq_pickle, 'rb') as picklefile:
+        fq_datum_dict = pickle.load(picklefile)
+        seq_qual_dict = fq_datum_dict['seq_qual_dict']
+        table_list.append(N50(seq_qual_dict["LEN"]))
+        table_list.append(mean(seq_qual_dict["QUAL1"]))
+        table_list.append(max(seq_qual_dict["QUAL1"]))
+        table_list.append(min(seq_qual_dict["QUAL1"]))
+    fq_table_string = "<thead><tr>"
+    for i in table_name:
+        fq_table_string += "<th>{}</th>".format(i)
+    fq_table_string += "</tr><tr>"
     for i in table_list:
         fq_table_string += "<th>{}</th>".format(i)
+    fq_table_string += "</tr><thead>"
+    # plots string create
     plots_list = [["read_length_quality_cross.scatterplot.png",
                    "read_length_histplot_nolog.barplot.png"],
                   ["read_relative_position_avg_qual.lineplot.png",
@@ -59,16 +84,36 @@ def generate_fq_report_strings(args):
             fq_plots_string += "</td>"
         fq_plots_string += "</tr>"
     return fq_table_string, fq_plots_string
+    
 # bam report data
 def generate_bam_report_string(args):
     sample_name = args["sample_name"]
+    table_list = [sample_name]
+    table_name = ["SampleName", "TotalReads", "MappedReads", "Indentity(%)","TotalErr(%)", "MismatchErr(%)", "InsertionErr(%)", "DeletionErr(%)", "HomopolymerErr(%)", "Non-HpErr(%)"]
     bam_pickle = sample_name + '/' + sample_name+'_bam.pickle'
-
-    # bam
-    table_list = ["TB2000B609-202403200954240_read.bam", "2399", "3939982", "95.02", "3.98", "1.53", "1.32", "1.13", "2.3", "1.68"]
-    bam_table_string = ""
+    with open(bam_pickle, 'rb') as picklefile:
+        bam_datum_dict = pickle.load(picklefile)
+        overall_event_dict = bam_datum_dict['overall_aln_event_sum_dict']
+        all_evt = overall_event_dict['substitution'] + overall_event_dict['contraction'] + overall_event_dict['expansion'] + overall_event_dict['identity']
+        all_idy = round(overall_event_dict['identity'] / all_evt *10, 2)
+        all_dif = round(1 - all_idy, 2)
+        all_mis = round(overall_event_dict['substitution'] / all_evt *100, 2)
+        all_del = round(overall_event_dict['contraction'] / all_evt *100, 2)
+        all_ins = round(overall_event_dict['expansion'] / all_evt *100, 2)
+        hpm_evt = overall_event_dict['non_hpm_substitution'] + overall_event_dict['non_hpm_contraction'] + overall_event_dict['non_hpm_expansion']
+        hpm_dif = round(hpm_evt/ all_evt * 100, 2)
+        non_hpm_dif = round(all_dif - hpm_dif, 2)
+        table_list.append(overall_event_dict['total_reads'])
+        table_list.append(overall_event_dict['mapped_reads'])
+        table_list.extend([ all_idy, all_dif, all_mis, all_ins, all_del, hpm_dif, non_hpm_dif])
+    bam_table_string = "<thead><tr>"
+    for i in table_name:
+        bam_table_string += "<th>{}</th>".format(i)
+    bam_table_string += "</tr><tr>"
     for i in table_list:
         bam_table_string += "<th>{}</th>".format(i)
+    bam_table_string += "</tr><thead>"
+
     plots_list = [["query_all_error_item.barplot.png",
                    "query_insertion_frequency.barplot.png"],
                   ["query_deletion_frequency.barplot.png",
@@ -127,7 +172,7 @@ def generate_report_html(args, flag):
             report_title=report_title,
             report_subtitle=report_subtitle)
         # Write to HTML file
-        with open(outfile, "w") as fp:
+        with open(output_path, "w") as fp:
             fp.write(rendering)
         
     elif flag == 2:
@@ -144,7 +189,7 @@ def generate_report_html(args, flag):
             report_title=report_title,
             report_subtitle=report_subtitle)
         # Write to HTML file
-        with open(outfile, "w") as fp:
+        with open(output_path, "w") as fp:
             fp.write(rendering)
 
     abs_output_path = os.path.abspath(output_path)

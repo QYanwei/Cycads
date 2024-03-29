@@ -14,111 +14,124 @@ warnings.filterwarnings("ignore", "use_inf_as_na")
 
 from plots import *
 
-def plot_query_event_rate_overlapping_densities(bam_datum_dict):
-    # identity rate
-    qry_idy_rate = np.array(bam_datum_dict['qry_idy_rate'])
-    qry_hpm_idy_rate = np.array(bam_datum_dict['qry_hpm_idy_rate'])
-    qry_non_hpm_idy_rate = np.array(bam_datum_dict['qry_non_hpm_idy_rate'])
-    qry_idy_df = pd.DataFrame([qry_idy_rate,qry_hpm_idy_rate, qry_non_hpm_idy_rate])
-    qry_idy_df.index = ['overall identity rate', 'homopolymer identity rate', 'non-homopolymer identity rate']
+# def plot_query_event_rate_overlapping_densities(bam_datum_dict):
+#     # identity rate
+#     qry_idy_rate = np.array(bam_datum_dict['qry_idy_rate'])
+#     qry_hpm_idy_rate = np.array(bam_datum_dict['qry_hpm_idy_rate'])
+#     qry_non_hpm_idy_rate = np.array(bam_datum_dict['qry_non_hpm_idy_rate'])
+#     qry_idy_df = pd.DataFrame([qry_idy_rate,qry_hpm_idy_rate, qry_non_hpm_idy_rate])
+#     qry_idy_df.index = ['overall identity rate', 'homopolymer identity rate', 'non-homopolymer identity rate']
     
-    fig, ax = plt.subplots()
-    sns.displot(data=qry_idy_df.T, kind="kde")
-    plt.yticks(size=ticksize)
-    plt.xticks(size=ticksize)
-    # ax.set_xlabel('x', fontsize=fontsize)
-    # ax.set_ylabel('y', fontsize=fontsize)
-    # ax.set_title('Title', fontsize=fontsize)
-    plt.tight_layout()
-    plt.savefig(f'{output}/report_html/query_events_curve_idy.dispplot.png')
-    # error rate
-    qry_dif_rate = np.array(bam_datum_dict['qry_dif_rate'])
-    qry_hpm_dif_rate = np.array(bam_datum_dict['qry_hpm_dif_rate'])
-    qry_non_hpm_dif_rate = np.array(bam_datum_dict['qry_non_hpm_dif_rate'])
-    qry_dif_df = pd.DataFrame([qry_dif_rate,qry_hpm_dif_rate, qry_non_hpm_dif_rate])
-    qry_dif_df.index = ['overall error rate', 'homopolymer error rate', 'non-homopolymer error rate']
-    plt.clf()
-    fig, ax = plt.subplots()
-    sns.displot(data=qry_dif_df.T, kind="kde")
-    plt.yticks(size=ticksize)
-    plt.xticks(size=ticksize)
-    # ax.set_xlabel('x', fontsize=fontsize)
-    # ax.set_ylabel('y', fontsize=fontsize)
-    # ax.set_title('Title', fontsize=fontsize)
-    plt.tight_layout()
-    fig.savefig(f'{output}/report_html/query_events_curve_dif.dispplot.png')
+#     fig, ax = plt.subplots()
+#     sns.displot(data=qry_idy_df.T, kind="kde")
+#     plt.yticks(size=ticksize)
+#     plt.xticks(size=ticksize)
+#     # ax.set_xlabel('x', fontsize=fontsize)
+#     # ax.set_ylabel('y', fontsize=fontsize)
+#     # ax.set_title('Title', fontsize=fontsize)
+#     plt.tight_layout()
+#     plt.savefig(f'{output}/report_html/query_events_curve_idy.dispplot.png')
+#     # error rate
+#     qry_dif_rate = np.array(bam_datum_dict['qry_dif_rate'])
+#     qry_hpm_dif_rate = np.array(bam_datum_dict['qry_hpm_dif_rate'])
+#     qry_non_hpm_dif_rate = np.array(bam_datum_dict['qry_non_hpm_dif_rate'])
+#     qry_dif_df = pd.DataFrame([qry_dif_rate,qry_hpm_dif_rate, qry_non_hpm_dif_rate])
+#     qry_dif_df.index = ['overall error rate', 'homopolymer error rate', 'non-homopolymer error rate']
+#     plt.clf()
+#     fig, ax = plt.subplots()
+#     sns.displot(data=qry_dif_df.T, kind="kde")
+#     plt.yticks(size=ticksize)
+#     plt.xticks(size=ticksize)
+#     # ax.set_xlabel('x', fontsize=fontsize)
+#     # ax.set_ylabel('y', fontsize=fontsize)
+#     # ax.set_title('Title', fontsize=fontsize)
+#     plt.tight_layout()
+#     fig.savefig(f'{output}/report_html/query_events_curve_dif.dispplot.png')
 
-def plot_substitution_frequency(overall_aln_event_stat_dict, output):
+def plot_substitution_frequency(overall_aln_event_stat_dict):
     substitution = np.array(list(overall_aln_event_stat_dict['all_mis_typ_dict'].values()))
     all_mis_typ_dict = dict(zip(overall_aln_event_stat_dict['all_mis_typ_dict'], substitution * 100 / sum(substitution) ))
     substitution_type = pd.DataFrame(all_mis_typ_dict, index=[0])
     substitution_type.index = ['Substitution']
-    plt.clf()
-    fig, ax = plt.subplots()
-    sns.barplot(data=substitution_type)
-    plt.yticks(size=ticksize)
-    plt.xticks(size=ticksize)
-    # ax.set_xlabel('x', fontsize=fontsize)
-    # ax.set_ylabel('y', fontsize=fontsize)
-    # ax.set_title('Title', fontsize=fontsize)
-    plt.tight_layout()
-    plt.savefig(f'{output}/report_html/query_all_substitution_errors.barplot.png')
+    
+    fig, ax = plt.subplots(**figure_kw)
+    sns.barplot(ax=ax, data=substitution_type)
+    tick_labels = [col[0] + "→" + col[1] for col in substitution_type.columns]
+    ticks = list(range(len(tick_labels)))
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(tick_labels)
+    ax.set_xlabel("Substitution type")
+    ax.set_ylabel("Number of substitutions")
+    ax.set_title("Summary of substitutions by type" , **title_kw)
+    post_process_ax(ax)
 
-def plot_insertion_deletion_frequency(bam_datum_dict, output):
+    return fig
+
+def plot_insertion_deletion_frequency(bam_datum_dict):
     indel_len_max = 10
     indel_range_dict = {'Insertion': {}, 'Deletion':{} }
-    ins_sum = sum(bam_datum_dict['all_ins_len_dict'].values())
-    del_sum = sum(bam_datum_dict['all_del_len_dict'].values())
-    for i in bam_datum_dict['all_ins_len_dict'].keys():
+    ins_sum = sum(bam_datum_dict['overall_aln_event_stat_dict']['all_ins_len_dict'].values())
+    del_sum = sum(bam_datum_dict['overall_aln_event_stat_dict']['all_del_len_dict'].values())
+    for i in bam_datum_dict['overall_aln_event_stat_dict']['all_ins_len_dict'].keys():
         if int(i) < indel_len_max:
-            indel_range_dict['Insertion'][int(i)] = bam_datum_dict['all_ins_len_dict'][i] * 100 / ins_sum
+            indel_range_dict['Insertion'][int(i)] = bam_datum_dict['overall_aln_event_stat_dict']['all_ins_len_dict'][i] * 100 / ins_sum
         elif int(i) >= indel_len_max:
             if indel_len_max in indel_range_dict['Insertion'].keys():
-                indel_range_dict['Insertion'][indel_len_max] += bam_datum_dict['all_ins_len_dict'][i]
+                indel_range_dict['Insertion'][indel_len_max] += bam_datum_dict['overall_aln_event_stat_dict']['all_ins_len_dict'][i]
             else:
-                indel_range_dict['Insertion'][indel_len_max] = bam_datum_dict['all_ins_len_dict'][i]
+                indel_range_dict['Insertion'][indel_len_max] = bam_datum_dict['overall_aln_event_stat_dict']['all_ins_len_dict'][i]
         else:
             pass
-    for i in bam_datum_dict['all_del_len_dict'].keys():
+    for i in bam_datum_dict['overall_aln_event_stat_dict']['all_del_len_dict'].keys():
         if int(i) < indel_len_max:
-            indel_range_dict['Deletion'][int(i)] = bam_datum_dict['all_del_len_dict'][i] * 100 / del_sum
+            indel_range_dict['Deletion'][int(i)] = bam_datum_dict['overall_aln_event_stat_dict']['all_del_len_dict'][i] * 100 / del_sum
         elif int(i) >= indel_len_max:
             if indel_len_max in indel_range_dict['Deletion'].keys():
-                indel_range_dict['Deletion'][indel_len_max] += bam_datum_dict['all_del_len_dict'][i]
+                indel_range_dict['Deletion'][indel_len_max] += bam_datum_dict['overall_aln_event_stat_dict']['all_del_len_dict'][i]
             else:
-                indel_range_dict['Deletion'][indel_len_max] = bam_datum_dict['all_del_len_dict'][i]
+                indel_range_dict['Deletion'][indel_len_max] = bam_datum_dict['overall_aln_event_stat_dict']['all_del_len_dict'][i]
         else:
             pass
     indel_range_dict['Insertion'][indel_len_max] = indel_range_dict['Insertion'][indel_len_max] * 100 / ins_sum
     indel_range_dict['Deletion'][indel_len_max] = indel_range_dict['Deletion'][indel_len_max] * 100 / del_sum
     Ins_dataframe = pd.DataFrame(indel_range_dict['Insertion'], index=[0])
     Ins_dataframe.index = ['Insertion']
+
     # Insertion
-    plt.clf()
-    fig, ax = plt.subplots()
-    sns.barplot(data=Ins_dataframe)
-    plt.yticks(size=ticksize)
-    plt.xticks(size=ticksize)
-    # ax.set_xlabel('x', fontsize=fontsize)
-    # ax.set_ylabel('y', fontsize=fontsize)
-    # ax.set_title('Title', fontsize=fontsize)
-    plt.tight_layout()
-    plt.savefig(f'{output}/report_html/query_insertion_frequency.barplot.png')
+    fig, ax = plt.subplots(**figure_kw)
+    fig1 = fig
+    sns.barplot(ax=ax, data=Ins_dataframe, color='steelblue')
+    ax.set_xlabel("Insertion size (bp)")
+    
+    ticks = list(range(0, indel_len_max))
+    tick_labels = [str(x+1) for x in ticks]
+    tick_labels[-1] += "+"
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(tick_labels)
+
+    ax.set_ylabel("Number of insertions")
+    ax.set_title("Size distribution of insertions", **title_kw)
+    post_process_ax(ax)
+    
+    
     # Deletion
     Del_dataframe = pd.DataFrame(indel_range_dict['Deletion'], index=[0])
     Del_dataframe.index = ['Deletion']
-    plt.clf()
-    fig, ax = plt.subplots()
-    sns.barplot(data=Del_dataframe)
-    plt.yticks(size=ticksize)
-    plt.xticks(size=ticksize)
-    # ax.set_xlabel('x', fontsize=fontsize)
-    # ax.set_ylabel('y', fontsize=fontsize)
-    # ax.set_title('Title', fontsize=fontsize)
-    plt.tight_layout()
-    plt.savefig(f'{output}/report_html/query_deletion_frequency.barplot.png')
 
-def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_dict, output):
+    fig, ax = plt.subplots(**figure_kw)
+    fig2 = fig
+    sns.barplot(ax=ax, data=Del_dataframe, color='steelblue')
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(tick_labels)
+    ax.set_xlabel("Deletion size (bp)")
+    ax.set_ylabel("Number of deletions")
+    ax.set_title("Size distribution of insertions", **title_kw)
+    post_process_ax(ax)
+
+
+    return fig1, fig2
+
+def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_dict):
     qry_hpm_event = np.array([homopolymer_aln_event_stat_dict['S'][i] for i in homopolymer_aln_event_stat_dict['S'].keys()])
     qry_hpm_event2= []
     for i in qry_hpm_event:
@@ -128,26 +141,41 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
             for j in i /sum(i):
                 p += j
                 lt.append(p)
-        else:
-            pass
         qry_hpm_event2.append(lt)
     homopolymer_dataframe = pd.DataFrame(qry_hpm_event2)
     homopolymer_dataframe.index = range(2,len(qry_hpm_event2)+2,1)
     homopolymer_dataframe.columns = ["contraction 4bp+", "contraction 3bp", "contraction 2bp", "contraction 1bp",
-                                     "correct segment",  "mismatch segment",
+                                      "mismatch segment","correct segment", 
                                      "expansion 1bp", "expansion 2bp", "expansion 3bp", "expansion 4bp+"]
-    plt.clf()
-    fig, ax = plt.subplots()
-    sns.lineplot(data=homopolymer_dataframe)
-    plt.yticks(size=ticksize)
-    plt.xticks(size=ticksize)
-    # ax.set_xlabel('x', fontsize=fontsize)
-    # ax.set_ylabel('y', fontsize=fontsize)
-    # ax.set_title('Title', fontsize=fontsize)
-    plt.tight_layout()
-    plt.savefig(f'{output}/report_html/query_homopolymer_length_event.lineplot.png')
+    #return homopolymer_dataframe
+    cmap = plt.get_cmap("coolwarm")
+    colors = [cmap(0), cmap(0.1), cmap(0.2), cmap(0.3), 
+               "lightgray", "wheat",
+              cmap(0.7), cmap(0.8), cmap(0.9), cmap(1)]
+    
+    fig, ax = plt.subplots(**figure_kw)
+    xs = homopolymer_dataframe.index
+    columns = homopolymer_dataframe.columns
+    for j, col in enumerate(columns):
+        if j == 0:
+            y0 = [0 for _ in xs]
+        
+        y1 = homopolymer_dataframe[col]
+        color = colors[j]
+        ax.fill_between(xs, y0, y1, label=col, color=color)
+        y0 = y1
+    ax.set_xlim(xs.min(), xs.max())
+    ax.set_ylim(0, 1)
+    ax.set_xlabel("Homopolymer length (bp)")
+    ax.set_ylabel("Fraction of homopolymers")
+    ax.set_title("Summary of homopolymer errors" , **title_kw)
 
-def plot_overall_alignment_frequency(overall_aln_event_sum_dict, output):
+    post_process_ax(ax)
+
+    return fig
+
+
+def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     all_event = overall_aln_event_sum_dict['identity'] + overall_aln_event_sum_dict['substitution'] + overall_aln_event_sum_dict['contraction'] + overall_aln_event_sum_dict['expansion']
     all_dif_event = overall_aln_event_sum_dict['substitution'] + overall_aln_event_sum_dict['contraction'] + overall_aln_event_sum_dict['expansion']
     all_dif = all_dif_event / all_event *100
@@ -159,38 +187,48 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict, output):
     non_hpm_mis = overall_aln_event_sum_dict['non_hpm_substitution'] / all_event *100
     non_hpm_del = overall_aln_event_sum_dict['non_hpm_contraction'] / all_event *100
     non_hpm_ins = overall_aln_event_sum_dict['non_hpm_expansion'] / all_event *100
-    plt.clf()
+
     all_aln_rates = [all_dif, all_mis, all_del, all_ins]
     non_hpm_aln_rates = [non_hpm_dif, non_hpm_mis, non_hpm_del, non_hpm_ins]
-    labels = ['Error rate', 'Mismatch', 'Deletion', 'Insertion']
+    labels = ['Overall', 'Mismatch', 'Deletion', 'Insertion']
     x = np.arange(len(labels))  # the label locations
     width = 0.35  # the width of the bars
-    fig, ax = plt.subplots()
-    ax.bar(x - width/2, all_aln_rates, width, label='Total error rate')
-    ax.bar(x + width/2, non_hpm_aln_rates, width, label='Non-homopolymer error rate')
-    ax.set_ylabel('Percentage(%)')
+
+    fig, ax = plt.subplots(**figure_kw)
+    ax.bar(x - width/2, all_aln_rates, width, label='Overall error rate', color='tab:blue')
+    ax.bar(x + width/2, non_hpm_aln_rates, width, label='Non-homopolymer error rate', color='tab:green')
+    ax.set_ylabel('Error rate (%)')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    plt.yticks(size=ticksize)
-    plt.xticks(size=ticksize)
-    # ax.set_xlabel('x', fontsize=fontsize)
-    # ax.set_ylabel('y', fontsize=fontsize)
-    # ax.set_title('Title', fontsize=fontsize)
-    ax.legend()
-    plt.tight_layout()
-    plt.savefig(f'{output}/report_html/query_all_error_item.barplot.png')
+    ax.legend(loc='upper right')
+    ax.set_title("Error rates by type" , **title_kw)
+    post_process_ax(ax)
+
+    return fig
+
 def bam_figure_action(args):
     bam_pickle_file_path = os.path.join(args['output_dir'], 'bam.pickle')
     output_foler = args["output_dir"]
     with open(bam_pickle_file_path, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
-        plot_query_event_rate_overlapping_densities(bam_datum_dict['query_aln_event_stat_dict'], output)
-        plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'], output)
-        plot_insertion_deletion_frequency(bam_datum_dict['overall_aln_event_stat_dict'], output)
-        plot_overall_alignment_frequency(bam_datum_dict['overall_aln_event_sum_dict'], output)
-        plot_substitution_frequency(bam_datum_dict['overall_aln_event_stat_dict'], output)
-fontsize=16
-ticksize=18
+
+
+    fig = plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'])
+    fig.savefig(f'{output}/report_html/query_homopolymer_length_event.lineplot.png')
+
+    
+    fig1, fig2 = plot_insertion_deletion_frequency(bam_datum_dict['overall_aln_event_stat_dict'])
+    fig1.savefig(f'{output}/report_html/query_insertion_frequency.barplot.png')
+    fig2.savefig(f'{output}/report_html/query_deletion_frequency.barplot.png')
+
+    fig = plot_overall_alignment_frequency(bam_datum_dict['overall_aln_event_sum_dict'])
+    fig.savefig(f'{output}/report_html/query_all_error_item.barplot.png')
+
+    fig = plot_substitution_frequency(bam_datum_dict['overall_aln_event_stat_dict'])
+    fig.savefig(f'{output}/report_html/query_all_substitution_errors.barplot.png')
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-O", "--output_dir", default='cycads_report', required=False, help="prefix of output file name")

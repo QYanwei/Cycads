@@ -10,3 +10,7 @@ hist_kw = dict(facecolor='tab:blue', edgecolor='k', linewidth=0.5)
 grid_kw = dict(color='k', alpha=0.1)
 title_kw = dict(fontsize=10)
 
+
+def post_process_ax(ax):
+    ax.spines[['right', 'top']].set_visible(False)
+

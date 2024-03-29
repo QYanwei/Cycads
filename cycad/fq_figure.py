@@ -17,8 +17,6 @@ warnings.filterwarnings("ignore", "use_inf_as_na")
 from plots import *
 
 
-def post_process_ax(ax):
-    ax.spines[['right', 'top']].set_visible(False)
 
 def plot_length_Nx_average_bar(seq_qual_dict):
     def Nx_reads_length(list_read_length):

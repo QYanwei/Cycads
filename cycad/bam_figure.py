@@ -165,21 +165,22 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     all_mis = overall_aln_event_sum_dict['substitution'] / all_event *100
     all_del = overall_aln_event_sum_dict['contraction'] / all_event *100
     all_ins = overall_aln_event_sum_dict['expansion'] / all_event *100
-    non_hpm_dif_event = overall_aln_event_sum_dict['non_hpm_substitution'] + overall_aln_event_sum_dict['non_hpm_contraction'] + overall_aln_event_sum_dict['non_hpm_expansion']
-    non_hpm_dif = non_hpm_dif_event / all_event *100
-    non_hpm_mis = overall_aln_event_sum_dict['non_hpm_substitution'] / all_event *100
-    non_hpm_del = overall_aln_event_sum_dict['non_hpm_contraction'] / all_event *100
-    non_hpm_ins = overall_aln_event_sum_dict['non_hpm_expansion'] / all_event *100
+#    non_hpm_dif_event = overall_aln_event_sum_dict['non_hpm_substitution'] + overall_aln_event_sum_dict['non_hpm_contraction'] + overall_aln_event_sum_dict['non_hpm_expansion']
+#    non_hpm_dif = non_hpm_dif_event / all_event *100
+#    non_hpm_mis = overall_aln_event_sum_dict['non_hpm_substitution'] / all_event *100
+#    non_hpm_del = overall_aln_event_sum_dict['non_hpm_contraction'] / all_event *100
+#    non_hpm_ins = overall_aln_event_sum_dict['non_hpm_expansion'] / all_event *100
 
     all_aln_rates = [all_dif, all_mis, all_del, all_ins]
-    non_hpm_aln_rates = [non_hpm_dif, non_hpm_mis, non_hpm_del, non_hpm_ins]
+#    non_hpm_aln_rates = [non_hpm_dif, non_hpm_mis, non_hpm_del, non_hpm_ins]
     labels = ['Overall', 'Mismatch', 'Deletion', 'Insertion']
     x = np.arange(len(labels))  # the label locations
     width = 0.35  # the width of the bars
 
     fig, ax = plt.subplots(**figure_kw)
-    ax.bar(x - width/2, all_aln_rates, width, label='Overall error rate', color='tab:blue')
-    ax.bar(x + width/2, non_hpm_aln_rates, width, label='Non-homopolymer error rate', color='tab:green')
+    ax.bar(x, all_aln_rates, width, label='Overall error rate', color='tab:blue')
+#    ax.bar(x - width/2, all_aln_rates, width, label='Overall error rate', color='tab:blue')
+#    ax.bar(x + width/2, non_hpm_aln_rates, width, label='Non-homopolymer error rate', color='tab:green')
     ax.set_ylabel('Error rate (%)')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)

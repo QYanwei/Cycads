@@ -37,9 +37,9 @@ def generate_fq_report_strings(args, output_folder):
         fq_datum_dict = pickle.load(picklefile)
         seq_qual_dict = fq_datum_dict['seq_qual_dict']
         table_list.append(N50(seq_qual_dict["LEN"]))
-        table_list.append(mean(seq_qual_dict["QUAL1"]))
-        table_list.append(max(seq_qual_dict["QUAL1"]))
-        table_list.append(min(seq_qual_dict["QUAL1"]))
+        table_list.append(mean(seq_qual_dict["QUAL2"]))
+        table_list.append(max(seq_qual_dict["QUAL2"]))
+        table_list.append(min(seq_qual_dict["QUAL2"]))
     fq_table_string = "<thead><tr>"
     for i in table_name:
         fq_table_string += "<th>{}</th>".format(i)
@@ -86,23 +86,23 @@ def generate_fq_report_strings(args, output_folder):
 # bam report data
 def generate_bam_report_string(args, output_folder):
     table_list = [args["sample_name"]]
-    table_name = ["SampleName", "TotalReads", "MappedReads", "Indentity(%)","TotalErr(%)", "MismatchErr(%)", "InsertionErr(%)", "DeletionErr(%)", "HomopolymerErr(%)", "Non-HpErr(%)"]
+    table_name = ["SampleName", "TotalReads", "MappedReads", "Indentity(%)","TotalErr(%)", "MismatchErr(%)", "InsertionErr(%)", "DeletionErr(%)", "HomopolymerErr(%)"]
     bam_pickle = os.path.join(output_folder, 'bam.pickle')
     with open(bam_pickle, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
         overall_event_dict = bam_datum_dict['overall_aln_event_sum_dict']
         all_evt = overall_event_dict['substitution'] + overall_event_dict['contraction'] + overall_event_dict['expansion'] + overall_event_dict['identity']
-        all_idy = round(overall_event_dict['identity'] / all_evt *10, 2)
-        all_dif = round(1 - all_idy, 2)
+        all_idy = round(overall_event_dict['identity'] / all_evt *100, 2)
+        all_dif = round(100 - all_idy, 2)
         all_mis = round(overall_event_dict['substitution'] / all_evt *100, 2)
         all_del = round(overall_event_dict['contraction'] / all_evt *100, 2)
         all_ins = round(overall_event_dict['expansion'] / all_evt *100, 2)
-        hpm_evt = overall_event_dict['non_hpm_substitution'] + overall_event_dict['non_hpm_contraction'] + overall_event_dict['non_hpm_expansion']
+        hpm_evt = overall_event_dict['hpm_substitution'] + overall_event_dict['hpm_contraction'] + overall_event_dict['hpm_expansion']
         hpm_dif = round(hpm_evt/ all_evt * 100, 2)
-        non_hpm_dif = round(all_dif - hpm_dif, 2)
+#        non_hpm_dif = round(all_dif - hpm_dif, 2)
         table_list.append(overall_event_dict['total_reads'])
         table_list.append(overall_event_dict['mapped_reads'])
-        table_list.extend([ all_idy, all_dif, all_mis, all_ins, all_del, hpm_dif, non_hpm_dif])
+        table_list.extend([ all_idy, all_dif, all_mis, all_ins, all_del, hpm_dif])
     bam_table_string = "<thead><tr>"
     for i in table_name:
         bam_table_string += "<th>{}</th>".format(i)
@@ -112,15 +112,15 @@ def generate_bam_report_string(args, output_folder):
     bam_table_string += "</tr><thead>"
 
     plots_list = [["query_all_error_item.barplot.png",
-                   "query_insertion_frequency.barplot.png"],
-                  ["query_deletion_frequency.barplot.png",
                    "query_all_substitution_errors.barplot.png"],
+                  ["query_deletion_frequency.barplot.png",
+                   "query_insertion_frequency.barplot.png"],
                   ["query_events_curve_idy.displot.png",
                   "query_homopolymer_length_event.lineplot.png"]]
     plots_src = [["Sequencing error rate",
-                  "Insertion frequency"],
-                 ["Deletion frequency",
                   "Substitution type error frequency"],
+                 ["Deletion frequency",
+                  "Insertion frequency"],
                  ["Read identity rate distribution",
                  "Homopolymer error type with its length"]]
     bam_plots_string = ""

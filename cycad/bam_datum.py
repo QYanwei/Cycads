@@ -34,6 +34,9 @@ def try_extend_sequence_homopolymer(start_pos, end_pos, sequence, base_homopolym
             end_pos += 1
     return start_pos, end_pos
 def parsing_homopolymer_error_event(hpm_max_length, shift_length, new_ref, new_seq, homopolymer_aln_event_stat_dict):
+#    print(new_ref)
+#    print(new_seq)
+#    print(len(new_ref) - len(new_seq))
     start_init, end_init = -1, -1
     hpm_map, hpm_mis, hpm_ins, hpm_del = 0, 0, 0, 0
     # homopolymers regular expression pattern
@@ -107,10 +110,8 @@ def parsing_homopolymer_error_event(hpm_max_length, shift_length, new_ref, new_s
                 homopolymer_aln_event_stat_dict[base_homopolymer][hpm_max_length][shift_length + 1] += 1
                 homopolymer_aln_event_stat_dict['S'][hpm_max_length][shift_length + 1] += 1
     return hpm_map, hpm_mis, hpm_ins, hpm_del
-#def parsing_alignment_events(raw_ref, raw_seq, cigar_tuples):
 def parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq, cigar_tuples, overall_aln_event_sum_dict, overall_aln_event_stat_dict, query_aln_event_stat_dict, homopolymer_aln_event_stat_dict):
     new_ref, new_seq = '', ''
-    raw_seq, raw_ref = raw_seq.upper(), raw_ref.upper()
     qry_map, qry_mis, qry_del, qry_ins = 0, 0, 0, 0
     for i in cigar_tuples:
         if i[0] == 7:  # matched
@@ -183,24 +184,31 @@ def parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq,
     query_aln_event_stat_dict['qry_hpm_del_rate'].append(qry_hpm_del_rate)
     query_aln_event_stat_dict['qry_hpm_idy_rate'].append(qry_hpm_idy_rate)
     query_aln_event_stat_dict['qry_hpm_dif_rate'].append(qry_hpm_dif_rate)
+    overall_aln_event_sum_dict['hpm_identity'] += hpm_map
     overall_aln_event_sum_dict['hpm_substitution'] += hpm_mis
     overall_aln_event_sum_dict['hpm_expansion'] += hpm_ins
     overall_aln_event_sum_dict['hpm_contraction'] += hpm_del
     # non-homopolymer events statistics
-    qry_non_hpm_mis_rate = round((qry_mis - hpm_mis)/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    qry_non_hpm_ins_rate = round((qry_ins - hpm_ins)/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    qry_non_hpm_del_rate = round((qry_del - hpm_del)/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    hpm_mid_number = hpm_mis - hpm_ins - hpm_del
-    qry_non_hpm_idy_rate = round((qry_map - hpm_mid_number)/(qry_map + qry_ins + qry_del + qry_mis - hpm_mid_number), 5)
-    qry_non_hpm_dif_rate = round(1 - qry_non_hpm_idy_rate, 5)
-    overall_aln_event_sum_dict['non_hpm_substitution'] += qry_mis - hpm_mis
-    overall_aln_event_sum_dict['non_hpm_expansion'] += qry_ins - hpm_ins
-    overall_aln_event_sum_dict['non_hpm_contraction'] += qry_del - hpm_del
-    query_aln_event_stat_dict['qry_non_hpm_mis_rate'].append(qry_non_hpm_mis_rate)
-    query_aln_event_stat_dict['qry_non_hpm_ins_rate'].append(qry_non_hpm_ins_rate)
-    query_aln_event_stat_dict['qry_non_hpm_del_rate'].append(qry_non_hpm_del_rate)
-    query_aln_event_stat_dict['qry_non_hpm_dif_rate'].append(qry_non_hpm_dif_rate)
-    query_aln_event_stat_dict['qry_non_hpm_idy_rate'].append(qry_non_hpm_idy_rate)
+#    qry_non_hpm_mis_rate = round((qry_mis - hpm_mis)/(qry_map + qry_ins + qry_del + qry_mis), 5)
+#    qry_non_hpm_ins_rate = round((qry_ins - hpm_ins)/(qry_map + qry_ins + qry_del + qry_mis), 5)
+#    qry_non_hpm_del_rate = round((qry_del - hpm_del)/(qry_map + qry_ins + qry_del + qry_mis), 5)
+#    hpm_mid_number = hpm_mis + hpm_ins + hpm_del
+#    qry_non_hpm_idy_rate = round((qry_map - hpm_mid_number)/(qry_map + qry_ins + qry_del + qry_mis), 5)
+#    qry_non_hpm_dif_rate = round(1 - qry_non_hpm_idy_rate, 5)
+#    overall_aln_event_sum_dict['non_hpm_substitution'] += qry_mis - hpm_mis
+#    overall_aln_event_sum_dict['non_hpm_expansion'] += qry_ins - hpm_ins
+#    overall_aln_event_sum_dict['non_hpm_contraction'] += qry_del - hpm_del
+#    query_aln_event_stat_dict['qry_non_hpm_mis_rate'].append(qry_non_hpm_mis_rate)
+#    query_aln_event_stat_dict['qry_non_hpm_ins_rate'].append(qry_non_hpm_ins_rate)
+#    query_aln_event_stat_dict['qry_non_hpm_del_rate'].append(qry_non_hpm_del_rate)
+#    query_aln_event_stat_dict['qry_non_hpm_dif_rate'].append(qry_non_hpm_dif_rate)
+#    query_aln_event_stat_dict['qry_non_hpm_idy_rate'].append(qry_non_hpm_idy_rate)
+def reverse_complement(dna):
+    revc = ""
+    basepair = {'A':'T', 'T':'A', 'G':'C', 'C':'G'}
+    for c in dna:
+        revc = basepair[c] + revc
+    return revc
 
 def bam_datum_action(args):
     output_folder = os.path.join(args["output_dir"], args["sample_name"])
@@ -233,11 +241,11 @@ def bam_datum_action(args):
         'qry_hpm_mis_rate': list(),
         'qry_hpm_ins_rate': list(),
         'qry_hpm_del_rate': list(),
-        'qry_non_hpm_idy_rate': list(),
-        'qry_non_hpm_dif_rate': list(),
-        'qry_non_hpm_mis_rate': list(),
-        'qry_non_hpm_ins_rate': list(),
-        'qry_non_hpm_del_rate': list(),
+#        'qry_non_hpm_idy_rate': list(),
+#        'qry_non_hpm_dif_rate': list(),
+#        'qry_non_hpm_mis_rate': list(),
+#        'qry_non_hpm_ins_rate': list(),
+#        'qry_non_hpm_del_rate': list(),
     }
     homopolymer_aln_event_stat_dict = {
         'S': {i: [0] * (hpm_shift_length * 2 + 2) for i in range(2, hpm_max_length + 1, 1)},
@@ -247,18 +255,19 @@ def bam_datum_action(args):
         'G': {i: [0] * (hpm_shift_length * 2 + 2) for i in range(2, hpm_max_length + 1, 1)},
     }
     overall_aln_event_sum_dict = {
-        'total_reads':0,
-        'mapped_reads':0,
+        'total_reads': 0,
+        'mapped_reads': 0,
         'identity': 0,
         'substitution': 0,
         'expansion': 0,
         'contraction': 0,
+        'hpm_identity': 0,
         'hpm_substitution': 0,
         'hpm_expansion': 0,
         'hpm_contraction': 0,
-        'non_hpm_substitution': 0,
-        'non_hpm_expansion': 0,
-        'non_hpm_contraction': 0,
+#        'non_hpm_substitution': 0,
+#        'non_hpm_expansion': 0,
+#        'non_hpm_contraction': 0,
     }
     # analyzing data
     readprofile = pysam.AlignmentFile(bam, "rb")
@@ -271,16 +280,28 @@ def bam_datum_action(args):
             overall_aln_event_sum_dict['total_reads'] += 1
         else:
             overall_aln_event_sum_dict['total_reads'] += 1
-        if read.is_forward and flag == 0:
+        # reverse HP compute
+        if read.is_reverse:
             skipped_length = short_softclip_hardclip_discard(cigar_tuples)
-            if skipped_length/query_length <= 0.5 and query_length > 100:
+            if skipped_length/query_length <= 0.2 and query_length > 100:
                 raw_seq = read.seq
                 raw_ref = read.get_reference_sequence()
+                raw_seq, raw_ref = raw_seq.upper(), raw_ref.upper()
+                raw_seq, raw_ref = reverse_complement(raw_seq), reverse_complement(raw_ref)
+                parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq, tuple(reversed(cigar_tuples)), overall_aln_event_sum_dict, overall_aln_event_stat_dict, query_aln_event_stat_dict, homopolymer_aln_event_stat_dict)
+            else:
+                pass
+        # forward HP compute
+        if read.is_forward:
+            skipped_length = short_softclip_hardclip_discard(cigar_tuples)
+            if skipped_length/query_length <= 0.2 and query_length > 100:
+                raw_seq = read.seq
+                raw_ref = read.get_reference_sequence()
+                raw_seq, raw_ref = raw_seq.upper(), raw_ref.upper()
                 parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq, cigar_tuples, overall_aln_event_sum_dict, overall_aln_event_stat_dict, query_aln_event_stat_dict, homopolymer_aln_event_stat_dict)
             else:
                 pass
-        else:
-            continue
+
     # structure write
     merge_alignment_dict = {
         'overall_aln_event_sum_dict': overall_aln_event_sum_dict,

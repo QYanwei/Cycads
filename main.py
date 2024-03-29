@@ -32,6 +32,7 @@ change log:
 
 import os,re,sys,time
 import argparse
+from warnings import warn
 
 from cycad import fq_index
 from cycad import fq_datum
@@ -69,9 +70,16 @@ def print_helpdoc():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     ############################################## initialize subparsers ###############################################
+    banner = """
+                     ........:::=== Cycads v%s ===:::........
+    ============================================================================
+                Quality control & Data filtering & Error analysis
+                             for Long-read sequencing
+    ============================================================================
+    """ % version()
 
     # initialize the options parser
-    parser = argparse.ArgumentParser(description='Cycads:Long reads sequencing quality analyzer')
+    parser = argparse.ArgumentParser(description="Cycads: Quality control & Data filtering & Error analysis")
     parser.add_argument("-fq",   "--fastq",     required=False,  help="sequences.fq/fq.gz")
     parser.add_argument("-bam",  "--alignment", required=False, help="alignment.bam")
     parser.add_argument("-ref",  "--reference", required=False, help="reference.fasta")
@@ -101,27 +109,24 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--thread", required=False, default=4, help="thread number")
     parser.add_argument("-hpmindelmax", "--homopolymer_indel_max", type=int, default=4, required=False, help="homopolymer max indel shift")
     # for storing result.
-    parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+    parser.add_argument("-O", "--output_dir", default='cycads_report', required=False, help="Output direcotry")
     ############################## parse provided arguments and run corresponding function #############################
 
     # get and check options
     #    args = None
+    print(banner)
     args = parser.parse_args()
-    if (len(sys.argv) == 1) or (sys.argv[1] == '-h') or (sys.argv[1] == '-help') or (sys.argv[1] == '--help'):
+    if args.help:
         print_helpdoc()
         sys.exit(0)
-    else:
-        args = vars(parser.parse_args())
-    output_folder = args["sample_name"]
+    
+    args = vars(parser.parse_args())
+    output_folder = args["output_dir"]
     if os.path.exists(output_folder):
-        raise IOError(f"Output folder {output_folder} already exists.")
-    else:
-        os.makedirs(output_folder)
-    if os.path.exists("./" + args["sample_name"] + "/report_html"):
-        print("report folder existed")
-    else:
-        os.mkdir("./" + args["sample_name"] + "/report_html")
-    pwd_config_file = os.path.realpath(__file__)
+        warn(f"Output folder {output_folder} already exists.")
+    os.makedirs(output_folder, exist_ok=True)
+    html_folder = os.path.join(output_folder, "HTML_report")
+    os.makedirs(html_folder, exist_ok=True)
     
     if args["fastq"] and not args["filtering"] and not args["alignment"] and not args["reference"] :
         if os.path.exists(args["fastq"]):

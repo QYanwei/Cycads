@@ -3,6 +3,16 @@
 ## Description
 Cycads long reads quality analyser
 
+## Installation
+
+```
+conda create -n cycads_env -c bioconda -c conda-forge -c defaults jinja2 matplotlib~=3.8.3 numpy~=1.26.4 pandas~=2.2.1 pyfastx~=2.1.0 pysam~=0.22.0 scipy~=1.12.0 seaborn~=0.13.2 minimap2 samtools
+git clone https://github.com/QYanwei/Cycads
+
+conda activate cycads_env
+Cycads/main.py --help
+```
+
 ## Dependencies
 
 * System requirement:

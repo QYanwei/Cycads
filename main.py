@@ -115,11 +115,6 @@ if __name__ == '__main__':
     # get and check options
     #    args = None
     print(banner)
-    args = parser.parse_args()
-    if args.help:
-        print_helpdoc()
-        sys.exit(0)
-    
     args = vars(parser.parse_args())
     output_folder = args["output_dir"]
     if os.path.exists(output_folder):
@@ -161,12 +156,10 @@ if __name__ == '__main__':
         else:
             print( "Both " + args["fastq"] + " " +args["reference"] + " are not exist!")
     elif args["alignment"] and not args["fastq"] and not args["reference"] and not args["filtering"]:
-        if os.path.exists(args["alignment"]):
-            bam_datum.bam_datum_action(args)
-            bam_figure.bam_figure_action(args)
-            all_report.generate_html(args)
-        else:
-            print(args["alignment"] + " does not exist!")
+        bam_datum.bam_datum_action(args)
+        bam_figure.bam_figure_action(args)
+        all_report.generate_html(args)
+        
     else:
         print("please input correct file: fq/fastq/fq.gz & fastq+referecence.fasta & alignment.bam")
 

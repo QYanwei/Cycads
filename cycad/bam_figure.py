@@ -12,18 +12,16 @@ import warnings
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
 
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rcParams['figure.dpi'] = 300
-palette = dict(A="tab:red", T="tab:green", C="tab:blue", G="tab:purple", S='tab:black')
+from plots import *
 
-def plot_query_event_rate_overlapping_densities(bam_datum_dict, output):
+def plot_query_event_rate_overlapping_densities(bam_datum_dict):
     # identity rate
     qry_idy_rate = np.array(bam_datum_dict['qry_idy_rate'])
     qry_hpm_idy_rate = np.array(bam_datum_dict['qry_hpm_idy_rate'])
     qry_non_hpm_idy_rate = np.array(bam_datum_dict['qry_non_hpm_idy_rate'])
     qry_idy_df = pd.DataFrame([qry_idy_rate,qry_hpm_idy_rate, qry_non_hpm_idy_rate])
     qry_idy_df.index = ['overall identity rate', 'homopolymer identity rate', 'non-homopolymer identity rate']
-    plt.clf()
+    
     fig, ax = plt.subplots()
     sns.displot(data=qry_idy_df.T, kind="kde")
     plt.yticks(size=ticksize)
@@ -48,7 +46,7 @@ def plot_query_event_rate_overlapping_densities(bam_datum_dict, output):
     # ax.set_ylabel('y', fontsize=fontsize)
     # ax.set_title('Title', fontsize=fontsize)
     plt.tight_layout()
-    plt.savefig(f'{output}/report_html/query_events_curve_dif.dispplot.png')
+    fig.savefig(f'{output}/report_html/query_events_curve_dif.dispplot.png')
 
 def plot_substitution_frequency(overall_aln_event_stat_dict, output):
     substitution = np.array(list(overall_aln_event_stat_dict['all_mis_typ_dict'].values()))
@@ -182,8 +180,8 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict, output):
     plt.tight_layout()
     plt.savefig(f'{output}/report_html/query_all_error_item.barplot.png')
 def bam_figure_action(args):
-    bam_pickle_file_path = args["sample_name"] + '/' + args["sample_name"] + '_bam.pickle'
-    output=args["sample_name"]
+    bam_pickle_file_path = os.path.join(args['output_dir'], 'bam.pickle')
+    output_foler = args["output_dir"]
     with open(bam_pickle_file_path, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
         plot_query_event_rate_overlapping_densities(bam_datum_dict['query_aln_event_stat_dict'], output)
@@ -195,7 +193,7 @@ fontsize=16
 ticksize=18
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+    parser.add_argument("-O", "--output_dir", default='cycads_report', required=False, help="prefix of output file name")
     args = vars(parser.parse_args())
     bam_figure_action(args)
 

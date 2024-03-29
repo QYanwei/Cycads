@@ -17,7 +17,7 @@ warnings.filterwarnings("ignore", "use_inf_as_na")
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['figure.dpi'] = 300
 palette = dict(A="tab:red", T="tab:green", C="tab:blue", G="tab:purple", S='tab:black')
-figsize = (5, 4)
+figure_kw = dict(figsize = (5, 4), constrained_layout=True)
 hist_kw = dict(facecolor='tab:blue', edgecolor='k', linewidth=0.5)
 grid_kw = dict(color='k', alpha=0.1)
 title_kw = dict(fontsize=10)
@@ -46,7 +46,7 @@ def plot_length_Nx_average_bar(seq_qual_dict):
     LengthFrame = pd.DataFrame( np.array( Nx_reads_length( seq_qual_dict['LEN']) ).astype(int).T, columns=['read_length'])
     LengthFrame.loc[: , 'nx'] = [ 'N10', 'N20', 'N30', 'N40', 'N50', 'N60', 'N70', 'N80', 'N90']
     
-    fig, ax = plt.subplots(figsize=figsize)
+    fig, ax = plt.subplots(**figure_kw)
     g = sns.barplot(LengthFrame, ax=ax, x='nx', y='read_length', color='steelblue')
     ax.axhline(average_length, color='k', ls='--', label='Mean read length')
     ax.legend(loc='upper right')
@@ -59,7 +59,7 @@ def plot_length_Nx_average_bar(seq_qual_dict):
 
 def plot_gc_content_frequency_distribution(seq_qual_dict):
     gc_percentage = np.array( seq_qual_dict['GC'] ).astype(float) * 100
-    fig, ax = plt.subplots(figsize=figsize)
+    fig, ax = plt.subplots(**figure_kw)
     ax.hist(gc_percentage, bins=np.arange(0, 100, 2), density=True, **hist_kw)
     ax.xaxis.set_major_formatter(mtick.PercentFormatter())
     ax.set_xlim(0, 100)
@@ -73,7 +73,7 @@ def plot_gc_content_frequency_distribution(seq_qual_dict):
 
 def plot_read_quality_frequency_distritution(seq_qual_dict):
     quality_values = np.array( seq_qual_dict['QUAL1'] )
-    fig, ax = plt.subplots(figsize=figsize)
+    fig, ax = plt.subplots(**figure_kw)
     xmin = floor(quality_values.min())
     xmax = ceil(quality_values.max())
     bins = np.arange(xmin, xmax + 1, 0.5)
@@ -89,7 +89,7 @@ def plot_read_quality_frequency_distritution(seq_qual_dict):
 def plot_read_length_frequency_distribution(seq_qual_dict):
     lengths = np.array( seq_qual_dict['LEN'] )
 
-    fig, ax = plt.subplots(figsize=figsize)
+    fig, ax = plt.subplots(**figure_kw)
     ax.hist(lengths / 1000, bins=50, **hist_kw)
     ax.set_xlim(left=0)
     ax.set_xlabel("Read length (kb)")
@@ -105,7 +105,7 @@ def plot_read_length_cumulative_distribution(seq_qual_dict):
     xs = np.arange(lengths.min(), lengths.max() + 100, 100) / 1000
     ys = [lengths[lengths >= x * 1000].sum() * 100 / total_bases for x in xs]
 
-    fig, ax = plt.subplots(figsize=figsize)
+    fig, ax = plt.subplots(**figure_kw)
     ax.plot(xs, ys)
     ax.set_ylim(0, 100)
     ax.set_xlim(left=0)
@@ -121,7 +121,7 @@ def plot_length_quality_2d_histogram(seq_qual_dict):
     lengths = np.array(seq_qual_dict['LEN']) / 1000
     quality_values = np.array(seq_qual_dict['QUAL1'])
 
-    fig, ax = plt.subplots(figsize=figsize)
+    fig, ax = plt.subplots(**figure_kw)
     ax.hist2d(lengths, quality_values, bins=(50, 50), cmap='Blues')
     ax.set_xlim(lengths.min(), lengths.max())
     ax.set_ylim(quality_values.min(), quality_values.max())
@@ -147,7 +147,7 @@ def plot_homopolymer_frequency(homopolymer_dict):
             else:
                 pass
     xs = list(range(2, homopolymer_len_max + 1))
-    fig, ax = plt.subplots(figsize=figsize)
+    fig, ax = plt.subplots(**figure_kw)
 
     for base in ("A", "T", "C", "G"):
         ys = [homopolymer_range_dict[base][x] for x in xs]
@@ -166,7 +166,7 @@ def plot_homopolymer_frequency(homopolymer_dict):
 
 def plot_ends_base_content_curve(endBaseQual_dict):
     for key in ("HeadBaseContent_dict", "TailBaseContent_dict"):
-        fig, ax = plt.subplots(figsize=figsize)
+        fig, ax = plt.subplots(**figure_kw)
         if key == "HeadBaseContent_dict":
             fig1 = fig
         else:
@@ -206,7 +206,7 @@ def plot_ends_base_content_curve(endBaseQual_dict):
 def plot_ends_base_quality_curve(endBaseQual_dict):
 
     for key in ("HeadQualContent_dict", "TailQualContent_dict"):
-        fig, ax = plt.subplots(figsize=figsize)
+        fig, ax = plt.subplots(**figure_kw)
         if key == "HeadQualContent_dict":
             fig1 = fig
         else:
@@ -244,7 +244,7 @@ def plot_ends_base_quality_curve(endBaseQual_dict):
 def plot_read_percent_qualtiy_curve(allBaseQual_dict):
     quality_values = np.array(allBaseQual_dict['PercentBaseQual_dict']['Q'])/ allBaseQual_dict['PercentBaseQual_dict']['S']
     xs = np.arange(1, quality_values.shape[0]+1)
-    fig, ax = plt.subplots(figsize=figsize)
+    fig, ax = plt.subplots(**figure_kw)
     ax.plot(xs, quality_values, clip_on=False, color='steelblue')
     ax.set_xlim(0, 100)
     ax.set_xlabel("Relative position in read")

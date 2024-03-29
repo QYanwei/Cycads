@@ -54,8 +54,8 @@ def generate_fq_report_strings(args):
         fq_plots_string += "<tr>"
         for j in range(2):
             fq_plots_string += "<td><figure>"
-            fq_plots_string += "<img src=\"./{}\" width=\"600\" height=\"580\" />".format(plots_list[i][j])
-            fq_plots_string += "<figcaption class=\"figure-caption text-center\">{}</figcaption>".format(plots_src[i][j])
+            fq_plots_string += "<img src=\"./{}\" width=\"auto\" height=\"480\" />".format(plots_list[i][j])
+            #fq_plots_string += "<figcaption class=\"figure-caption text-center\">{}</figcaption>".format(plots_src[i][j])
             fq_plots_string += "</td>"
         fq_plots_string += "</tr>"
     return fq_table_string, fq_plots_string
@@ -95,6 +95,9 @@ def generate_bam_report_string(args):
     return bam_table_string, bam_plots_string
 
 def generate_report_html(args, flag):
+    output_folder = args["sample_name"]
+    output_path = os.path.join(output_folder, "summary.html")
+
     # set the basic report infortion
     report_title = "CycloneSEQ quality reporter"
     report_subtitle = "Created on {} with {} {}".format(datetime.datetime.now().strftime("%d/%m/%y"), "Cycads", "0.3.0")
@@ -110,10 +113,9 @@ def generate_report_html(args, flag):
            report_title=report_title,
            report_subtitle=report_subtitle)
         # Write to HTML file
-        output_folder = args["sample_name"]
-        output_path = os.path.join(output_folder, "report_html", "FASTQ_report.html")
         with open(output_path, "w") as fp:
             fp.write(rendering)
+        
     elif flag == 1:
         bam_table_string, bam_plots_string = generate_bam_report_string(args)
         template_file = '/'.join(pwd_config_file.split('/')[:-2]) + "/config/template_bam_report.j2"
@@ -125,9 +127,9 @@ def generate_report_html(args, flag):
             report_title=report_title,
             report_subtitle=report_subtitle)
         # Write to HTML file
-        outfile = args["sample_name"] + "/report_html/" + args["sample_name"] + "_bam_report.html"
         with open(outfile, "w") as fp:
             fp.write(rendering)
+        
     elif flag == 2:
         fq_table_string, fq_plots_string = generate_fq_report_strings(args)
         bam_table_string, bam_plots_string = generate_bam_report_string(args)
@@ -142,9 +144,11 @@ def generate_report_html(args, flag):
             report_title=report_title,
             report_subtitle=report_subtitle)
         # Write to HTML file
-        outfile = args["sample_name"] + "/report_html/" + args["sample_name"] + "_all_report.html"
         with open(outfile, "w") as fp:
             fp.write(rendering)
+
+    abs_output_path = os.path.abspath(output_path)
+    print(f"HTML report written to {abs_output_path}")
 
 def generate_html(args):
     output_folder = args["sample_name"]

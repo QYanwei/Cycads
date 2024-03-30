@@ -16,6 +16,7 @@ jobs:
         auto-activate-base: false
 
     - name: Run Tests
+      shell: bash -l {0}
       run: |
         source activate cycads_env
         mkdir -p sandbox

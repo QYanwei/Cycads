@@ -103,7 +103,7 @@ def Extracting(fastq, args, outfile):
     fq = pyfastx.Fastq(fastq)
     read_count = len(fq)
     seed = args['seed']
-    sample_size = args['sample']
+    sample_size = args['extract']
     selected_read_indices = np.random.default_rng(seed).randint(low=0, high=read_count, size=sample_size, dtype=np.uint64)
     for i in selected_read_indices:
         read = fq[i]
@@ -136,9 +136,9 @@ def Extracting(fastq, args, outfile):
 def fq_filter_action(args):
     input_fastq_path = args['fastq']
     with open(args['filtered_fastq_path'], 'wt') as f:
-        if args['max_depth'] and args['genome_size']:
+        if args['target_depth'] and args['genome_size']:
             Downsampling(input_fastq_path, args, f)
-        elif args['random_read']:
+        elif args['extract']:
             Extracting(input_fastq_path, args, f)
         elif args['min_length'] or args['max_length']:
             Filtering(input_fastq_path, args, f)

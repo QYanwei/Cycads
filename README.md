@@ -1,5 +1,7 @@
 # Cycads
 
+[![CI](https://github.com/QYanwei/Cycads/actions/workflows/run_test.yml/badge.svg?branch=master)](https://github.com/QYanwei/Cycads/actions/workflows/run_test.yml)
+
 ## Description
 Cycads long reads quality analyser
 

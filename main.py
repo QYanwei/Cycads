@@ -51,7 +51,7 @@ def check_binary_dependencies(args, dependencies):
             args[executable] = system_path
         else:
             raise RuntimeError(f"Unable to find {executable}")
-        print(f"Using {executable} from {user_supplied_path}")
+        print(f"Using {executable} from {args[executable]}")
 
 
 def parse_command_line_arguments():
@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
     
 
-    if args["fastq"] and not args["filter"] and not args["alignment"] and not args["reference"] :
+    if args["fastq"] and not args["filter"] and not args["bam"] and not args["reference"] :
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)           
             fq_datum.fq_datum_action(args)
@@ -151,7 +151,7 @@ if __name__ == '__main__':
             all_report.generate_html(args)
         else:
             print(args["fastq"] + " does not exist!")
-    elif args["fastq"] and args["filter"] and not args["alignment"] and not args["reference"]:
+    elif args["fastq"] and args["filter"] and not args["bam"] and not args["reference"]:
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)
             fq_datum.fq_datum_action(args)
@@ -160,7 +160,7 @@ if __name__ == '__main__':
             all_report.generate_html(args)
         else:
             print(args["fastq"] + " does not exist!")
-    elif args["fastq"] and args["reference"] and not args["filter"] and not args["alignment"]:
+    elif args["fastq"] and args["reference"] and not args["filter"] and not args["bam"]:
         if os.path.exists(args["fastq"]) and os.path.exists(args["reference"]):
             fq_index.fq_index_action(args)
             fq_datum.fq_datum_action(args)
@@ -175,7 +175,7 @@ if __name__ == '__main__':
             print(args["reference"] + " does not exist!")
         else:
             print( "Both " + args["fastq"] + " " +args["reference"] + " are not exist!")
-    elif args["alignment"] and not args["fastq"] and not args["reference"] and not args["filter"]:
+    elif args["bam"] and not args["fastq"] and not args["reference"] and not args["filter"]:
         bam_datum.bam_datum_action(args)
         bam_figure.bam_figure_action(args)
         all_report.generate_html(args)

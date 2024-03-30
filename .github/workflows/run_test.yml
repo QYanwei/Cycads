@@ -15,19 +15,25 @@ jobs:
         environment-file: environment.yml
         auto-activate-base: true
 
+    - name: Test help message
+      shell: bash -l {0}
+      run: |
+        conda activate cycads_env
+        ./main.py --help
+
     - name: Test FASTQ input
       shell: bash -l {0}
       run: |
         conda activate cycads_env
         mkdir -p sandbox
-        ./main.py --fastq test/ecoli.fq.gz --mode sampling --output_dir sandbox/fastq_output
+        ./main.py --fastq test/ecoli.fq.gz --output_dir sandbox/fastq_output
 
     - name: Test BAM input
       shell: bash -l {0}
       run: |
         conda activate cycads_env
         mkdir -p sandbox
-        ./main.py -bam test/test.bam --output_dir sandbox/bam_output
+        ./main.py --bam test/test.bam --output_dir sandbox/bam_output
 
     # - name: Test FASTQ filtering
     #   shell: bash -l {0}

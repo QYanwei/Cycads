@@ -32,7 +32,7 @@ def generate_fq_report_strings(args, output_folder):
         txtfile.readline()
         fq_info = txtfile.readline().strip().split()
     table_list = fq_info[:7]
-    fq_pickle = os.path.join(output_folder, 'fq.pickle')
+    fq_pickle = args['fastq_pickle_path']
     with open(fq_pickle, 'rb') as picklefile:
         fq_datum_dict = pickle.load(picklefile)
         seq_qual_dict = fq_datum_dict['seq_qual_dict']
@@ -87,7 +87,7 @@ def generate_fq_report_strings(args, output_folder):
 def generate_bam_report_string(args, output_folder):
     table_list = [args["sample_name"]]
     table_name = ["SampleName", "TotalReads", "MappedReads", "Indentity(%)","TotalErr(%)", "MismatchErr(%)", "InsertionErr(%)", "DeletionErr(%)", "HomopolymerErr(%)"]
-    bam_pickle = os.path.join(output_folder, 'bam.pickle')
+    bam_pickle = args['bam_pickle_path']
     with open(bam_pickle, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
         overall_event_dict = bam_datum_dict['overall_aln_event_sum_dict']

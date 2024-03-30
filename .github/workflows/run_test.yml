@@ -35,6 +35,13 @@ jobs:
         mkdir -p sandbox
         ./main.py --bam test/test.bam --output_dir sandbox/bam_output
 
+    - name: Test FASTQ + reference input
+      shell: bash -l {0}
+      run: |
+        conda activate cycads_env
+        mkdir -p sandbox
+        ./main.py --fastq test/ecoli.fq.gz --reference test/ecoli.reference.fasta --output_dir sandbox/alignment_output
+
     # - name: Test FASTQ filtering
     #   shell: bash -l {0}
     #   run: |

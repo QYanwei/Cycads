@@ -55,7 +55,8 @@ def check_binary_dependencies(args, dependencies):
 
 
 def parse_command_line_arguments():
-    parser = argparse.ArgumentParser(description="Cycads: Quality control & error profile analysis of long-read sequencing data")
+    parser = argparse.ArgumentParser(description="Cycads: Quality control & error profile analysis of long-read sequencing data",
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     io_group = parser.add_argument_group('I/O', 'Input/output arguments.')
     io_group.add_argument("-f",   "--fastq", metavar="FASTQ_PATH", required=False, default=None, help="Input FASTQ file. Supported extensions include *.fastq and *.fastq.gz.")

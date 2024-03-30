@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # coding: utf-8
+
 import os,re,sys,time, pickle
 import argparse
 import pysam
-import pprint
 
 def short_softclip_hardclip_discard(cigar_tuples):
     soft_hard_length = 0
@@ -23,16 +23,18 @@ def try_extend_reference_homopolymer(start_pos, end_pos, sequence, base_homopoly
     while sequence[end_pos-1] == "-":
         end_pos -= 1
     return start_pos, end_pos
+
 def try_extend_sequence_homopolymer(start_pos, end_pos, sequence, base_homopolymer):
     if sequence[start_pos: end_pos].replace("-", "") == "":
         return start_pos, end_pos
     if sequence[start_pos] == base_homopolymer:
         while start_pos-1 >= 0 and sequence[start_pos-1] == base_homopolymer:
             start_pos -= 1
-    if sequence[end_pos-1] == base_homopolymer:
+    if 0 <= end_pos-1 < len(sequence) and sequence[end_pos-1] == base_homopolymer:
         while end_pos < len(sequence) and sequence[end_pos] == base_homopolymer:
             end_pos += 1
     return start_pos, end_pos
+
 def parsing_homopolymer_error_event(hpm_max_length, shift_length, new_ref, new_seq, homopolymer_aln_event_stat_dict):
 #    print(new_ref)
 #    print(new_seq)
@@ -40,7 +42,7 @@ def parsing_homopolymer_error_event(hpm_max_length, shift_length, new_ref, new_s
     start_init, end_init = -1, -1
     hpm_map, hpm_mis, hpm_ins, hpm_del = 0, 0, 0, 0
     # homopolymers regular expression pattern
-    homopolymer_pattern = "A{2,}|C{2,}|G{2,}|T{2,}"
+    homopolymer_pattern = "A{2,}|C{2,}|G{2,}|T{2,}" # TODO: use min_homopolymer_size
     for homo_pos in re.finditer(homopolymer_pattern, new_ref):
         start_loci, end_loci = homo_pos.span()
         if start_loci in range(start_init, end_init):
@@ -203,12 +205,25 @@ def parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq,
 #    query_aln_event_stat_dict['qry_non_hpm_del_rate'].append(qry_non_hpm_del_rate)
 #    query_aln_event_stat_dict['qry_non_hpm_dif_rate'].append(qry_non_hpm_dif_rate)
 #    query_aln_event_stat_dict['qry_non_hpm_idy_rate'].append(qry_non_hpm_idy_rate)
-def reverse_complement(dna):
-    revc = ""
-    basepair = {'A':'T', 'T':'A', 'G':'C', 'C':'G'}
-    for c in dna:
-        revc = basepair[c] + revc
-    return revc
+
+def init_reverse_complement():
+    TRANSLATION_TABLE = str.maketrans("ACTGactg", "TGACtgac")
+
+    def reverse_complement(sequence):
+        """
+        >>> reverse_complement("AATC")
+        'GATT'
+        >>> reverse_complement("CCANT")
+        'ANTGG'
+        """
+        sequence = str(sequence)
+        return sequence.translate(TRANSLATION_TABLE)[::-1]
+
+    return reverse_complement
+
+
+reverse_complement = init_reverse_complement()
+
 
 def bam_datum_action(args):
     hpm_max_length = args["max_homopolymer_size"]
@@ -232,11 +247,6 @@ def bam_datum_action(args):
         'qry_hpm_mis_rate': list(),
         'qry_hpm_ins_rate': list(),
         'qry_hpm_del_rate': list(),
-#        'qry_non_hpm_idy_rate': list(),
-#        'qry_non_hpm_dif_rate': list(),
-#        'qry_non_hpm_mis_rate': list(),
-#        'qry_non_hpm_ins_rate': list(),
-#        'qry_non_hpm_del_rate': list(),
     }
     homopolymer_aln_event_stat_dict = {
         'S': {i: [0] * (hpm_shift_length * 2 + 2) for i in range(2, hpm_max_length + 1, 1)},
@@ -256,42 +266,37 @@ def bam_datum_action(args):
         'hpm_substitution': 0,
         'hpm_expansion': 0,
         'hpm_contraction': 0,
-#        'non_hpm_substitution': 0,
-#        'non_hpm_expansion': 0,
-#        'non_hpm_contraction': 0,
     }
     
     # analyzing data
     bam_path = args['bam']
+    print(f"Analyzing {bam_path}")
     readprofile = pysam.AlignmentFile(bam_path, "rb")
-    for read in readprofile.fetch():
+    for read in readprofile:
         flag = read.flag
         cigar_tuples = read.cigartuples
-        query_length = read.qlen
+        
         overall_aln_event_sum_dict['total_reads'] += 1
         if read.is_mapped:
             overall_aln_event_sum_dict['mapped_reads'] += 1
+        else:
+            continue
+        if read.query_alignment_length < 100:
+            continue
         # reverse HP compute
         if read.is_reverse:
-            skipped_length = short_softclip_hardclip_discard(cigar_tuples)
-            if skipped_length/query_length <= 0.2 and query_length > 100:
-                raw_seq = read.seq
-                raw_ref = read.get_reference_sequence()
-                raw_seq, raw_ref = raw_seq.upper(), raw_ref.upper()
-                raw_seq, raw_ref = reverse_complement(raw_seq), reverse_complement(raw_ref)
-                parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq, tuple(reversed(cigar_tuples)), overall_aln_event_sum_dict, overall_aln_event_stat_dict, query_aln_event_stat_dict, homopolymer_aln_event_stat_dict)
-            else:
-                pass
+            raw_seq = read.seq
+            raw_ref = read.get_reference_sequence()
+            raw_seq, raw_ref = raw_seq.upper(), raw_ref.upper()
+            raw_seq, raw_ref = reverse_complement(raw_seq), reverse_complement(raw_ref)
+            parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq, tuple(reversed(cigar_tuples)), overall_aln_event_sum_dict, overall_aln_event_stat_dict, query_aln_event_stat_dict, homopolymer_aln_event_stat_dict)
+
         # forward HP compute
         if read.is_forward:
-            skipped_length = short_softclip_hardclip_discard(cigar_tuples)
-            if skipped_length/query_length <= 0.2 and query_length > 100:
-                raw_seq = read.seq
-                raw_ref = read.get_reference_sequence()
-                raw_seq, raw_ref = raw_seq.upper(), raw_ref.upper()
-                parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq, cigar_tuples, overall_aln_event_sum_dict, overall_aln_event_stat_dict, query_aln_event_stat_dict, homopolymer_aln_event_stat_dict)
-            else:
-                pass
+            raw_seq = read.seq
+            raw_ref = read.get_reference_sequence()
+            raw_seq, raw_ref = raw_seq.upper(), raw_ref.upper()
+            parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq, cigar_tuples, overall_aln_event_sum_dict, overall_aln_event_stat_dict, query_aln_event_stat_dict, homopolymer_aln_event_stat_dict)
 
     # structure write
     merge_alignment_dict = {

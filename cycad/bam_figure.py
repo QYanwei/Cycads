@@ -141,7 +141,7 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
     cmap = plt.get_cmap("coolwarm")
     colors = [cmap(0), cmap(0.1), cmap(0.2), cmap(0.3), 
                "lightgray", "wheat",
-              cmap(0.7), cmap(0.8), cmap(0.9), cmap(1)]
+              cmap(0.7), cmap(0.8), cmap(0.9), cmap(0.999)]
     
     fig, ax = plt.subplots(**figure_kw)
     xs = homopolymer_dataframe.index

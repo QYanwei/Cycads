@@ -34,32 +34,19 @@ import os,re,sys,time
 import argparse
 from warnings import warn
 
+import cycads
 from cycads import fq_index, fq_datum, fq_figure, fq_filter, fq_align, bam_datum, bam_figure, all_report, helpers
 
-# basic function
-## version control
-def version():
-    version_file = open('%sVERSION' % './')
-    return version_file.readline().strip()
-## help document
-def print_helpdoc():
-    help_message = """
-               ........:::=== Cycads v%s ===:::........
-    ============================================================================
-                Quality control & Data filtering & Error analysis
-                             for Long-read sequencing
-    ============================================================================
-    """ % version()
-    print(help_message)
-
-
-def check_binary_dependencies(args, executables):
+def check_binary_dependencies(args, dependencies):
     cycads_dir = os.path.abspath(os.path.dirname(__file__))
-    for executable in executables:
-        user_supplied_path = os.path.join(cycads_dir, 'tool', executable)  
+    for executable in dependencies:
+        cli_path = args.get(executable + "_path")
+        symlink_path = os.path.join(cycads_dir, 'tool', executable)  
         system_path = helpers.which(executable)   
-        if os.path.isfile(user_supplied_path):
-            args[executable] = user_supplied_path
+        if cli_path and os.path.isfile(cli_path):
+            args[executable] = cli_path
+        elif os.path.isfile(symlink_path):
+            args[executable] = symlink_path
         elif system_path:
             args[executable] = system_path
         else:
@@ -67,74 +54,96 @@ def check_binary_dependencies(args, executables):
         print(f"Using {executable} from {user_supplied_path}")
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    ############################################## initialize subparsers ###############################################
-    banner = """
-                   ........:::=== Cycads v%s ===:::........
-    ============================================================================
-                Quality control & Data filtering & Error analysis
-                             for Long-read sequencing
-    ============================================================================
-    """ % version()
+def parse_command_line_arguments():
+    parser = argparse.ArgumentParser(description="Cycads: Quality control & error profile analysis of long-read sequencing data")
 
-    # initialize the options parser
-    parser = argparse.ArgumentParser(description="Cycads: Quality control & Data filtering & Error analysis")
-    parser.add_argument("-fq",   "--fastq",     required=False,  help="sequences.fq/fq.gz")
-    parser.add_argument("-bam",  "--alignment", required=False, help="alignment.bam")
-    parser.add_argument("-ref",  "--reference", required=False, help="reference.fasta")
+    io_group = parser.add_argument_group('I/O', 'Input/output arguments.')
+    io_group.add_argument("-f",   "--fastq", metavar="FASTQ_PATH", required=False, default=None, help="Input FASTQ file. Supported extensions include *.fastq and *.fastq.gz.")
+    io_group.add_argument("-b",  "--bam", metavar="BAM_PATH", required=False,default=None, help="Input BAM file.")
+    io_group.add_argument("-r",  "--reference", metavar="REFERENCE_PATH", required=False, default=None, help="Reference FASTA file.")
+    io_group.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry.")
+    io_group.add_argument("-n", "--sample_name", default='sample', required=False, help="Sample name displayed in output reports.")
     
-    # for quality control.
-    parser.add_argument("-P", "--platform", required=False, help="cyclone")
-    parser.add_argument("-M", "--mode", type=str, default="overall", required=False, help="if you want fast, please set to sampling")
-    parser.add_argument("-Hshift", "--head_shift_length", type=int, default=200, required=False, help="check head bases quality")
-    parser.add_argument("-Tshift", "--tail_shift_length", type=int, default=200, required=False, help="check tail bases quality")
-    parser.add_argument("-kmer", "--kmer_size_frequency",     type=int, default=5, required=False, help="observe kmer size specturm")
-    parser.add_argument("-hpmin", "--homopolymer_min_length", type=int, default=2, required=False, help="observe minium homopolymer")
-    parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
+    fastq_group = parser.add_argument_group('FASTQ', 'Arguments for FASTQ analyses. Only effective when FASTQ_PATH is supplied.')
+    fastq_group.add_argument("-s", "--sample", metavar="N", type=int, default="-1", required=False, help="Sample N reads from the input FASTQ file to accelerate evaluation.")
+    fastq_group.add_argument("--seed", metavar="SEED", type=int, default="684895", required=False, help="Random seed for sampling.")
+    fastq_group.add_argument("-T", "--check_terminal_bases", metavar="N", type=int, default=200, required=False, help="Analyze N bases at both ends of each read.")
+    
 
-    # for data filtering.
-    parser.add_argument("-filter", "--filtering", action='store_true', required=False, help="get clean data")
-    parser.add_argument("-Qmin", "--minium_quality",  type=float, default='10',   required=False, help="filter low quality reads")
-    parser.add_argument("-Lmin", "--minium_length",   type=int,   default='1000', required=False, help="filter short reads")
-    parser.add_argument("-Lmax", "--maxium_length",   type=int,   default='1000', required=False, help="filter large reads")
-    parser.add_argument("-Hcut", "--cut_head_length", type=int,   default='200',  required=False, help="trim head sequences")
-    parser.add_argument("-Tcut", "--cut_tail_length", type=int,   default='200', required=False,  help="trim head sequences")
-    parser.add_argument("-Htrim", "--trim_head_homopolymer", type=int, default='200', required=False, help="trim head sequences homopolymer")
-    parser.add_argument("-Ttrim", "--trim_tail_homopolymer", type=int, default='200', required=False, help="trim head sequences homopolymer")
-    parser.add_argument("-Dx", "--downsampling_dx", type=str, default='10', required=False, help="depth")
-    parser.add_argument("-Dg", "--downsampling_gs", type=str, default='4m', required=False, help="genome size")
-    # third party tool
-    # for error analysis.
-    parser.add_argument("-t", "--thread", required=False, default=4, help="thread number")
-    parser.add_argument("-hpmindelmax", "--homopolymer_indel_max", type=int, default=4, required=False, help="homopolymer max indel shift")
-    # for storing result.
-    parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
-    ############################## parse provided arguments and run corresponding function #############################
+    filter_group = parser.add_argument_group('Filtering', 'Arguments for filtering the input FASTQ file. Only effective when FASTQ_PATH is supplied.')
+    filter_group.add_argument("-F", "--filter", action='store_true', required=False, help="Output filtered FASTQ file. Analyses are always based on the input FASTQ file.")
+    filter_group.add_argument("-Q", "--min_base_quality", metavar="MIN_BASE_QUALITY", type=float, default=10,   required=False, help="Remove reads with mean base quality less than MIN_BASE_QUALITY.")
+    filter_group.add_argument("--min_length",  metavar="MIN_READ_LENGTH", type=int,   default=1000, required=False, help="Remove reads shorter than MIN_READ_LENGTH.")
+    filter_group.add_argument("--max_length",  metavar="MAX_READ_LENGTH", type=int,   default=1_000_000_000_000, required=False, help="Remove reads longer than MAX_READ_LENGTH.")
+    filter_group.add_argument("--trim_5_end", metavar="N", type=int,   default=0,  required=False, help="Trim N bases from the 5' end of each read.")
+    filter_group.add_argument("--trim_3_end", metavar="N", type=int,   default=0,  required=False, help="Trim N bases from the 3' end of each read.")
+    filter_group.add_argument("-d", "--target_depth", metavar="TARGET_DEPTH", type=float, default=None, required=False, help="Downsample FASTQ file to TARGET_DEPTH. Requires GENOME_SIZE to be supplied.")
+    filter_group.add_argument("-g", "--genome_size", metavar="GENOME_SIZE", type=str, default=None, required=False, help="Genome size of sequenced sample. Required if TARGET_DEPTH is set.")
 
-    # get and check options
-    #    args = None
-    print(banner)
+    hp_group = parser.add_argument_group('Homopolymers', 'Arguments related to homopolymer analyses. ')
+    hp_group.add_argument("--min_homopolymer_size", metavar='MIN_HOMOPOLYMER_SIZE', type=int, default=2, required=False, help="Do not analyze homopolymers shorter than MIN_HOMOPOLYMER_SIZE.")
+    hp_group.add_argument("--max_homopolymer_size", metavar='MAX_HOMOPOLYMER_SIZE', type=int, default=9, required=False, help="Do not analyze homopolymers longer than MAX_HOMOPOLYMER_SIZE.")
+    hp_group.add_argument("--max_homopolymer_indel_size", metavar='MAX_HOMOPOLYMER_INDEL_SIZE', type=int, default=4, required=False, help="Analyze homopolymer expansion/contraction up to MAX_HOMOPOLYMER_INDEL_SIZE.")
+
+    alignment_group = parser.add_argument_group('Alignment', 'Arguments for read alignment. Only effective when FASTQ_PATH and REFERENCE_PATH are supplied.')
+    alignment_group.add_argument("--alignment_threads", metavar="THREADS", required=False, default=4, help="Number of threads used in read alignment.")
+    alignment_group.add_argument("--sort_threads", metavar="THREADS", required=False, default=1, help="Number of threads used in sorting aligned segments.")
+    alignment_group.add_argument("--minimap2_arguments", metavar="ARGUMENTS", required=False, type=str, default="-ax map-ont --secondary=no --MD --eqx -I 10G", help="Alignment arguments to be passed to minimap2.")
+
+    denpendency_group = parser.add_argument_group('Dependencies', 'Arguments for custom paths to external binary dependencies. Cycads searches for binary dependencies in the following order: 1. arguments specified here; 2. the `dependencies` folder in Cycads installation path; 3. the system $PATH environmental variable.')
+    denpendency_group.add_argument("--minimap2_path", required=False, default=None, help="Path to Minimap2.")
+    denpendency_group.add_argument("--samtools_path", required=False, default=None, help="Path to samtools.")
+    denpendency_group.add_argument("--pyfastx_path", required=False, default=None, help="Path to pyfastx.")
 
     args = vars(parser.parse_args())
-    output_dir = args["output_dir"]
-    os.system("cd " + output_dir )
-    output_folder =  os.path.join(args["output_dir"], args["sample_name"])
+    return args
 
-    if os.path.exists(output_folder):
-        warn("Output folder " + output_folder + " already exists.")
-    os.makedirs(output_folder, exist_ok=True)    
+
+banner = f"""                      === Cycads {cycads.__version__} ===
+============================================================================
+            Quality control & Data filtering & Error analysis
+                            for Long-read sequencing
+============================================================================
+"""
+
+if __name__ == '__main__':
+    
+   
+    print(banner)
+    args = parse_command_line_arguments()
+
+    for argument in ("fastq", "bam", "reference"):
+        path = args[argument]
+        if path is not None and not os.path.isfile(path):
+            raise IOError(f"Failed to find input file: {path}")
+
+    output_dir = args["output_dir"]
+    output_folder =  os.path.join(args["output_dir"], args["sample_name"])
+    
+    output_dir = args["output_dir"]
+    sample_output_dir = os.path.join(args['output_dir'], args["sample_name"])
+    args['sample_output_dir'] = sample_output_dir
+    args['fastq_pickle_path'] = os.path.join(sample_output_dir, "fq.pickle")
+    args['bam_pickle_path'] = os.path.join(sample_output_dir, "bam.pickle")
+    args['fastq_summary_path'] = os.path.join(sample_output_dir, "fastq_summary.txt")
+    args['filtered_fastq_path'] = os.path.join(sample_output_dir, "filtered_reads.fastq")
+    args['output_bam_path'] = os.path.join(sample_output_dir, "aligned_reads.bam")
+
+    report_dir = os.path.join(sample_output_dir, "HTML_report")
+    args['report_dir'] = report_dir
+
+    if os.path.isdir(output_dir):
+        warn(f"Output folder {output_dir} already exists.")
+    try:
+        os.makedirs(report_dir, exist_ok=True)    
+    except Exception:
+        raise IOError(f"Failed to create output folder: {report_dir}")
 
     check_binary_dependencies(args, ('pyfastx', 'minimap2', 'samtools'))
 
-    args['fastq_pickle_path'] = os.path.join(args['output_dir'], args["sample_name"], "fq.pickle")
-    args['bam_pickle_path'] = os.path.join(args['output_dir'], args["sample_name"], "bam.pickle")
-    args['fastq_summary_path'] = os.path.join(args['output_dir'], args["sample_name"], "fastq_summary.txt")
-    args['report_dir'] = os.path.join(args['output_dir'], args["sample_name"], "report_html")
-    os.makedirs(args['report_dir'], exist_ok=True)
+    
 
-    if args["fastq"] and not args["filtering"] and not args["alignment"] and not args["reference"] :
+    if args["fastq"] and not args["filter"] and not args["alignment"] and not args["reference"] :
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)           
             fq_datum.fq_datum_action(args)
@@ -142,7 +151,7 @@ if __name__ == '__main__':
             all_report.generate_html(args)
         else:
             print(args["fastq"] + " does not exist!")
-    elif args["fastq"] and args["filtering"] and not args["alignment"] and not args["reference"]:
+    elif args["fastq"] and args["filter"] and not args["alignment"] and not args["reference"]:
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)
             fq_datum.fq_datum_action(args)
@@ -151,7 +160,7 @@ if __name__ == '__main__':
             all_report.generate_html(args)
         else:
             print(args["fastq"] + " does not exist!")
-    elif args["fastq"] and args["reference"] and not args["filtering"] and not args["alignment"]:
+    elif args["fastq"] and args["reference"] and not args["filter"] and not args["alignment"]:
         if os.path.exists(args["fastq"]) and os.path.exists(args["reference"]):
             fq_index.fq_index_action(args)
             fq_datum.fq_datum_action(args)
@@ -166,7 +175,7 @@ if __name__ == '__main__':
             print(args["reference"] + " does not exist!")
         else:
             print( "Both " + args["fastq"] + " " +args["reference"] + " are not exist!")
-    elif args["alignment"] and not args["fastq"] and not args["reference"] and not args["filtering"]:
+    elif args["alignment"] and not args["fastq"] and not args["reference"] and not args["filter"]:
         bam_datum.bam_datum_action(args)
         bam_figure.bam_figure_action(args)
         all_report.generate_html(args)

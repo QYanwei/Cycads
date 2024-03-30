@@ -196,32 +196,36 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     return fig
 
 def bam_figure_action(args):
-    output_foler = os.path.join(args["output_dir"], args["sample_name"])
+    
     bam_pickle_file_path = args['bam_pickle_path']
     with open(bam_pickle_file_path, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
 
+    output_folder = args['report_dir']
     fig = plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'])
-    fig.savefig(f'{output_foler}/report_html/query_homopolymer_length_event.lineplot.png')
+    fig.savefig(os.path.join(output_folder, 'query_homopolymer_length_event.lineplot.png'))
     
     fig1, fig2 = plot_insertion_deletion_frequency(bam_datum_dict['overall_aln_event_stat_dict'])
-    fig1.savefig(f'{output_foler}/report_html/query_insertion_frequency.barplot.png')
-    fig2.savefig(f'{output_foler}/report_html/query_deletion_frequency.barplot.png')
+    fig1.savefig(os.path.join(output_folder, 'query_insertion_frequency.barplot.png'))
+    fig2.savefig(os.path.join(output_folder, 'query_deletion_frequency.barplot.png'))
+
 
     fig = plot_overall_alignment_frequency(bam_datum_dict['overall_aln_event_sum_dict'])
-    fig.savefig(f'{output_foler}/report_html/query_all_error_item.barplot.png')
+    fig.savefig(os.path.join(output_folder, 'query_all_error_item.barplot.png'))
     
     fig = plot_substitution_frequency(bam_datum_dict['overall_aln_event_stat_dict'])
-    fig.savefig(f'{output_foler}/report_html/query_all_substitution_errors.barplot.png')
+    fig.savefig(os.path.join(output_folder, 'query_all_substitution_errors.barplot.png'))
+
 
     fig = plot_query_identity_rate_densities(bam_datum_dict['query_aln_event_stat_dict'])
-    fig.savefig(f'{output_foler}/report_html/query_events_curve_idy.displot.png')
+    fig.savefig(os.path.join(output_folder, 'query_events_curve_idy.displot.png'))
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
 
-    args = vars(parser.parse_args())
-    bam_figure_action(args)
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
+#     parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+
+#     args = vars(parser.parse_args())
+#     bam_figure_action(args)
 

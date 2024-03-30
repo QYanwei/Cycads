@@ -211,8 +211,8 @@ def reverse_complement(dna):
     return revc
 
 def bam_datum_action(args):
-    hpm_max_length = args["homopolymer_max_length"]
-    hpm_shift_length = args["homopolymer_indel_max"]
+    hpm_max_length = args["max_homopolymer_size"]
+    hpm_shift_length = args["max_homopolymer_indel_size"]
     overall_aln_event_stat_dict = {
         'all_mis_typ_dict': {'AT': 0, 'AC': 0, 'AG': 0, 'TC': 0, 'CG': 0, 'TG': 0, 'TA': 0, 'CA': 0, 'GA': 0, 'CT': 0,
                              'GC': 0, 'GT': 0},
@@ -262,9 +262,7 @@ def bam_datum_action(args):
     }
     
     # analyzing data
-    bam_path = args['alignment']
-    if not os.path.isfile(bam_path):
-        raise IOError(f"Unable to find {bam_path}")
+    bam_path = args['bam']
     readprofile = pysam.AlignmentFile(bam_path, "rb")
     for read in readprofile.fetch():
         flag = read.flag

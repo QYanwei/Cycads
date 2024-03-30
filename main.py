@@ -94,7 +94,7 @@ if __name__ == '__main__':
     parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
 
     # for data filtering.
-    parser.add_argument("-filter", "--filtering", required=False, help="get clean data")
+    parser.add_argument("-filter", "--filtering", action='store_true', required=False, help="get clean data")
     parser.add_argument("-Qmin", "--minium_quality",  type=float, default='10',   required=False, help="filter low quality reads")
     parser.add_argument("-Lmin", "--minium_length",   type=int,   default='1000', required=False, help="filter short reads")
     parser.add_argument("-Lmax", "--maxium_length",   type=int,   default='1000', required=False, help="filter large reads")

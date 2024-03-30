@@ -29,3 +29,9 @@ jobs:
         mkdir -p sandbox
         ./main.py -bam test/test.bam --output_dir sandbox/bam_output
 
+    - name: Test FASTQ filtering
+      shell: bash -l {0}
+      run: |
+        conda activate cycads_env
+        mkdir -p sandbox
+        ./main.py --fastq test/ecoli.fq.gz --filter --minium_quality 12 --cut_tail_length 100 --cut_head_length 100 --output_dir sandbox/fastq_filtering_output

@@ -135,10 +135,13 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
         qry_hpm_event2.append(lt)
     homopolymer_dataframe = pd.DataFrame(qry_hpm_event2)
     homopolymer_dataframe.index = range(2,len(qry_hpm_event2)+2,1)
-    homopolymer_dataframe.columns = ["≥4 bp contraction", "3 bp contraction", "2 bp contraction", "1 bp contraction",
+    # homopolymer_dataframe.columns = ["≥4 bp contraction", "3 bp contraction", "2 bp contraction", "1 bp contraction",
+    #                                   "others","correct", 
+    #                                  "1 bp expansion", "2 bp expansion", "3 bp expansion", "≥4 bp expansion"]
+    homopolymer_dataframe.columns = ["≤ -4 bp", "-3 bp", "-2 bp", "-1 bp",
                                       "others","correct", 
-                                     "1 bp expansion", "2 bp expansion", "3 bp expansion", "≥4 bp expansion"]
-    #return homopolymer_dataframe
+                                     "+1 bp", "+2 bp", "+3 bp", "≥ +4 bp"]
+
     cmap = plt.get_cmap("coolwarm")
     colors = [cmap(0), cmap(0.1), cmap(0.2), cmap(0.3), 
                "lightgray", "wheat",

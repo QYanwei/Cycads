@@ -244,53 +244,58 @@ def plot_read_percent_qualtiy_curve(allBaseQual_dict):
     return fig
 
 def fq_figure_action(args):
-    output_folder = os.path.join(args["output_dir"], args["sample_name"])
+    
     pickle_path = args['fastq_pickle_path']
     if not os.path.isfile(pickle_path):
         raise IOError(f"Unable to find FASTQ stats file: {pickle_path}")
 
     with open(pickle_path, 'rb') as picklefile:
         fq_datum_dict = pickle.load(picklefile)
-        seq_qual_dict = fq_datum_dict['seq_qual_dict']
-        homopolymer_dict = fq_datum_dict['homopolymer_dict']
-        endBaseQual_dict = fq_datum_dict['endBaseQual_dict']
-        allBaseQual_dict = fq_datum_dict['allBaseQual_dict']
+    seq_qual_dict = fq_datum_dict['seq_qual_dict']
+    homopolymer_dict = fq_datum_dict['homopolymer_dict']
+    endBaseQual_dict = fq_datum_dict['endBaseQual_dict']
+    allBaseQual_dict = fq_datum_dict['allBaseQual_dict']
 
+    output_folder = args['report_dir']
     fig = plot_length_Nx_average_bar(seq_qual_dict)
-    fig.savefig(output_folder+'/report_html/read_length_biostat' + '.barplot.png')
+    fig.savefig(os.path.join(output_folder, 'read_length_biostat.barplot.png'))
 
     fig = plot_gc_content_frequency_distribution(seq_qual_dict)
-    fig.savefig(output_folder+'/report_html/read_gc_histplot' + '.barplot.png')
+    fig.savefig(os.path.join(output_folder, 'read_gc_histplot.barplot.png'))
+
 
     fig = plot_read_quality_frequency_distritution(seq_qual_dict)
-    fig.savefig(output_folder+'/report_html/read_quality_histplot' + '.barplot.png')
+    fig.savefig(os.path.join(output_folder, 'read_quality_histplot.barplot.png'))
+
 
     fig = plot_read_length_frequency_distribution(seq_qual_dict)
-    fig.savefig(output_folder+'/report_html/read_length_histplot_nolog' + '.barplot.png')
+    fig.savefig(os.path.join(output_folder, 'read_length_histplot_nolog.barplot.png'))
+
 
     fig = plot_read_length_cumulative_distribution(seq_qual_dict)
-    fig.savefig(output_folder+'/report_html/read_length_cumulative' + '.barplot.png')
+    fig.savefig(os.path.join(output_folder, 'read_length_cumulative.barplot.png'))
 
     fig = plot_length_quality_2d_histogram(seq_qual_dict)
-    fig.savefig(output_folder+'/report_html/read_length_quality_cross' + '.scatterplot.png')
+    fig.savefig(os.path.join(output_folder, 'read_length_quality_cross.scatterplot.png'))
 
     fig = plot_read_percent_qualtiy_curve(allBaseQual_dict)
-    fig.savefig(output_folder+'/report_html/read_relative_position_avg_qual' + '.lineplot.png')
+    fig.savefig(os.path.join(output_folder, 'read_relative_position_avg_qual.lineplot.png'))
 
     fig1, fig2 = plot_ends_base_content_curve(endBaseQual_dict)
-    fig1.savefig(output_folder+'/report_html/read_head_base_content' + '.lineplot.png')
-    fig2.savefig(output_folder+'/report_html/read_tail_base_content' + '.lineplot.png')
+    fig1.savefig(os.path.join(output_folder, 'read_head_base_content.lineplot.png'))
+    fig2.savefig(os.path.join(output_folder, 'read_tail_base_content.lineplot.png'))
+
 
     fig1, fig2 = plot_ends_base_quality_curve(endBaseQual_dict)
-    fig1.savefig(output_folder+'/report_html/read_head_base_quality' + '.lineplot.png')
-    fig2.savefig(output_folder+'/report_html/read_tail_base_quality' + '.lineplot.png')
+    fig1.savefig(os.path.join(output_folder, 'read_head_base_quality.lineplot.png'))
+    fig2.savefig(os.path.join(output_folder, 'read_tail_base_quality.lineplot.png'))
 
     fig = plot_homopolymer_frequency(homopolymer_dict)
-    fig.savefig(output_folder+'/report_html/read_homopolymer_frequency' + '.lineplot.png')
+    fig.savefig(os.path.join(output_folder, 'read_homopolymer_frequency.lineplot.png'))
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
-    args = vars(parser.parse_args())
-    fq_figure_action(args)
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
+#     parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+#     args = vars(parser.parse_args())
+#     fq_figure_action(args)

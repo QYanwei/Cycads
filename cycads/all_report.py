@@ -32,7 +32,7 @@ def generate_fq_report_strings(args, output_folder):
         txtfile.readline()
         fq_info = txtfile.readline().strip().split()
     table_list = fq_info[:7]
-    fq_pickle = os.path.join(output_folder, 'fq.pickle')
+    fq_pickle = args['fastq_pickle_path']
     with open(fq_pickle, 'rb') as picklefile:
         fq_datum_dict = pickle.load(picklefile)
         seq_qual_dict = fq_datum_dict['seq_qual_dict']
@@ -87,7 +87,7 @@ def generate_fq_report_strings(args, output_folder):
 def generate_bam_report_string(args, output_folder):
     table_list = [args["sample_name"]]
     table_name = ["SampleName", "TotalReads", "MappedReads", "Indentity(%)","TotalErr(%)", "MismatchErr(%)", "InsertionErr(%)", "DeletionErr(%)", "HomopolymerErr(%)"]
-    bam_pickle = os.path.join(output_folder, 'bam.pickle')
+    bam_pickle = args['bam_pickle_path']
     with open(bam_pickle, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
         overall_event_dict = bam_datum_dict['overall_aln_event_sum_dict']
@@ -135,7 +135,7 @@ def generate_bam_report_string(args, output_folder):
     return bam_table_string, bam_plots_string
 
 def generate_report_html(args, output_folder, flag):
-    output_path = os.path.join(output_folder, "report_html/summary.html")
+    output_path = os.path.join(output_folder, "summary.html")
 
     # set the basic report infortion
     report_title = "CycloneSEQ quality reporter"
@@ -187,9 +187,9 @@ def generate_report_html(args, output_folder, flag):
     print(f"HTML report written to {abs_output_path}")
 
 def generate_html(args):
-    output_folder = os.path.join(args["output_dir"],args["sample_name"])
-    fq_pickle = os.path.join(output_folder, 'fq.pickle')
-    bam_pickle = os.path.join(output_folder, 'bam.pickle')
+    fq_pickle = args['fastq_pickle_path']
+    bam_pickle = args['bam_pickle_path']
+    output_folder = args['report_dir']
     if os.path.isfile(fq_pickle) and os.path.isfile(bam_pickle):
         generate_report_html(args, output_folder, 2)
     elif os.path.isfile(fq_pickle) and not os.path.isfile(bam_pickle):
@@ -200,9 +200,9 @@ def generate_html(args):
         raise IOError(f"Unable to find {fq_pickle} or {bam_pickle}")
 
 
-if __name__ == '__main__':
-     parser = argparse.ArgumentParser()
-     parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-     parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
-     args = vars(parser.parse_args())
-     generate_html(args)
+# if __name__ == '__main__':
+#      parser = argparse.ArgumentParser()
+#      parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
+#      parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+#      args = vars(parser.parse_args())
+#      generate_html(args)

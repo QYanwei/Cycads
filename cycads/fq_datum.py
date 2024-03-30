@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
+
 import re
 import os
 import pprint
@@ -63,11 +64,11 @@ def allBaseQualParse(quali, split_part_num, allBaseQual_dict):
     return allBaseQual_dict
 
 def endBaseQualParse(seq, quali, args, endBaseQual_dict):
-    if len(seq) > (args["head_shift_length"] + args["tail_shift_length"]):
-        endBaseQual_dict = endBaseHeadParse(seq, args["head_shift_length"], endBaseQual_dict)
-        endBaseQual_dict = endBaseTailParse(seq, args["tail_shift_length"], endBaseQual_dict)
-        endBaseQual_dict = endQualHeadParse(seq, quali, args["head_shift_length"], endBaseQual_dict)
-        endBaseQual_dict = endQualTailParse(seq, quali, args["tail_shift_length"], endBaseQual_dict)
+    if len(seq) > (args["check_terminal_bases"] + args["check_terminal_bases"]):
+        endBaseQual_dict = endBaseHeadParse(seq, args["check_terminal_bases"], endBaseQual_dict)
+        endBaseQual_dict = endBaseTailParse(seq, args["check_terminal_bases"], endBaseQual_dict)
+        endBaseQual_dict = endQualHeadParse(seq, quali, args["check_terminal_bases"], endBaseQual_dict)
+        endBaseQual_dict = endQualTailParse(seq, quali, args["check_terminal_bases"], endBaseQual_dict)
         endBaseQual_dict['HeadBaseContent_dict']['S'] += 1
         endBaseQual_dict['TailBaseContent_dict']['S'] += 1
     return endBaseQual_dict
@@ -119,9 +120,9 @@ def random_readnum(seed_num, read_size, sample_num):
     return sample_list
 def sampling_analyser(args):
     seqdict = dict( {'ID': [], 'GC': [], 'LEN': [], 'QUAL1': [], 'QUAL2':[]} ) # QUAL1: read basecall Q, QUAL2: read average Q
-    homopolymer_size_min = args["homopolymer_min_length"]
+    homopolymer_size_min = args["min_homopolymer_size"]
     homopolymer_dict = {'A':{}, 'G':{}, 'C':{}, 'T':{}}
-    head_shift_length, tail_shift_length = args["head_shift_length"], args["tail_shift_length"]
+    head_shift_length, tail_shift_length = args["check_terminal_bases"], args["check_terminal_bases"]
     endBaseQual_dict = {
                     'HeadBaseContent_dict': {'A': [0]*head_shift_length, 'G': [0]*head_shift_length, 'C': [0]*head_shift_length, 'T': [0]*head_shift_length, 'S':0},
                     'TailBaseContent_dict': {'A': [0]*tail_shift_length, 'G': [0]*tail_shift_length, 'C': [0]*tail_shift_length, 'T': [0]*tail_shift_length, 'S':0},
@@ -153,9 +154,9 @@ def sampling_analyser(args):
 
 def overall_analyser(args):
     seqdict = dict({'ID': [], 'GC': [], 'LEN': [], 'QUAL1': [], 'QUAL2': []})  # QUAL1: read basecall Q, QUAL2: read average Q
-    homopolymer_size_min = args["homopolymer_min_length"]
+    homopolymer_size_min = args["min_homopolymer_size"]
     homopolymer_dict = {'A':{}, 'G':{}, 'C':{}, 'T':{}}
-    head_shift_length, tail_shift_length = args["head_shift_length"], args["tail_shift_length"]
+    head_shift_length, tail_shift_length = args["check_terminal_bases"], args["check_terminal_bases"]
     endBaseQual_dict = {
                     'HeadBaseContent_dict': {'A': [0]*head_shift_length, 'G': [0]*head_shift_length, 'C': [0]*head_shift_length, 'T': [0]*head_shift_length, 'S':0},
                     'TailBaseContent_dict': {'A': [0]*tail_shift_length, 'G': [0]*tail_shift_length, 'C': [0]*tail_shift_length, 'T': [0]*tail_shift_length, 'S':0},
@@ -178,7 +179,7 @@ def overall_analyser(args):
     return seqdict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict
 
 def get_fq_datum(args):
-    if args["mode"] == 'sampling':
+    if args['sample'] > 0:
         seq_qual_dict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict = sampling_analyser(args)
         sampling_fq_datum_dict = {
             'seq_qual_dict': seq_qual_dict,
@@ -187,7 +188,7 @@ def get_fq_datum(args):
             'allBaseQual_dict': allBaseQual_dict
         }
         return sampling_fq_datum_dict
-    elif args["mode"] == 'overall':
+    else:
         seq_qual_dict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict = overall_analyser(args)
         overall_fq_datum_dict = {
             'seq_qual_dict': seq_qual_dict,
@@ -196,27 +197,24 @@ def get_fq_datum(args):
             'allBaseQual_dict': allBaseQual_dict
         }
         return overall_fq_datum_dict
-    else:
-        print('please check the mode of parsing target data!')
 
 def fq_datum_action(args):
-    if os.path.exists(args["fastq"]):
-        merged_fq_datum_dict = get_fq_datum(args)
-        with open(args['fastq_pickle_path'], "wb") as f:
-            filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
-            pickle.dump(merged_fq_datum_dict, f)
+    merged_fq_datum_dict = get_fq_datum(args)
+    with open(args['fastq_pickle_path'], "wb") as f:
+        filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
+        pickle.dump(merged_fq_datum_dict, f)
 
-if __name__ == "__main__" :
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-fq",    "--fastq",     required=True,  help="sequences.fq/fq.gz")
-    parser.add_argument("-P", "--platform", required=False, help="cyclone")
-    parser.add_argument("-M", "--mode", type=str, default="overall", required=False, help="if you want fast, please set to sampling")
-    parser.add_argument("-Hshift", "--head_shift_length", type=int, default=200, required=False, help="check head bases quality")
-    parser.add_argument("-Tshift", "--tail_shift_length", type=int, default=200, required=False, help="check tail bases quality")
-    parser.add_argument("-kmer", "--kmer_size_frequency",     type=int, default=5, required=False, help="observe kmer size specturm")
-    parser.add_argument("-hpmin", "--homopolymer_min_length", type=int, default=2, required=False, help="observe minium homopolymer")
-    parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
-    parser.add_argument("-o", "--output_dir", default='cycads_report', required=False, help="Output direcotry")
-    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
-    args = vars(parser.parse_args())
-    fq_datum_action(args)
+# if __name__ == "__main__" :
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("-fq",    "--fastq",     required=True,  help="sequences.fq/fq.gz")
+#     parser.add_argument("-P", "--platform", required=False, help="cyclone")
+#     parser.add_argument("-M", "--mode", type=str, default="overall", required=False, help="if you want fast, please set to sampling")
+#     parser.add_argument("-Hshift", "--head_shift_length", type=int, default=200, required=False, help="check head bases quality")
+#     parser.add_argument("-Tshift", "--tail_shift_length", type=int, default=200, required=False, help="check tail bases quality")
+#     parser.add_argument("-kmer", "--kmer_size_frequency",     type=int, default=5, required=False, help="observe kmer size specturm")
+#     parser.add_argument("-hpmin", "--homopolymer_min_length", type=int, default=2, required=False, help="observe minium homopolymer")
+#     parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
+#     parser.add_argument("-o", "--output_dir", default='cycads_report', required=False, help="Output direcotry")
+#     parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+#     args = vars(parser.parse_args())
+#     fq_datum_action(args)

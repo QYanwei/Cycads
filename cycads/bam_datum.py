@@ -303,7 +303,7 @@ def bam_datum_action(args):
         'homopolymer_aln_event_stat_dict': homopolymer_aln_event_stat_dict
     }
 
-    output_path = os.path.join(args["output_dir"], "bam.pickle")
+    output_path = args['bam_pickle_path']
     with open(output_path, 'wb') as picklefile:
         pickle.dump(merge_alignment_dict, picklefile)
 

@@ -23,6 +23,7 @@ def plot_substitution_frequency(overall_aln_event_stat_dict):
     
     fig, ax = plt.subplots(**figure_kw)
     sns.barplot(ax=ax, data=substitution_type)
+    ax.grid(axis='y', **grid_kw)
     tick_labels = [col[0] + "→" + col[1] for col in substitution_type.columns]
     ticks = list(range(len(tick_labels)))
     ax.set_xticks(ticks)
@@ -74,15 +75,14 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     fig, ax = plt.subplots(**figure_kw)
     fig1 = fig
     sns.barplot(ax=ax, data=Ins_dataframe, color='steelblue')
+    ax.grid(axis='y', **grid_kw)
     ax.set_xlabel("Insertion size (bp)")
 
-    
     ticks = list(range(0, indel_len_max))
     tick_labels = [str(x+1) for x in ticks]
     tick_labels[-1] += "+"
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
-
 
     ax.set_ylabel("Number of insertions")
     ax.set_title("Size distribution of insertions", **title_kw)
@@ -96,6 +96,7 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     fig, ax = plt.subplots(**figure_kw)
     fig2 = fig
     sns.barplot(ax=ax, data=Del_dataframe, color='steelblue')
+    ax.grid(axis='y', **grid_kw)
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
     ax.set_xlabel("Deletion size (bp)")
@@ -134,9 +135,9 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
         qry_hpm_event2.append(lt)
     homopolymer_dataframe = pd.DataFrame(qry_hpm_event2)
     homopolymer_dataframe.index = range(2,len(qry_hpm_event2)+2,1)
-    homopolymer_dataframe.columns = ["contraction 4bp+", "contraction 3bp", "contraction 2bp", "contraction 1bp",
-                                      "mismatch segment","correct segment", 
-                                     "expansion 1bp", "expansion 2bp", "expansion 3bp", "expansion 4bp+"]
+    homopolymer_dataframe.columns = ["≥4 bp contraction", "3 bp contraction", "2 bp contraction", "1 bp contraction",
+                                      "others","correct", 
+                                     "1 bp expansion", "2 bp expansion", "3 bp expansion", "≥4 bp expansion"]
     #return homopolymer_dataframe
     cmap = plt.get_cmap("coolwarm")
     colors = [cmap(0), cmap(0.1), cmap(0.2), cmap(0.3), 
@@ -154,6 +155,7 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
         color = colors[j]
         ax.fill_between(xs, y0, y1, label=col, color=color)
         y0 = y1
+    ax.legend(loc='upper left')
     ax.set_xlim(xs.min(), xs.max())
     ax.set_ylim(0, 1)
     ax.set_xlabel("Homopolymer length (bp)")
@@ -178,11 +180,9 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     labels = ['Overall', 'Mismatch', 'Deletion', 'Insertion']
     x = np.arange(len(labels))  # the label locations
     width = 0.35  # the width of the bars
-
     fig, ax = plt.subplots(**figure_kw)
-
     ax.bar(x, all_aln_rates, width, label='Overall error rate', color='steelblue')
-
+    ax.grid(axis='y', **grid_kw)
     ax.set_ylabel('Error rate (%)')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
@@ -194,7 +194,7 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
 
 def bam_figure_action(args):
     output_foler = os.path.join(args["output_dir"], args["sample_name"])
-    bam_pickle_file_path = os.path.join(output_foler, 'bam.pickle')
+    bam_pickle_file_path = args['bam_pickle_path']
     with open(bam_pickle_file_path, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
 

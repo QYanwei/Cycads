@@ -132,6 +132,21 @@ def Extracting(fastq, args, outfile):
                     buffer_iter = 0
                     query = ''
 
+
+def fq_filter_action(args):
+    input_fastq_path = args['fastq']
+    output_file = os.path.join(args['output_dir'], args['sample_name'], "filtered.fastq")
+    with open(output_file, 'wt') as f:
+        if args['max_depth'] and args['genome_size']:
+            Downsampling(fq, args, f)
+        elif args['random_read']:
+            Extracting(fq, args, f)
+        elif args['min_length'] or args['max_length']:
+            Filtering(fq, args, f)
+        else:
+            raise ValueError("Invalid arguments")
+
+
 if __name__ == "__main__":
     args = {
         'head_cut_length': 10,

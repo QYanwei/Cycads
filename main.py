@@ -34,14 +34,8 @@ import os,re,sys,time
 import argparse
 from warnings import warn
 
-from cycad import fq_index
-from cycad import fq_datum
-from cycad import fq_figure
-from cycad import fq_filter
-from cycad import fq_align
-from cycad import bam_datum
-from cycad import bam_figure
-from cycad import all_report
+from cycads import fq_index, fq_datum, fq_figure, fq_filter, fq_align, bam_datum, bam_figure, all_report
+
 # basic function
 ## version control
 def version():

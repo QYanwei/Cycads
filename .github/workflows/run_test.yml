@@ -1,0 +1,27 @@
+name: Continuous Integration
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Set up Conda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        activate-environment: cycads_env
+        environment-file: environment.yml
+        auto-activate-base: false
+
+    - name: Install Dependencies
+      run: |
+        conda env update --file environment.yml --name cycads_env
+
+    - name: Run Tests
+      run: |
+        conda activate cycads_env
+        mkdir -p sandbox
+        main.py --fastq test/ecoli.fq.gz --mode sampling --output_dir sandbox/fastq_output
+

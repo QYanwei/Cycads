@@ -14,7 +14,7 @@ import warnings
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
 
-from plots import *
+from .plots import *
 
 def plot_length_Nx_average_bar(seq_qual_dict):
     def Nx_reads_length(list_read_length):

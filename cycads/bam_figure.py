@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
 
 
-from plots import *
+from .plots import *
 
 def plot_substitution_frequency(overall_aln_event_stat_dict):
     substitution = np.array(list(overall_aln_event_stat_dict['all_mis_typ_dict'].values()))

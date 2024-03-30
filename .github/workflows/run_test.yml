@@ -15,13 +15,8 @@ jobs:
         environment-file: environment.yml
         auto-activate-base: false
 
-    - name: Install Dependencies
-      run: |
-        conda env update --file environment.yml --name cycads_env
-
     - name: Run Tests
       run: |
-        conda activate cycads_env
         mkdir -p sandbox
-        main.py --fastq test/ecoli.fq.gz --mode sampling --output_dir sandbox/fastq_output
+        ./main.py --fastq test/ecoli.fq.gz --mode sampling --output_dir sandbox/fastq_output
 

@@ -27,7 +27,7 @@ def N50(list_read_length):
 def generate_fq_report_strings(args, output_folder):
     table_name = ["FileName", "TotalRead", "TotalBases", "GC%", "AvgLen", "MaxLen", "MinLen", "N50", "AvgReadQ", "MaxReadQ", "MinReadQ"]
     #table_list = ["TB2000B609-202403200954240_read.fq.gz", "873663", "138045423", "54.542", "158.008", "31187", "1", "27.5", "7", "0"]
-    fq_sum = output_folder+'/'+args["sample_name"]+'_sum.txt'
+    fq_sum = args['fastq_summary_path']
     with open(fq_sum) as txtfile:
         txtfile.readline()
         fq_info = txtfile.readline().strip().split()

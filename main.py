@@ -34,7 +34,7 @@ import os,re,sys,time
 import argparse
 from warnings import warn
 
-from cycads import fq_index, fq_datum, fq_figure, fq_filter, fq_align, bam_datum, bam_figure, all_report
+from cycads import fq_index, fq_datum, fq_figure, fq_filter, fq_align, bam_datum, bam_figure, all_report, helpers
 
 # basic function
 ## version control
@@ -51,6 +51,21 @@ def print_helpdoc():
     ============================================================================
     """ % version()
     print(help_message)
+
+
+def check_binary_dependencies(args, executables):
+    cycads_dir = os.path.abspath(os.path.dirname(__file__))
+    for executable in executables:
+        user_supplied_path = os.path.join(cycads_dir, 'tool', executable)  
+        system_path = helpers.which(executable)   
+        if os.path.isfile(user_supplied_path):
+            args[executable] = user_supplied_path
+        elif system_path:
+            args[executable] = system_path
+        else:
+            raise RuntimeError(f"Unable to find {executable}")
+        print(f"Using {executable} from {user_supplied_path}")
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -108,28 +123,16 @@ if __name__ == '__main__':
     output_folder =  os.path.join(args["output_dir"], args["sample_name"])
 
     if os.path.exists(output_folder):
-        print("Output folder " + output_folder + " already exists.")
-    os.makedirs(output_folder, exist_ok=True)
-    html_folder = os.path.join(output_folder, "report_html")
-    os.makedirs(html_folder, exist_ok=True)
-    
-    pwd_config_file = os.path.realpath(__file__)
-    # TODO: use binary tool from $PATH
-    args["pyfastx"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/pyfastx'
-    args["minimap2"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/minimap2'
-    args["samtools"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/samtools'
-    if not os.path.exists(args["pyfastx"]):
-        print("pyfastx: not found in the ./tool/")
-    else:
-        pass
-    if not os.path.exists(args["minimap2"]):
-        print("minimap2: not found in the ./tool/")
-    else:
-        pass
-    if not os.path.exists(args["samtools"]):
-        print("samtools: not found in the ./tool/")
-    else:
-        pass
+        warn("Output folder " + output_folder + " already exists.")
+    os.makedirs(output_folder, exist_ok=True)    
+
+    check_binary_dependencies(args, ('pyfastx', 'minimap2', 'samtools'))
+
+    args['fastq_pickle_path'] = os.path.join(args['output_dir'], args["sample_name"], "fq.pickle")
+    args['bam_pickle_path'] = os.path.join(args['output_dir'], args["sample_name"], "bam.pickle")
+    args['fastq_summary_path'] = os.path.join(args['output_dir'], args["sample_name"], "fastq_summary.txt")
+    args['report_dir'] = os.path.join(args['output_dir'], args["sample_name"], "report_html")
+    os.makedirs(args['report_dir'], exist_ok=True)
 
     if args["fastq"] and not args["filtering"] and not args["alignment"] and not args["reference"] :
         if os.path.exists(args["fastq"]):

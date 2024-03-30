@@ -3,14 +3,19 @@
 import os
 import subprocess
 import argparse
+from .helpers import which
+
 
 def fq_index_action(args):
     sample_name = args['sample_name']
     infastq = args['fastq']
-    subprocess.run(['pyfastx', 'index', infastq])
-    os.system('pyfastx stat ' +  infastq  + ' |awk \'BEGIN{OFS="\t"}{NF=7}1\' > ' + sample_name + '/' + sample_name + '_sum.txt ') #
+    pyfastx_path = args['pyfastx']
+    subprocess.run([pyfastx_path, 'index', infastq])
+    summary_path = args['fastq_summary_path']
+    os.system(f'{pyfastx_path} stat {infastq} |awk \'BEGIN{{OFS="\t"}}{{NF=7}}1\' > {summary_path}')
     print("##sequencing summary overview")
-    os.system('cat ' + sample_name + '/' + sample_name + '_sum.txt')
+    with open(summary_path, 'rt') as f:
+        print(f.read())
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -202,9 +202,7 @@ def get_fq_datum(args):
 def fq_datum_action(args):
     if os.path.exists(args["fastq"]):
         merged_fq_datum_dict = get_fq_datum(args)
-        output_folder = args["sample_name"]
-        output_path = os.path.join(output_folder, "fq.pickle")
-        with open(output_path, "wb") as f:
+        with open(args['fastq_pickle_path'], "wb") as f:
             filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
             pickle.dump(merged_fq_datum_dict, f)
 

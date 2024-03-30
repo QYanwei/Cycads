@@ -245,10 +245,7 @@ def plot_read_percent_qualtiy_curve(allBaseQual_dict):
 
 def fq_figure_action(args):
     output_folder = os.path.join(args["output_dir"], args["sample_name"])
-    pickle_path = os.path.join(output_folder, "fq.pickle")
-
-    output_folder = args["sample_name"]
-    pickle_path = os.path.join(output_folder, "fq.pickle")
+    pickle_path = args['fastq_pickle_path']
     if not os.path.isfile(pickle_path):
         raise IOError(f"Unable to find FASTQ stats file: {pickle_path}")
 

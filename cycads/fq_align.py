@@ -5,18 +5,24 @@ import os
 import argparse
 
 def fq_align_action(args):
-    infastq = args['fastq']
+    input_fastq_path = args['fastq']
     reference = args['reference']
-    output = args['sample_name']
     minimap2 = args['minimap2']
     samtools = args['samtools']
-    thread = args['thread']
     alignment_threads = args['alignment_threads']
     sort_threads = args['sort_threads']
     minimap2_arguments = args['minimap2_arguments']
     output_bam_path = args['output_bam_path']
-    os.system(f'{minimap2} {minimap2_arguments} -t {alignment_threads} {reference} {infastq} | {samtools} sort -@ {sort_threads} -o {output_bam_path}')
-    os.system(f'{samtools} index {output_bam_path}')
+    command = f'{minimap2} {minimap2_arguments} -t {alignment_threads} {reference} {input_fastq_path} | {samtools} sort -@ {sort_threads} -o {output_bam_path}'
+    print(command)
+    os.system(command)
+    command = f'{samtools} index {output_bam_path}'
+    print(command)
+    os.system(command)
+    if os.path.isfile(output_bam_path):
+        args['bam'] = output_bam_path
+    else:
+        raise RuntimeError(f"Failed to align {input_fastq_path} to {reference}")
 
 # if __name__ == '__main__':
 #     parser = argparse.ArgumentParser()

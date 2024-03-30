@@ -12,16 +12,8 @@ import warnings
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
 
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rcParams['figure.dpi'] = 300
-palette = dict(A="tab:red", T="tab:green", C="tab:blue", G="tab:purple", S='tab:black')
-figure_kw = dict(figsize = (5, 4), constrained_layout=True)
-hist_kw = dict(facecolor='tab:blue', edgecolor='k', linewidth=0.5)
-grid_kw = dict(color='k', alpha=0.1)
-title_kw = dict(fontsize=10)
 
-def post_process_ax(ax):
-    ax.spines[['right', 'top']].set_visible(False)
+from plots import *
 
 def plot_substitution_frequency(overall_aln_event_stat_dict):
     substitution = np.array(list(overall_aln_event_stat_dict['all_mis_typ_dict'].values()))
@@ -41,6 +33,8 @@ def plot_substitution_frequency(overall_aln_event_stat_dict):
     post_process_ax(ax)
 
     return fig
+
+
 
 def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     indel_len_max = 10
@@ -73,18 +67,27 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     # Insertion
     Ins_dataframe = pd.DataFrame(indel_range_dict['Insertion'], index=[0])
     Ins_dataframe.index = ['Insertion']
+
+
+    # Insertion
+
     fig, ax = plt.subplots(**figure_kw)
     fig1 = fig
     sns.barplot(ax=ax, data=Ins_dataframe, color='steelblue')
     ax.set_xlabel("Insertion size (bp)")
+
+    
     ticks = list(range(0, indel_len_max))
     tick_labels = [str(x+1) for x in ticks]
     tick_labels[-1] += "+"
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
+
+
     ax.set_ylabel("Number of insertions")
     ax.set_title("Size distribution of insertions", **title_kw)
     post_process_ax(ax)
+    
 
     # Deletion
     Del_dataframe = pd.DataFrame(indel_range_dict['Deletion'], index=[0])
@@ -99,6 +102,7 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     ax.set_ylabel("Number of deletions")
     ax.set_title("Size distribution of insertions", **title_kw)
     post_process_ax(ax)
+
     return fig1, fig2
 
 def plot_query_identity_rate_densities(query_aln_event_stat_dict):
@@ -106,13 +110,14 @@ def plot_query_identity_rate_densities(query_aln_event_stat_dict):
     qry_idy_rate = np.array(query_aln_event_stat_dict['qry_idy_rate'])
     qry_idy_df = pd.DataFrame([qry_idy_rate])
     qry_idy_df.index = ['Identity']
-    plt.clf()
+
     fig, ax = plt.subplots(**figure_kw)
     sns.kdeplot(data=qry_idy_df.T, fill=True, alpha=.5, linewidth=0)
-    ax.set_xlabel("Accuracy ratio")
+    ax.set_xlabel("Per-read identity")
+    ax.set_xlim(right=1)
+    ax.set_yticks([])
     ax.set_ylabel("Density")
-    ax.set_title("All reads indentity distribution", **title_kw)
-    plt.legend('', frameon=False)
+    ax.set_title("Distribution of per-read identity", **title_kw)
     post_process_ax(ax)
     return fig
 
@@ -154,6 +159,7 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
     ax.set_xlabel("Homopolymer length (bp)")
     ax.set_ylabel("Fraction of homopolymers")
     ax.set_title("Summary of homopolymer errors" , **title_kw)
+
     post_process_ax(ax)
     return fig
 
@@ -165,28 +171,25 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     all_mis = overall_aln_event_sum_dict['substitution'] / all_event *100
     all_del = overall_aln_event_sum_dict['contraction'] / all_event *100
     all_ins = overall_aln_event_sum_dict['expansion'] / all_event *100
-#    non_hpm_dif_event = overall_aln_event_sum_dict['non_hpm_substitution'] + overall_aln_event_sum_dict['non_hpm_contraction'] + overall_aln_event_sum_dict['non_hpm_expansion']
-#    non_hpm_dif = non_hpm_dif_event / all_event *100
-#    non_hpm_mis = overall_aln_event_sum_dict['non_hpm_substitution'] / all_event *100
-#    non_hpm_del = overall_aln_event_sum_dict['non_hpm_contraction'] / all_event *100
-#    non_hpm_ins = overall_aln_event_sum_dict['non_hpm_expansion'] / all_event *100
+
 
     all_aln_rates = [all_dif, all_mis, all_del, all_ins]
-#    non_hpm_aln_rates = [non_hpm_dif, non_hpm_mis, non_hpm_del, non_hpm_ins]
+
     labels = ['Overall', 'Mismatch', 'Deletion', 'Insertion']
     x = np.arange(len(labels))  # the label locations
     width = 0.35  # the width of the bars
 
     fig, ax = plt.subplots(**figure_kw)
-    ax.bar(x, all_aln_rates, width, label='Overall error rate', color='tab:blue')
-#    ax.bar(x - width/2, all_aln_rates, width, label='Overall error rate', color='tab:blue')
-#    ax.bar(x + width/2, non_hpm_aln_rates, width, label='Non-homopolymer error rate', color='tab:green')
+
+    ax.bar(x, all_aln_rates, width, label='Overall error rate', color='steelblue')
+
     ax.set_ylabel('Error rate (%)')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.legend(loc='upper right')
     ax.set_title("Error rates by type" , **title_kw)
     post_process_ax(ax)
+
     return fig
 
 def bam_figure_action(args):
@@ -215,6 +218,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
     parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+
     args = vars(parser.parse_args())
     bam_figure_action(args)
 

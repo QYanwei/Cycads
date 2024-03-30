@@ -107,16 +107,12 @@ if __name__ == '__main__':
     # get and check options
     #    args = None
     print(banner)
-    args = parser.parse_args()
-    if (len(sys.argv) == 1) or (sys.argv[1] == '-h') or (sys.argv[1] == '-help') or (sys.argv[1] == '--help'):
-        print_helpdoc()
-        sys.exit(0)
-    else:
-        args = vars(parser.parse_args())
+
+    args = vars(parser.parse_args())
     output_dir = args["output_dir"]
     os.system("cd " + output_dir )
-
     output_folder =  os.path.join(args["output_dir"], args["sample_name"])
+
     if os.path.exists(output_folder):
         print("Output folder " + output_folder + " already exists.")
     os.makedirs(output_folder, exist_ok=True)
@@ -124,6 +120,7 @@ if __name__ == '__main__':
     os.makedirs(html_folder, exist_ok=True)
     
     pwd_config_file = os.path.realpath(__file__)
+    # TODO: use binary tool from $PATH
     args["pyfastx"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/pyfastx'
     args["minimap2"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/minimap2'
     args["samtools"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/samtools'
@@ -173,12 +170,10 @@ if __name__ == '__main__':
         else:
             print( "Both " + args["fastq"] + " " +args["reference"] + " are not exist!")
     elif args["alignment"] and not args["fastq"] and not args["reference"] and not args["filtering"]:
-        if os.path.exists(args["alignment"]):
-            bam_datum.bam_datum_action(args)
-            bam_figure.bam_figure_action(args)
-            all_report.generate_html(args)
-        else:
-            print(args["alignment"] + " does not exist!")
+        bam_datum.bam_datum_action(args)
+        bam_figure.bam_figure_action(args)
+        all_report.generate_html(args)
+        
     else:
-        print("please input correct file: fq/fastq/fq.gz & fastq+referecence.fasta & alignment.bam")
+        raise IOError("please input correct file: fq/fastq/fq.gz & fastq+referecence.fasta & alignment.bam")
 

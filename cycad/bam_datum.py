@@ -211,15 +211,6 @@ def reverse_complement(dna):
     return revc
 
 def bam_datum_action(args):
-    output_folder = os.path.join(args["output_dir"], args["sample_name"])
-
-    # parameter list
-    bam = output_folder + "/" + args["sample_name"]+".bam"
-    if not os.path.exists(bam):
-        print(f'{bam} is not exists!')
-        sys.exit(0)
-    else:
-        pass
     hpm_max_length = args["homopolymer_max_length"]
     hpm_shift_length = args["homopolymer_indel_max"]
     overall_aln_event_stat_dict = {
@@ -269,8 +260,12 @@ def bam_datum_action(args):
 #        'non_hpm_expansion': 0,
 #        'non_hpm_contraction': 0,
     }
+    
     # analyzing data
-    readprofile = pysam.AlignmentFile(bam, "rb")
+    bam_path = args['alignment']
+    if not os.path.isfile(bam_path):
+        raise IOError(f"Unable to find {bam_path}")
+    readprofile = pysam.AlignmentFile(bam_path, "rb")
     for read in readprofile.fetch():
         flag = read.flag
         cigar_tuples = read.cigartuples
@@ -307,16 +302,19 @@ def bam_datum_action(args):
         'query_aln_event_stat_dict': query_aln_event_stat_dict,
         'homopolymer_aln_event_stat_dict': homopolymer_aln_event_stat_dict
     }
-    pickle_path = os.path.join(output_folder, "bam.pickle")
-    with open(pickle_path, 'wb') as picklefile:
+
+    output_path = os.path.join(args["output_dir"], "bam.pickle")
+    with open(output_path, 'wb') as picklefile:
         pickle.dump(merge_alignment_dict, picklefile)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
     parser.add_argument("-hpmindelmax", "--homopolymer_indel_max", type=int, default=4, required=False, help="homopolymer max indel shift")
+
     parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="Prefix of output file name")
+
     # initiated dict
     args = vars(parser.parse_args())
     bam_datum_action(args)

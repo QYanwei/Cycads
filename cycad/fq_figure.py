@@ -14,16 +14,7 @@ import warnings
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
 
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rcParams['figure.dpi'] = 300
-palette = dict(A="tab:red", T="tab:green", C="tab:blue", G="tab:purple", S='tab:black')
-figure_kw = dict(figsize = (5, 4), constrained_layout=True)
-hist_kw = dict(facecolor='tab:blue', edgecolor='k', linewidth=0.5)
-grid_kw = dict(color='k', alpha=0.1)
-title_kw = dict(fontsize=10)
-
-def post_process_ax(ax):
-    ax.spines[['right', 'top']].set_visible(False)
+from plots import *
 
 def plot_length_Nx_average_bar(seq_qual_dict):
     def Nx_reads_length(list_read_length):

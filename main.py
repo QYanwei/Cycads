@@ -42,24 +42,15 @@ from cycad import fq_align
 from cycad import bam_datum
 from cycad import bam_figure
 from cycad import all_report
-# basic stent function
-## check file
-def file_checkin(infile, func):
-    if os.path.exists(infile):
-        print(func + ': check...' + infile + ' file existed.')
-        return 1
-    else:
-        print(func + ': check...' + infile + ' file not found.')
-        return 0
+# basic function
 ## version control
 def version():
-    return "0.3.0" # TODO: fetch version automatically
-    # version_file = open('%sVERSION.txt' % './')
-    # return version_file.readline().strip()
+    version_file = open('%sVERSION' % './')
+    return version_file.readline().strip()
 ## help document
 def print_helpdoc():
     help_message = """
-              ........:::=== Cycads v%s ===:::........
+               ........:::=== Cycads v%s ===:::........
     ============================================================================
                 Quality control & Data filtering & Error analysis
                              for Long-read sequencing
@@ -71,7 +62,7 @@ def print_helpdoc():
 if __name__ == '__main__':
     ############################################## initialize subparsers ###############################################
     banner = """
-                     ........:::=== Cycads v%s ===:::........
+                   ........:::=== Cycads v%s ===:::........
     ============================================================================
                 Quality control & Data filtering & Error analysis
                              for Long-read sequencing
@@ -109,20 +100,43 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--thread", required=False, default=4, help="thread number")
     parser.add_argument("-hpmindelmax", "--homopolymer_indel_max", type=int, default=4, required=False, help="homopolymer max indel shift")
     # for storing result.
-    parser.add_argument("-O", "--output_dir", default='cycads_report', required=False, help="Output direcotry")
+    parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
+    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
     ############################## parse provided arguments and run corresponding function #############################
 
     # get and check options
     #    args = None
     print(banner)
+
     args = vars(parser.parse_args())
-    output_folder = args["output_dir"]
+    output_dir = args["output_dir"]
+    os.system("cd " + output_dir )
+    output_folder =  os.path.join(args["output_dir"], args["sample_name"])
+
     if os.path.exists(output_folder):
-        warn(f"Output folder {output_folder} already exists.")
+        print("Output folder " + output_folder + " already exists.")
     os.makedirs(output_folder, exist_ok=True)
-    html_folder = os.path.join(output_folder, "HTML_report")
+    html_folder = os.path.join(output_folder, "report_html")
     os.makedirs(html_folder, exist_ok=True)
     
+    pwd_config_file = os.path.realpath(__file__)
+    # TODO: use binary tool from $PATH
+    args["pyfastx"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/pyfastx'
+    args["minimap2"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/minimap2'
+    args["samtools"] = '/'.join(pwd_config_file.split('/')[:-1]) + '/tool/samtools'
+    if not os.path.exists(args["pyfastx"]):
+        print("pyfastx: not found in the ./tool/")
+    else:
+        pass
+    if not os.path.exists(args["minimap2"]):
+        print("minimap2: not found in the ./tool/")
+    else:
+        pass
+    if not os.path.exists(args["samtools"]):
+        print("samtools: not found in the ./tool/")
+    else:
+        pass
+
     if args["fastq"] and not args["filtering"] and not args["alignment"] and not args["reference"] :
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)           
@@ -161,5 +175,5 @@ if __name__ == '__main__':
         all_report.generate_html(args)
         
     else:
-        print("please input correct file: fq/fastq/fq.gz & fastq+referecence.fasta & alignment.bam")
+        raise IOError("please input correct file: fq/fastq/fq.gz & fastq+referecence.fasta & alignment.bam")
 

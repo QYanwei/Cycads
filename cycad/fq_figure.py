@@ -16,8 +16,6 @@ warnings.filterwarnings("ignore", "use_inf_as_na")
 
 from plots import *
 
-
-
 def plot_length_Nx_average_bar(seq_qual_dict):
     def Nx_reads_length(list_read_length):
         # Calculate the total length of the sequences
@@ -231,7 +229,6 @@ def plot_ends_base_quality_curve(endBaseQual_dict):
         post_process_ax(ax)
 
     return fig1, fig2
-    
 
 def plot_read_percent_qualtiy_curve(allBaseQual_dict):
     quality_values = np.array(allBaseQual_dict['PercentBaseQual_dict']['Q'])/ allBaseQual_dict['PercentBaseQual_dict']['S']
@@ -246,9 +243,10 @@ def plot_read_percent_qualtiy_curve(allBaseQual_dict):
     post_process_ax(ax)
     return fig
 
-    
-
 def fq_figure_action(args):
+    output_folder = os.path.join(args["output_dir"], args["sample_name"])
+    pickle_path = os.path.join(output_folder, "fq.pickle")
+
     output_folder = args["sample_name"]
     pickle_path = os.path.join(output_folder, "fq.pickle")
     if not os.path.isfile(pickle_path):
@@ -292,10 +290,10 @@ def fq_figure_action(args):
 
     fig = plot_homopolymer_frequency(homopolymer_dict)
     fig.savefig(output_folder+'/report_html/read_homopolymer_frequency' + '.lineplot.png')
-        
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+    parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
+    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
     args = vars(parser.parse_args())
     fq_figure_action(args)

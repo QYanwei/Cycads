@@ -20,7 +20,8 @@ if __name__ == '__main__':
     parser.add_argument("-mmp", "--minimap2", required=True, help="minimap2 tool")
     parser.add_argument("-sam", "--samtools", required=True, help="samtools tool")
     parser.add_argument("-t", "--thread", required=False, default=4, help="thread number")
-    parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+    parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
+    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
     args = vars(parser.parse_args())
     fq_align_action(args)
 

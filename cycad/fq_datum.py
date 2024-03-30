@@ -218,6 +218,7 @@ if __name__ == "__main__" :
     parser.add_argument("-kmer", "--kmer_size_frequency",     type=int, default=5, required=False, help="observe kmer size specturm")
     parser.add_argument("-hpmin", "--homopolymer_min_length", type=int, default=2, required=False, help="observe minium homopolymer")
     parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
-    parser.add_argument("-name", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
+    parser.add_argument("-o", "--output_dir", default='cycads_report', required=False, help="Output direcotry")
+    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
     args = vars(parser.parse_args())
     fq_datum_action(args)

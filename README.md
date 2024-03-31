@@ -11,7 +11,8 @@ Cycads long reads quality analyser
 git clone https://github.com/QYanwei/Cycads
 conda env create --file Cycads/environment.yml --name cycads_env
 conda activate cycads_env
-Cycads/main.py --help
+pip install Cycads
+cycads --help
 ```
 
 
@@ -20,41 +21,35 @@ Cycads/main.py --help
 The example below generates HTML report from `test/ecoli.fq.gz`:
 
   ```
-  cd /path/to/workdir/ 
-  python Cycads.py -fq test/ecoli.fq.gz -ref ref/Reference_Ecoli.fasta -name test 
+  cycads --fastq test/ecoli.fq.gz --output_dir test/fastq_output
   ```
 
 ## Usages
 
-* 1. only fastq quality control 
+* 1. FASTQ quality control 
   ``` 
-  python main.py -fq test/ecoli.fq.gz -name test
+  cycads --fastq test/ecoli.fq.gz --output_dir test/fastq_output
   ```
-* 2. fastq quality control and data filter
+* 2. FASTQ quality control and filtering
   ```
-  python main.py -fq test/ecoli.fq.gz -filter -name test
+  cycads --fastq test/ecoli.fq.gz --filter --output_dir test/fastq_output
   ```
-* 3. fastq quality control and error analysis
+* 3. FASTQ quality control and alignment-based error analysis
   ```
-  python main.py -fq test/ecoli.fq.gz -ref ref/Reference_Ecoli.fasta -name test
+  cycads --fastq test/ecoli.fq.gz --reference test/ecoli.reference.fasta --output_dir test/alignment_output
   ```
-   
-* 4. fastq quality control and data filter and error analysis
+  
+* 4. Alignment-based error analysis based on a pre-existing BAM file
+  ```
+  cycads --bam test/test.bam --output_dir test/bam_output
   ```
 
-  python main.py -fq test/ecoli.fq.gz -fitler -ref ref/Reference_Ecoli.fasta -name test
 
-  ```
-* 5. only bam error analysis
-  ```
-  python main.py -bam test/bam -name test 
-  ```
 ## Parameters details
 
 
-## Demo
+## Example output
 
 
-## Copyright
 
 

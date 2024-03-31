@@ -120,7 +120,7 @@ def main():
     args['report_dir'] = report_dir
 
     if os.path.isdir(output_dir):
-        warn(f"Output folder {output_dir} already exists.")
+        raise IOError(f"Output folder {output_dir} already exists.")
     try:
         os.makedirs(report_dir, exist_ok=True)    
     except Exception:

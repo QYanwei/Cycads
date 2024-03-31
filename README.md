@@ -26,20 +26,20 @@ The example below generates HTML report from `test/ecoli.fq.gz`:
 
 ## Usages
 
-* 1. FASTQ quality control 
+* FASTQ quality control 
   ``` 
   cycads --fastq test/ecoli.fq.gz --output_dir test/fastq_output
   ```
-* 2. FASTQ quality control and filtering
+* FASTQ quality control and filtering
   ```
   cycads --fastq test/ecoli.fq.gz --filter --output_dir test/fastq_output
   ```
-* 3. FASTQ quality control and alignment-based error analysis
+* FASTQ quality control and alignment-based error analysis
   ```
   cycads --fastq test/ecoli.fq.gz --reference test/ecoli.reference.fasta --output_dir test/alignment_output
   ```
   
-* 4. Alignment-based error analysis based on a pre-existing BAM file
+* Alignment-based error analysis based on a pre-existing BAM file
   ```
   cycads --bam test/test.bam --output_dir test/bam_output
   ```

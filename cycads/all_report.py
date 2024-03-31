@@ -5,7 +5,7 @@ import pickle
 import jinja2
 from statistics import mean
 # import html template
-def import_jinja_template(template_file):
+def import_jinja_template(template_file): # TODO: enable custom template for advanced users
     # get template_fq_report.html
     if template_file:
         try:
@@ -143,7 +143,7 @@ def generate_report_html(args, output_folder, flag):
     pwd_config_file = os.path.realpath(__file__)
     if flag == 0:
         fq_table_string, fq_plots_string = generate_fq_report_strings(args, output_folder)
-        template_file = '/'.join(pwd_config_file.split('/')[:-2]) + "/config/template_fq_report.j2"
+        template_file = "config/template_fq_report.j2"
         template = import_jinja_template(template_file)
         rendering = template.render(
            fq_table=fq_table_string,
@@ -156,7 +156,7 @@ def generate_report_html(args, output_folder, flag):
         
     elif flag == 1:
         bam_table_string, bam_plots_string = generate_bam_report_string(args, output_folder)
-        template_file = '/'.join(pwd_config_file.split('/')[:-2]) + "/config/template_bam_report.j2"
+        template_file = "config/template_bam_report.j2"
         template = import_jinja_template(template_file)
         rendering = template.render(
             bam_table=bam_table_string,
@@ -170,7 +170,7 @@ def generate_report_html(args, output_folder, flag):
     elif flag == 2:
         fq_table_string, fq_plots_string = generate_fq_report_strings(args, output_folder)
         bam_table_string, bam_plots_string = generate_bam_report_string(args, output_folder)
-        template_file = '/'.join(pwd_config_file.split('/')[:-2]) + "/config/template_all_report.j2"
+        template_file = "config/template_all_report.j2"
         template = import_jinja_template(template_file)
         rendering = template.render(
             fq_table=fq_table_string,

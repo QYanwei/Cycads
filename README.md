@@ -11,7 +11,7 @@ Cycads long reads quality analyser
 git clone https://github.com/QYanwei/Cycads
 conda env create --file Cycads/environment.yml --name cycads_env
 conda activate cycads_env
-pip install Cycads
+cd Cycads && pip install .
 cycads --help
 ```
 

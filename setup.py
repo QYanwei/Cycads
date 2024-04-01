@@ -21,6 +21,7 @@ setup(
             'cycads = cycads.cycads:main',
         ],
     },
+    package_data={'cycads':  ['resources/*']},
     classifiers=[
         # Trove classifiers
         # Full list at https://pypi.python.org/pypi?%3Aaction=list_classifiers

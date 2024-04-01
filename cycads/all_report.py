@@ -8,7 +8,6 @@ import pkg_resources
 
 def get_template_path(template_name):
     path = pkg_resources.resource_filename('cycads', f'resources/{template_name}.j2')
-    print(path)
     return path
 
 # import html template

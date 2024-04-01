@@ -3,7 +3,8 @@
 [![CI](https://github.com/QYanwei/Cycads/actions/workflows/run_test.yml/badge.svg?branch=master)](https://github.com/QYanwei/Cycads/actions/workflows/run_test.yml)
 
 ## Description
-Cycads long reads quality analyser
+
+Cycads is a tool for quality control & error profile analysis of long-read sequencing data.
 
 ## Installation
 

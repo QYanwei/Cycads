@@ -132,7 +132,7 @@ def parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq,
             new_ref += i[1] * '-'
             raw_seq = raw_seq[i[1]:]
             raw_ref = raw_ref
-            qry_ins += 1
+            qry_ins += i[1]
             if i[1] in overall_aln_event_stat_dict['all_ins_len_dict'].keys():
                 overall_aln_event_stat_dict['all_ins_len_dict'][i[1]] += 1
             else:
@@ -142,7 +142,7 @@ def parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq,
             new_ref += raw_ref[:i[1]]
             raw_seq = raw_seq
             raw_ref = raw_ref[i[1]:]
-            qry_del += 1
+            qry_del += i[1]
             if i[1] in overall_aln_event_stat_dict['all_del_len_dict'].keys():
                 overall_aln_event_stat_dict['all_del_len_dict'][i[1]] += 1
             else:
@@ -154,7 +154,7 @@ def parsing_alignment_events(hpm_max_length, hpm_shift_length, raw_ref, raw_seq,
                 overall_aln_event_stat_dict['all_mis_typ_dict'][raw_ref[:i[1]] + raw_seq[:i[1]]] += 1
             raw_seq = raw_seq[i[1]:]
             raw_ref = raw_ref[i[1]:]
-            qry_mis += 1
+            qry_mis += i[1]
         elif i[0] == 4 or i[0] == 5:
             raw_seq = raw_seq[i[1]:]
         else:

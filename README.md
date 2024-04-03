@@ -69,8 +69,8 @@ I/O:
 FASTQ:
   Arguments for FASTQ analyses. Only effective when FASTQ_PATH is supplied.
 
-  -s N, --sample N      Only include a random sample of N reads from the input FASTQ file to accelerate evaluation. (default: -1)
-  --seed SEED           Random seed for sampling. (default: 684895)
+  -s N, --sample N      Only include a random sample of N reads from the input FASTQ file to accelerate evaluation. (default: 10000)
+  --seed SEED           Random seed for sampling. (default: 1)
   -T N, --check_terminal_bases N
                         Analyze N bases at both ends of each read. (default: 200)
 
@@ -84,7 +84,7 @@ Filtering:
   --min_length MIN_READ_LENGTH
                         Remove reads shorter than MIN_READ_LENGTH. (default: 1000)
   --max_length MAX_READ_LENGTH
-                        Remove reads longer than MAX_READ_LENGTH. (default: 1000000000000)
+                        Remove reads longer than MAX_READ_LENGTH. (default: 1000000000)
   --trim_5_end N        Trim N bases from the 5' end of each read. (default: 0)
   --trim_3_end N        Trim N bases from the 3' end of each read. (default: 0)
   -d TARGET_DEPTH, --target_depth TARGET_DEPTH

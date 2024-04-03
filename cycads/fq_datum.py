@@ -11,16 +11,14 @@ import numpy as np
 from collections import Counter
 
 def readGCcontent(seq, seq_len):
-    gc_count = 0
-    for base in seq:
-        if base == 'G' or base == 'C':
-            gc_count += 1
-    return round(gc_count/seq_len, 3)
+    C = seq.count("C")
+    G = seq.count("G")
+    return (C+G)/len(seq)
 
 def readAvgQscore(quali, seq_len):
     value_list = Counter(list(quali))
     value_sum = sum([k * v for k, v in value_list.items()])
-    seq_qscore = round(value_sum / seq_len, 3)
+    seq_qscore = value_sum / seq_len
     return seq_qscore
 
 def endBaseHeadParse(seq, shift_length, endBaseQual_dict):
@@ -134,8 +132,8 @@ def sampling_analyser(args):
     split_part_num = 100
     allBaseQual_dict = {'PercentBaseQual_dict': {'Q':[0]* split_part_num, 'S':0}} # Q: average quality, S: base count
     fq = pyfastx.Fastq(args["fastq"], build_index=False)
-    seed_num = 1
-    read_num = 10000
+    seed_num = args["seed"]
+    read_num = args["sample"]
     print(len(fq))
     if read_num<len(fq):
         sample_list = random_readnum(seed_num, len(fq), read_num)[0]

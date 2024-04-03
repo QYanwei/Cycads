@@ -28,8 +28,9 @@ def N50(list_read_length):
     base_sum = 0
     for length in list_read_length:
         base_sum += length
-        if base_sum/total_length == 0.5:
-           return length
+        if base_sum/total_length >= 0.5:
+            return length
+            break
 # fq report data
 def generate_fq_report_strings(args, output_folder):
     table_name = ["FileName", "TotalRead", "TotalBases", "GC%", "AvgLen", "MaxLen", "MinLen", "N50", "AvgReadQ", "MaxReadQ", "MinReadQ"]
@@ -44,7 +45,7 @@ def generate_fq_report_strings(args, output_folder):
         fq_datum_dict = pickle.load(picklefile)
         seq_qual_dict = fq_datum_dict['seq_qual_dict']
         table_list.append(N50(seq_qual_dict["LEN"]))
-        table_list.append(mean(seq_qual_dict["QUAL2"]))
+        table_list.append(round(mean(seq_qual_dict["QUAL2"]), 2))
         table_list.append(max(seq_qual_dict["QUAL2"]))
         table_list.append(min(seq_qual_dict["QUAL2"]))
     fq_table_string = "<thead><tr>"

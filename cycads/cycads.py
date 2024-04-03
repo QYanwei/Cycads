@@ -50,8 +50,8 @@ def parse_command_line_arguments():
     io_group.add_argument("-n", "--sample_name", default='sample', required=False, help="Sample name displayed in output reports.")
     
     fastq_group = parser.add_argument_group('FASTQ', 'Arguments for FASTQ analyses. Only effective when FASTQ_PATH is supplied.')
-    fastq_group.add_argument("-s", "--sample", metavar="N", type=int, default="-1", required=False, help="Only include a random sample of N reads from the input FASTQ file to accelerate evaluation.")
-    fastq_group.add_argument("--seed", metavar="SEED", type=int, default="684895", required=False, help="Random seed for sampling.")
+    fastq_group.add_argument("-s", "--sample", metavar="N", type=int, default="10000", required=False, help="Only include a random sample of N reads from the input FASTQ file to accelerate evaluation.")
+    fastq_group.add_argument("--seed", metavar="SEED", type=int, default="1", required=False, help="Random seed for sampling.")
     fastq_group.add_argument("-T", "--check_terminal_bases", metavar="N", type=int, default=200, required=False, help="Analyze N bases at both ends of each read.")
     
 

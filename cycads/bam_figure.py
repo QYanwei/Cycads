@@ -29,7 +29,7 @@ def plot_substitution_frequency(overall_aln_event_stat_dict):
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
     ax.set_xlabel("Substitution type")
-    ax.set_ylabel("Number of substitutions")
+    ax.set_ylabel("Frequency of substitutions")
     ax.set_title("Summary of substitutions by type" , **title_kw)
     post_process_ax(ax)
 
@@ -84,7 +84,7 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
 
-    ax.set_ylabel("Number of insertions")
+    ax.set_ylabel("Frequency of insertions")
     ax.set_title("Size distribution of insertions", **title_kw)
     post_process_ax(ax)
     
@@ -100,7 +100,7 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
     ax.set_xlabel("Deletion size (bp)")
-    ax.set_ylabel("Number of deletions")
+    ax.set_ylabel("Freqency of deletions")
     ax.set_title("Size distribution of insertions", **title_kw)
     post_process_ax(ax)
 

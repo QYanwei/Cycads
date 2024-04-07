@@ -160,27 +160,29 @@ def parsing_alignment_events(hpm_min_length, hpm_max_length, hpm_shift_length, r
         else:
             pass
     # overall error and identity events
-    query_mis_rate = round(qry_mis/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    query_ins_rate = round(qry_ins/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    query_del_rate = round(qry_del/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    query_idy_rate = round(qry_map/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    query_dif_rate = round(1 - query_idy_rate, 5)
+    total_events = qry_map + qry_ins + qry_del + qry_mis
+    query_mis_rate = qry_mis/total_events
+    query_ins_rate = qry_ins/total_events
+    query_del_rate = qry_del/total_events
+    query_idy_rate = qry_map/total_events
+    query_dif_rate = 1 - query_idy_rate
     query_aln_event_stat_dict['qry_mis_rate'].append(query_mis_rate)
     query_aln_event_stat_dict['qry_ins_rate'].append(query_ins_rate)
     query_aln_event_stat_dict['qry_del_rate'].append(query_del_rate)
     query_aln_event_stat_dict['qry_dif_rate'].append(query_dif_rate)
     query_aln_event_stat_dict['qry_idy_rate'].append(query_idy_rate)
+    overall_aln_event_sum_dict['mapped_bases'] += total_events
     overall_aln_event_sum_dict['identity'] += qry_map
     overall_aln_event_sum_dict['substitution'] += qry_mis
     overall_aln_event_sum_dict['expansion'] += qry_ins
     overall_aln_event_sum_dict['contraction'] += qry_del
     # homopolymer events statistics
     hpm_map, hpm_mis, hpm_del, hpm_ins = parsing_homopolymer_error_event(hpm_min_length, hpm_max_length, hpm_shift_length, new_ref, new_seq, homopolymer_aln_event_stat_dict)
-    qry_hpm_mis_rate = round(hpm_mis/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    qry_hpm_ins_rate = round(hpm_ins/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    qry_hpm_del_rate = round(hpm_del/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    qry_hpm_idy_rate = round(hpm_map/(qry_map + qry_ins + qry_del + qry_mis), 5)
-    qry_hpm_dif_rate = round(1-qry_hpm_idy_rate, 5)
+    qry_hpm_mis_rate = hpm_mis/total_events
+    qry_hpm_ins_rate = hpm_ins/total_events
+    qry_hpm_del_rate = hpm_del/total_events
+    qry_hpm_idy_rate = hpm_map/total_events
+    qry_hpm_dif_rate = 1-qry_hpm_idy_rate, 5
     query_aln_event_stat_dict['qry_hpm_mis_rate'].append(qry_hpm_mis_rate)
     query_aln_event_stat_dict['qry_hpm_ins_rate'].append(qry_hpm_ins_rate)
     query_aln_event_stat_dict['qry_hpm_del_rate'].append(qry_hpm_del_rate)
@@ -238,7 +240,8 @@ def bam_datum_action(args):
     }
     overall_aln_event_sum_dict = {
         'total_reads': 0,
-        'mapped_reads': 0,
+        'mapped_reads' : 0,
+        'mapped_bases' : 0,
         'identity': 0,
         'substitution': 0,
         'expansion': 0,

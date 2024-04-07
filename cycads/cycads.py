@@ -50,17 +50,17 @@ def parse_command_line_arguments():
     io_group.add_argument("-n", "--sample_name", default='sample', required=False, help="Sample name displayed in output reports.")
     
     fastq_group = parser.add_argument_group('FASTQ', 'Arguments for FASTQ analyses. Only effective when FASTQ_PATH is supplied.')
-    fastq_group.add_argument("-s", "--sample", metavar="N", type=int, default="10000", required=False, help="Only include a random sample of N reads from the input FASTQ file to accelerate evaluation.")
-    fastq_group.add_argument("--seed", metavar="SEED", type=int, default="1", required=False, help="Random seed for sampling.")
+    fastq_group.add_argument("-s", "--sample", metavar="N", type=int, default=10000, required=False, help="Only include a random sample of N reads from the input FASTQ file to accelerate evaluation.")
+    fastq_group.add_argument("--seed", metavar="SEED", type=int, default=1, required=False, help="Random seed for sampling.")
     fastq_group.add_argument("-T", "--check_terminal_bases", metavar="N", type=int, default=200, required=False, help="Analyze N bases at both ends of each read.")
     
 
     filter_group = parser.add_argument_group('Filtering', 'Arguments for filtering the input FASTQ file. Only effective when FASTQ_PATH is supplied.')
     filter_group.add_argument("-F", "--filter", action='store_true', required=False, help="Output filtered FASTQ file. Analyses are always based on the input FASTQ file.")
     filter_group.add_argument("-e", "--extract", metavar="N", required=False, default=None, help="Randomly extract N reads from the input FASTQ file.")
-    filter_group.add_argument("-Q", "--min_base_quality", metavar="MIN_BASE_QUALITY", type=float, default=10,   required=False, help="Remove reads with mean base quality less than MIN_BASE_QUALITY.")
-    filter_group.add_argument("--min_length",  metavar="MIN_READ_LENGTH", type=int,   default=1000, required=False, help="Remove reads shorter than MIN_READ_LENGTH.")
-    filter_group.add_argument("--max_length",  metavar="MAX_READ_LENGTH", type=int,   default=1_000_000_000_000, required=False, help="Remove reads longer than MAX_READ_LENGTH.")
+    filter_group.add_argument("-Q", "--min_base_quality", metavar="MIN_BASE_QUALITY", type=float, default=7,   required=False, help="Remove reads with mean base quality less than MIN_BASE_QUALITY.")
+    filter_group.add_argument("--min_length",  metavar="MIN_READ_LENGTH", type=int,   default=1, required=False, help="Remove reads shorter than MIN_READ_LENGTH.")
+    filter_group.add_argument("--max_length",  metavar="MAX_READ_LENGTH", type=int,   default=1000000000, required=False, help="Remove reads longer than MAX_READ_LENGTH.")
     filter_group.add_argument("--trim_5_end", metavar="N", type=int,   default=0,  required=False, help="Trim N bases from the 5' end of each read.")
     filter_group.add_argument("--trim_3_end", metavar="N", type=int,   default=0,  required=False, help="Trim N bases from the 3' end of each read.")
     filter_group.add_argument("-d", "--target_depth", metavar="TARGET_DEPTH", type=float, default=None, required=False, help="Downsample FASTQ file to TARGET_DEPTH. Requires GENOME_SIZE to be supplied.")
@@ -120,7 +120,9 @@ def main():
     args['report_dir'] = report_dir
 
     if os.path.isdir(output_dir):
-        raise IOError(f"Output folder {output_dir} already exists.")
+        print(f"Output folder {output_dir} already exists.")
+    else:
+        os.makedirs(output_dir, exist_ok=True)
     try:
         os.makedirs(report_dir, exist_ok=True)    
     except Exception:
@@ -142,10 +144,10 @@ def main():
     elif args["fastq"] and args["filter"] and not args["bam"] and not args["reference"]:
         if os.path.exists(args["fastq"]):
             fq_index.fq_index_action(args)
-            fq_datum.fq_datum_action(args)
-            fq_figure.fq_figure_action(args)
+#            fq_datum.fq_datum_action(args)
+#            fq_figure.fq_figure_action(args)
             fq_filter.fq_filter_action(args)
-            all_report.generate_html(args)
+#            all_report.generate_html(args)
         else:
             print(args["fastq"] + " does not exist!")
     elif args["fastq"] and args["reference"] and not args["filter"] and not args["bam"]:
@@ -173,6 +175,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-   
-    
 

@@ -4,7 +4,8 @@ import re,os,sys,time
 import numpy as np
 import gzip
 import pyfastx
-
+import subprocess
+from collections import Counter
 
 def ends_cutting(raw_read, raw_qual, head_cut_length, tail_cut_length):
     new_read, new_qual = '', ''
@@ -23,157 +24,114 @@ def ends_cutting(raw_read, raw_qual, head_cut_length, tail_cut_length):
 def reads_buffer_io(queries, outfile):
     outfile.write(queries)
 
+def readAvgQscore(quali, seq_len):
+    value_list = Counter(list(quali))
+    value_sum = sum([k * v for k, v in value_list.items()])
+    seq_qscore = value_sum / seq_len
+    return seq_qscore
+
 def Downsampling(fq, args, out_file):
     read_number = 0
     base_number = 0
-    buffer_iter = 0
-    query = ''
     fq = pyfastx.Fastq(fq, build_index=False)
     for name, raw_seq, raw_qual in fq:
         read_number += 1
         read_length = len(raw_seq)
-        if base_number <= args['target_depth'] * args['genome_size']:
-            if read_length >= args['min_length']:
-                if (args['trim_5_end'] or args['trim_3_end']):
+        quali = [ord(i) - 33 for i in raw_qual]
+        read_q = readAvgQscore(quali, read_length)
+        if base_number <= (float(args['target_depth']) * float(args['genome_size'])):
+            if read_length >= args['min_length'] and read_length <= args['max_length'] and read_q >= args['min_base_quality']:
+                if args['trim_5_end'] or args['trim_3_end']:
                     if (args['trim_5_end'] + args['trim_3_end']) < read_length:
-                        buffer_iter += 1
-                        base_number += read_length
+                        base_number += read_length - args['trim_5_end'] - args['trim_3_end']
                         new_read, new_qual = ends_cutting(raw_seq, raw_qual, args['trim_5_end'], args['trim_3_end'])
-                        query += '%s\n%s\n%s\n%s\n' % ('@'+name, new_read, '+', new_qual)
-                        if buffer_iter == buffersize:
-                            reads_buffer_io(query, out_file)
-                            buffer_iter = 0
-                            query = ''
-                        else:
-                            continue
+                        query = '%s\n%s\n%s\n%s\n' % ('@'+name, new_read, '+', new_qual)
+                        reads_buffer_io(query, out_file)
                     else:
                         pass
                 else:
-                    buffer_iter += 1
                     base_number += read_length
-                    query += '%s\n%s\n%s\n%s\n' % ('@'+name, raw_seq, '+', raw_qual)
-                    if buffer_iter == buffersize:
-                        reads_buffer_io(query, out_file)
-                        buffer_iter = 0
-                        query = ''
-                    else:
-                        continue
+                    query = '%s\n%s\n%s\n%s\n' % ('@'+name, raw_seq, '+', raw_qual)
+                    reads_buffer_io(query, out_file)
             else:
                 pass
-        else:
-            outfile = gzip.open(out_file, 'wt+')
-            outfile.write(query)
-            outfile.close()
-            break
+
 def Filtering(fq, args, out_file):
     read_number = 0
     base_number = 0
-    buffer_iter = 0
-    query = ''
     fq = pyfastx.Fastq(fq, build_index=False)
     for name, raw_seq, raw_qual in fq:
         read_number += 1
         read_length = len(raw_seq)
-        if read_length >= args['min_length'] and read_length <= args['max_length']:
+        quali = [ord(i) - 33 for i in raw_qual]
+        read_q = readAvgQscore(quali, read_length)
+        if read_length >= args['min_length'] and read_length <= args['max_length'] and read_q >= args['min_base_quality']:
             if (args['trim_5_end'] or args['trim_3_end']):
                 if (args['trim_5_end'] + args['trim_3_end']) < read_length:
-                    buffer_iter += 1
                     base_number += read_length
                     new_read, new_qual = ends_cutting(raw_seq, raw_qual, args['trim_5_end'], args['trim_3_end'])
-                    query += '%s\n%s\n%s\n%s\n' % ('@' + name, new_read, '+', new_qual)
-                    if buffer_iter == buffersize:
-                        reads_buffer_io(query, out_file)
-                        buffer_iter = 0
-                        query = ''
+                    query = '%s\n%s\n%s\n%s\n' % ('@' + name, new_read, '+', new_qual)
+                    reads_buffer_io(query, out_file)
                 else:
                     continue
             else:
-                buffer_iter += 1
                 base_number += read_length
-                query += '%s\n%s\n%s\n%s\n' % ('@'+name, raw_seq, '+', raw_qual)
-                if buffer_iter == buffersize:
-                    reads_buffer_io(query, out_file)
-                    buffer_iter = 0
-                    query = ''
+                query = '%s\n%s\n%s\n%s\n' % ('@'+name, raw_seq, '+', raw_qual)
+                reads_buffer_io(query, out_file)
+
 def Extracting(fastq, args, outfile):
     read_number = 0
     base_number = 0
-    buffer_iter = 0
-    query = ''
     fq = pyfastx.Fastq(fastq)
     read_count = len(fq)
     seed = args['seed']
     sample_size = args['extract']
-    selected_read_indices = np.random.default_rng(seed).randint(low=0, high=read_count, size=sample_size, dtype=np.uint64)
+    selected_read_indices = np.random.default_rng(seed).integers(low=0, high=read_count, size=sample_size, dtype=np.uint64)
     for i in selected_read_indices:
         read = fq[i]
-        name, raw_seq, raw_qual = read.name, read.seq, read.qual
+        name, raw_seq, raw_qual, raw_quali = read.name, read.seq, read.qual, read.quali
         read_number += 1
         read_length = len(raw_seq)
-        if read_length >= args['min_length'] and read_length <= args['max_length']:
-            if (args['head_cut_length'] or args['tail_cut_length']):
-                if (args['head_cut_length'] + args['tail_cut_length']) < read_length:
-                    buffer_iter += 1
+        read_q = readAvgQscore(quali, read_length)
+        if read_length >= args['min_length'] and read_length <= args['max_length'] and read_q >= args['min_base_quality']:
+            if (args['trim_5_end'] or args['trim_3_end']):
+                if (args['trim_5_end'] + args['trim_3_end']) < read_length:
                     base_number += read_length
-                    new_read, new_qual = ends_cutting(raw_seq, raw_qual, args['head_cut_length'], args['tail_cut_length'])
-                    query += '%s\n%s\n%s\n%s\n' % ('@' + name, new_read, '+', new_qual)
-                    if buffer_iter == buffersize:
-                        reads_buffer_io(query, outfile)
-                        buffer_iter = 0
-                        query = ''
+                    new_read, new_qual = ends_cutting(raw_seq, raw_qual, args['trim_5_end'], args['trim_3_end'])
+                    query = '%s\n%s\n%s\n%s\n' % ('@' + name, new_read, '+', new_qual)
+                    reads_buffer_io(query, outfile)
                 else:
                     continue
             else:
-                buffer_iter += 1
                 base_number += read_length
-                query += '%s\n%s\n%s\n%s\n' % ('@'+name, raw_seq, '+', raw_qual)
-                if buffer_iter == buffersize:
-                    reads_buffer_io(query, outfile)
-                    buffer_iter = 0
-                    query = ''
+                query = '%s\n%s\n%s\n%s\n' % ('@'+name, raw_seq, '+', raw_qual)
+                reads_buffer_io(query, outfile)
 
+def filtered_fq_stat(args):
+    input_fastq_path = os.path.abspath(args['filtered_fastq_path'])
+    pyfastx_path = args['pyfastx']
+    command = [pyfastx_path, 'index', input_fastq_path]
+    subprocess.run(command)
+    print("------ Sequencing data summary ------")
+    os.system(f'{pyfastx_path} stat {input_fastq_path} |awk \'BEGIN{{OFS="\t"}}{{NF=7}}1\'')
 
 def fq_filter_action(args):
     input_fastq_path = args['fastq']
-    with open(args['filtered_fastq_path'], 'wt') as f:
+    with open(args['filtered_fastq_path'], 'wt', buffering=1000) as f:
         if args['target_depth'] and args['genome_size']:
             Downsampling(input_fastq_path, args, f)
+            filtered_fq_stat(args)
+            f.close()
+            sys.exit()
         elif args['extract']:
             Extracting(input_fastq_path, args, f)
+            f.cloes()
+            filtered_fq_stat(args)
+            sys.exit()
         elif args['min_length'] or args['max_length']:
             Filtering(input_fastq_path, args, f)
+            f.close()
+            filtered_fq_stat(args)
+            sys.exit()
         else:
             raise ValueError("Invalid arguments")
-
-
-# if __name__ == "__main__":
-#     args = {
-#         'head_cut_length': 10,
-#         'tail_cut_length': 0,
-#         'random_read_size': 100,
-#         'min_length': 1,
-#         'max_length': 10000000,
-#         'max_depth': 0,
-#         'genome_size': 10000000,
-#         'seed': 0,
-#         'random_read': 0,
-#     }
-#     buffersize = 100
-#     fq = '../test/ecoli.fq.gz'
-#     out = '../test/ecoli.filter.gz'
-#     outfile = gzip.open(out, 'wt')
-#     if args['max_depth'] and args['genome_size']:
-#         Downsampling(fq, args, outfile)
-#         outfile.close()
-#         sys.exit()
-#     elif args['sample'] > 0:
-#         Extracting(fq, args, outfile)
-#         outfile.close()
-#         sys.exit()
-#     elif args['min_length'] or args['max_length']:
-#         Filtering(fq, args, outfile)
-#         outfile.close()
-#         sys.exit()
-#     else:
-#         print('stop')
-    

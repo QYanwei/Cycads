@@ -5,6 +5,7 @@ import pickle
 import jinja2
 from statistics import mean
 import pkg_resources
+from . import __version__
 
 def get_template_path(template_name):
     path = pkg_resources.resource_filename('cycads', f'resources/{template_name}.j2')
@@ -99,7 +100,8 @@ def generate_bam_report_string(args, output_folder):
     with open(bam_pickle, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
         overall_event_dict = bam_datum_dict['overall_aln_event_sum_dict']
-        all_evt = overall_event_dict['substitution'] + overall_event_dict['contraction'] + overall_event_dict['expansion'] + overall_event_dict['identity']
+        all_evt = overall_event_dict['mapped_bases']
+#        all_evt = overall_event_dict['substitution'] + overall_event_dict['contraction'] + overall_event_dict['expansion'] + overall_event_dict['identity']
         all_idy = round(overall_event_dict['identity'] / all_evt *100, 2)
         all_dif = round(100 - all_idy, 2)
         all_mis = round(overall_event_dict['substitution'] / all_evt *100, 2)
@@ -147,7 +149,7 @@ def generate_report_html(args, output_folder, flag):
 
     # set the basic report infortion
     report_title = "CycloneSEQ quality reporter"
-    report_subtitle = "Created on {} with {} {}".format(datetime.datetime.now().strftime("%d/%m/%y"), "Cycads", "0.3.0")
+    report_subtitle = "Created on {} with {} {}".format(datetime.datetime.now().strftime("%d/%m/%y"), "Cycads", __version__)
     pwd_config_file = os.path.realpath(__file__)
     if flag == 0:
         fq_table_string, fq_plots_string = generate_fq_report_strings(args, output_folder)

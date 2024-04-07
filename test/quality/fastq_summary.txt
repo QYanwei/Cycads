@@ -1,0 +1,2 @@
+fileName	readCounts	totalBases	GC%	avgLen	maxLen	minLen
+ecoli.fq.gz	2500	25638921	50.737	10255.568	111931	1

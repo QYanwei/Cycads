@@ -112,10 +112,6 @@ def readParse(number, name, seq, quali, seqdict):
     seqdict['QUAL1'].append(float(name.split('_')[-1]))
     seqdict['QUAL2'].append(readAvgQscore(quali, seq_len))
     return seqdict
-def random_readnum(seed_num, read_size, sample_num):
-    np.random.seed(seed_num)
-    sample_list = np.random.randint(1, read_size, (1, sample_num) )
-    return sample_list
 def sampling_analyser(args):
     seqdict = dict( {'ID': [], 'GC': [], 'LEN': [], 'QUAL1': [], 'QUAL2':[]} ) # QUAL1: read basecall Q, QUAL2: read average Q
     homopolymer_size_min = args["min_homopolymer_size"]
@@ -132,17 +128,17 @@ def sampling_analyser(args):
     split_part_num = 100
     allBaseQual_dict = {'PercentBaseQual_dict': {'Q':[0]* split_part_num, 'S':0}} # Q: average quality, S: base count
     fq = pyfastx.Fastq(args["fastq"], build_index=False)
-    seed_num = args["seed"]
-    read_num = args["sample"]
-    print(len(fq))
-    if read_num<len(fq):
-        sample_list = random_readnum(seed_num, len(fq), read_num)[0]
+    seed = int(args["seed"])
+    sample_size = int(args["sample"])
+    read_count = len(fq)
+    if sample_size<len(fq):
+        selected_read_indices = np.random.default_rng(seed).integers(low=0, high=read_count, size=sample_size, dtype=np.uint64)
         print('random number')
     else:
-        sample_list = range(len(fq))
+        selected_read_indices = range(read_count)
         print('read number')
 
-    for i in sample_list:
+    for i in selected_read_indices:
         read = fq[i]
         seqdict = readParse(i, read.name, read.seq, read.quali, seqdict)
         homopolymer_dict = homopolymerParse(read.seq, homopolymer_size_min, homopolymer_dict)

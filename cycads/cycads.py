@@ -48,12 +48,12 @@ def parse_command_line_arguments():
     io_group.add_argument("-r",  "--reference", metavar="REFERENCE_PATH", required=False, default=None, help="Reference FASTA file.")
     io_group.add_argument("-o", "--output_dir", default='cycads_output', required=False, help="Output direcotry.")
     io_group.add_argument("-n", "--sample_name", default='sample', required=False, help="Sample name displayed in output reports.")
+    io_group.add_argument('-p', "--platform", default='cyclone', required=False, help="Design for CycloneSEQ data, also adopt to ONT and PB data.")
     
     fastq_group = parser.add_argument_group('FASTQ', 'Arguments for FASTQ analyses. Only effective when FASTQ_PATH is supplied.')
     fastq_group.add_argument("-s", "--sample", metavar="N", type=int, default=10000, required=False, help="Only include a random sample of N reads from the input FASTQ file to accelerate evaluation.")
     fastq_group.add_argument("--seed", metavar="SEED", type=int, default=1, required=False, help="Random seed for sampling.")
     fastq_group.add_argument("-T", "--check_terminal_bases", metavar="N", type=int, default=200, required=False, help="Analyze N bases at both ends of each read.")
-    
 
     filter_group = parser.add_argument_group('Filtering', 'Arguments for filtering the input FASTQ file. Only effective when FASTQ_PATH is supplied.')
     filter_group.add_argument("-F", "--filter", action='store_true', required=False, help="Output filtered FASTQ file. Analyses are always based on the input FASTQ file.")
@@ -77,9 +77,9 @@ def parse_command_line_arguments():
     alignment_group.add_argument("--minimap2_arguments", metavar="ARGUMENTS", required=False, type=str, default="-ax map-ont --secondary=no --MD --eqx -I 10G", help="Alignment arguments to be passed to minimap2.")
 
     denpendency_group = parser.add_argument_group('Dependencies', 'Arguments for custom paths to external binary dependencies. Cycads searches for binary dependencies in the following order: 1. arguments specified here; 2. the `dependencies` folder in Cycads installation path; 3. the system $PATH environmental variable.')
-    denpendency_group.add_argument("--minimap2_path", required=False, default=None, help="Path to Minimap2.")
-    denpendency_group.add_argument("--samtools_path", required=False, default=None, help="Path to samtools.")
-    denpendency_group.add_argument("--pyfastx_path", required=False, default=None, help="Path to pyfastx.")
+    denpendency_group.add_argument("--minimap2", required=False, default=None, help="Path to Minimap2.")
+    denpendency_group.add_argument("--samtools", required=False, default=None, help="Path to samtools.")
+    denpendency_group.add_argument("--pyfastx", required=False, default=None, help="Path to pyfastx.")
 
     args = vars(parser.parse_args())
     return args
@@ -152,6 +152,17 @@ def main():
             print(args["fastq"] + " does not exist!")
     elif args["fastq"] and args["reference"] and not args["filter"] and not args["bam"]:
         if os.path.exists(args["fastq"]) and os.path.exists(args["reference"]):
+            print(args['platform'])
+            print(args['minimap2'])
+            if args['platform'] in ['Cyclone', 'cyclone', 'CycloneSEQ'] or args['platform'] in ['ont', 'ONT']:
+                pass
+            elif args['platform'] in ['pb', 'PB', 'PB-CLR'] and 'minimap' in args['minimap2']:
+                args['minimap2_arguments'] = '-ax map-pb --secondary=no --MD --eqx -I 10G'
+            elif args['platform'] in ['hifi', 'pb-hifi', 'PB-HiFi'] and 'minimap2' in args['minimap2']:
+                args['minimap2_arguments'] = '-ax map-hifi --secondary=no --MD --eqx -I 10G'
+            else:
+                platform = args['platform']
+                raise IOError(f'Wrong sequencing platform input:{platform}, please check the platform parameter!')
             fq_index.fq_index_action(args)
             fq_datum.fq_datum_action(args)
             fq_figure.fq_figure_action(args)

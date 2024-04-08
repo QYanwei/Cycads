@@ -84,7 +84,7 @@ def generate_fq_report_strings(args, output_folder):
         for j in range(2):
             fq_plots_string += "<td><figure>"
             fq_plots_string += "<img src=\"./{}\" width=\"auto\" height=\"480\" />".format(plots_list[i][j])
-            #fq_plots_string += "<figcaption class=\"figure-caption text-center\">{}</figcaption>".format(plots_src[i][j])
+#            fq_plots_string += "<figcaption class=\"figure-caption text-center\">{}</figcaption>".format(plots_src[i][j])
             fq_plots_string += "</td>"
         fq_plots_string += "</tr>"
     return fq_table_string, fq_plots_string
@@ -134,7 +134,7 @@ def generate_bam_report_string(args, output_folder):
         for j in range(2):
             bam_plots_string += "<td><figure>"
             bam_plots_string += "<img src=\"./{}\" width=\"auto\" height=\"480\" />".format(plots_list[i][j])
-            bam_plots_string += "<figcaption class=\"figure-caption text-center\">{}</figcaption>".format(plots_src[i][j])
+#            bam_plots_string += "<figcaption class=\"figure-caption text-center\">{}</figcaption>".format(plots_src[i][j])
             bam_plots_string += "</td>"
         bam_plots_string += "</tr>"
     return bam_table_string, bam_plots_string

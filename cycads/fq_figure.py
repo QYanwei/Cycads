@@ -48,7 +48,7 @@ def plot_length_Nx_average_bar(seq_qual_dict):
 def plot_gc_content_frequency_distribution(seq_qual_dict):
     gc_percentage = np.array( seq_qual_dict['GC'] ).astype(float) * 100
     fig, ax = plt.subplots(**figure_kw)
-    ax.hist(gc_percentage, bins=np.arange(0, 100, 2), density=True, **hist_kw)
+    ax.hist(gc_percentage, bins=np.arange(0, 100, 1), density=True, **hist_kw)
     ax.xaxis.set_major_formatter(mtick.PercentFormatter())
     ax.set_xlim(0, 100)
     ax.set_xlabel("Read GC content")
@@ -60,7 +60,7 @@ def plot_gc_content_frequency_distribution(seq_qual_dict):
     return fig
 
 def plot_read_quality_frequency_distritution(seq_qual_dict):
-    quality_values = np.array( seq_qual_dict['QUAL1'] )
+    quality_values = np.array( seq_qual_dict['QUAL2'] )
     fig, ax = plt.subplots(**figure_kw)
     xmin = floor(quality_values.min())
     xmax = ceil(quality_values.max())
@@ -78,7 +78,7 @@ def plot_read_length_frequency_distribution(seq_qual_dict):
     lengths = np.array( seq_qual_dict['LEN'] )
 
     fig, ax = plt.subplots(**figure_kw)
-    ax.hist(lengths / 1000, bins=50, **hist_kw)
+    ax.hist(lengths/1000, bins=100, **hist_kw)
     ax.set_xlim(left=0)
     ax.set_xlabel("Read length (kb)")
     ax.set_ylabel("Density")
@@ -107,7 +107,7 @@ def plot_read_length_cumulative_distribution(seq_qual_dict):
 
 def plot_length_quality_2d_histogram(seq_qual_dict):
     lengths = np.array(seq_qual_dict['LEN']) / 1000
-    quality_values = np.array(seq_qual_dict['QUAL1'])
+    quality_values = np.array(seq_qual_dict['QUAL2'])
 
     fig, ax = plt.subplots(**figure_kw)
     ax.hist2d(lengths, quality_values, bins=(50, 50), cmap='Blues')

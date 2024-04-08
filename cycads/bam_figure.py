@@ -11,8 +11,6 @@ import pickle
 import warnings
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
-
-
 from .plots import *
 
 def plot_substitution_frequency(overall_aln_event_stat_dict):
@@ -20,7 +18,7 @@ def plot_substitution_frequency(overall_aln_event_stat_dict):
     all_mis_typ_dict = dict(zip(overall_aln_event_stat_dict['all_mis_typ_dict'], substitution * 100 / sum(substitution) ))
     substitution_type = pd.DataFrame(all_mis_typ_dict, index=[0])
     substitution_type.index = ['Substitution']
-    
+    # figure start
     fig, ax = plt.subplots(**figure_kw)
     sns.barplot(ax=ax, data=substitution_type)
     ax.grid(axis='y', **grid_kw)
@@ -32,10 +30,7 @@ def plot_substitution_frequency(overall_aln_event_stat_dict):
     ax.set_ylabel("Frequency of substitutions")
     ax.set_title("Summary of substitutions by type" , **title_kw)
     post_process_ax(ax)
-
     return fig
-
-
 
 def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     indel_len_max = 10
@@ -64,35 +59,27 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
             pass
     indel_range_dict['Insertion'][indel_len_max] = indel_range_dict['Insertion'][indel_len_max] * 100 / ins_sum
     indel_range_dict['Deletion'][indel_len_max] = indel_range_dict['Deletion'][indel_len_max] * 100 / del_sum
-
-    # Insertion
+    # Insertion data prepare
     Ins_dataframe = pd.DataFrame(indel_range_dict['Insertion'], index=[0])
     Ins_dataframe.index = ['Insertion']
-
-
-    # Insertion
-
+    # Insertion plotting
     fig, ax = plt.subplots(**figure_kw)
     fig1 = fig
     sns.barplot(ax=ax, data=Ins_dataframe, color='steelblue')
     ax.grid(axis='y', **grid_kw)
     ax.set_xlabel("Insertion size (bp)")
-
     ticks = list(range(0, indel_len_max))
     tick_labels = [str(x+1) for x in ticks]
     tick_labels[-1] += "+"
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
-
     ax.set_ylabel("Frequency of insertions")
     ax.set_title("Size distribution of insertions", **title_kw)
     post_process_ax(ax)
-    
-
-    # Deletion
+    # Deletion data prepare
     Del_dataframe = pd.DataFrame(indel_range_dict['Deletion'], index=[0])
     Del_dataframe.index = ['Deletion']
-
+    # Deletion plotting
     fig, ax = plt.subplots(**figure_kw)
     fig2 = fig
     sns.barplot(ax=ax, data=Del_dataframe, color='steelblue')
@@ -103,7 +90,6 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     ax.set_ylabel("Freqency of deletions")
     ax.set_title("Size distribution of insertions", **title_kw)
     post_process_ax(ax)
-
     return fig1, fig2
 
 def plot_query_identity_rate_densities(query_aln_event_stat_dict):
@@ -111,7 +97,7 @@ def plot_query_identity_rate_densities(query_aln_event_stat_dict):
     qry_idy_rate = np.array(query_aln_event_stat_dict['qry_idy_rate'])
     qry_idy_df = pd.DataFrame([qry_idy_rate])
     qry_idy_df.index = ['Identity']
-
+    # query identity plotting
     fig, ax = plt.subplots(**figure_kw)
     sns.kdeplot(data=qry_idy_df.T, fill=True, alpha=.5, linewidth=0)
     ax.set_xlabel("Per-read identity")
@@ -135,25 +121,19 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
         qry_hpm_event2.append(lt)
     homopolymer_dataframe = pd.DataFrame(qry_hpm_event2)
     homopolymer_dataframe.index = range(2,len(qry_hpm_event2)+2,1)
-    # homopolymer_dataframe.columns = ["≥4 bp contraction", "3 bp contraction", "2 bp contraction", "1 bp contraction",
-    #                                   "others","correct", 
-    #                                  "1 bp expansion", "2 bp expansion", "3 bp expansion", "≥4 bp expansion"]
     homopolymer_dataframe.columns = ["≤ -4 bp", "-3 bp", "-2 bp", "-1 bp",
                                       "others","correct", 
                                      "+1 bp", "+2 bp", "+3 bp", "≥ +4 bp"]
-
     cmap = plt.get_cmap("coolwarm")
     colors = [cmap(0), cmap(0.1), cmap(0.2), cmap(0.3), 
                "lightgray", "wheat",
               cmap(0.7), cmap(0.8), cmap(0.9), cmap(0.999)]
-    
     fig, ax = plt.subplots(**figure_kw)
     xs = homopolymer_dataframe.index
     columns = homopolymer_dataframe.columns
     for j, col in enumerate(columns):
         if j == 0:
             y0 = [0 for _ in xs]
-        
         y1 = homopolymer_dataframe[col]
         color = colors[j]
         ax.fill_between(xs, y0, y1, label=col, color=color)
@@ -164,10 +144,8 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
     ax.set_xlabel("Homopolymer length (bp)")
     ax.set_ylabel("Fraction of homopolymers")
     ax.set_title("Summary of homopolymer errors" , **title_kw)
-
     post_process_ax(ax)
     return fig
-
 
 def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     all_event = overall_aln_event_sum_dict['identity'] + overall_aln_event_sum_dict['substitution'] + overall_aln_event_sum_dict['contraction'] + overall_aln_event_sum_dict['expansion']
@@ -176,10 +154,7 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     all_mis = overall_aln_event_sum_dict['substitution'] / all_event *100
     all_del = overall_aln_event_sum_dict['contraction'] / all_event *100
     all_ins = overall_aln_event_sum_dict['expansion'] / all_event *100
-
-
     all_aln_rates = [all_dif, all_mis, all_del, all_ins]
-
     labels = ['Overall', 'Mismatch', 'Deletion', 'Insertion']
     x = np.arange(len(labels))  # the label locations
     width = 0.35  # the width of the bars
@@ -192,40 +167,26 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     ax.legend(loc='upper right')
     ax.set_title("Error rates by type" , **title_kw)
     post_process_ax(ax)
-
     return fig
 
 def bam_figure_action(args):
-    
     bam_pickle_file_path = args['bam_pickle_path']
     with open(bam_pickle_file_path, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
-
     output_folder = args['report_dir']
+    # query_homopolymer_length_event
     fig = plot_overall_homopolymer_length_event_frequency(bam_datum_dict['homopolymer_aln_event_stat_dict'])
     fig.savefig(os.path.join(output_folder, 'query_homopolymer_length_event.lineplot.png'))
-    
+    # query_insertion_deletion_frequency
     fig1, fig2 = plot_insertion_deletion_frequency(bam_datum_dict['overall_aln_event_stat_dict'])
     fig1.savefig(os.path.join(output_folder, 'query_insertion_frequency.barplot.png'))
     fig2.savefig(os.path.join(output_folder, 'query_deletion_frequency.barplot.png'))
-
-
+    # query_all_error_item
     fig = plot_overall_alignment_frequency(bam_datum_dict['overall_aln_event_sum_dict'])
     fig.savefig(os.path.join(output_folder, 'query_all_error_item.barplot.png'))
-    
+    # query_all_substitution_errors
     fig = plot_substitution_frequency(bam_datum_dict['overall_aln_event_stat_dict'])
     fig.savefig(os.path.join(output_folder, 'query_all_substitution_errors.barplot.png'))
-
-
+    # query_events_curve_idy
     fig = plot_query_identity_rate_densities(bam_datum_dict['query_aln_event_stat_dict'])
     fig.savefig(os.path.join(output_folder, 'query_events_curve_idy.displot.png'))
-
-
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-#     parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
-
-#     args = vars(parser.parse_args())
-#     bam_figure_action(args)
-

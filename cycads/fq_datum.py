@@ -105,7 +105,10 @@ def readParse(number, name, seq, quali, seqdict):
     seqdict['ID'].append(number)
     seqdict['GC'].append(readGCcontent(seq, seq_len))
     seqdict['LEN'].append(seq_len)
-    seqdict['QUAL1'].append(float(name.split('_')[-1]))
+    try:
+        seqdict['QUAL1'].append(float(name.split('_')[-1]))
+    except Exception:
+        seqdict['QUAL1'].append(0)
     seqdict['QUAL2'].append(readAvgQscore(quali, seq_len))
     return seqdict
 def sampling_analyser(args):

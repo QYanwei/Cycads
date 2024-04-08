@@ -10,10 +10,8 @@ import matplotlib.ticker as mtick
 import seaborn as sns
 import pickle
 import warnings
-
 warnings.filterwarnings("ignore", "is_categorical_dtype")
 warnings.filterwarnings("ignore", "use_inf_as_na")
-
 from .plots import *
 
 def plot_length_Nx_average_bar(seq_qual_dict):
@@ -150,7 +148,6 @@ def plot_homopolymer_frequency(homopolymer_dict):
     ax.set_ylabel("Total number of occurances")
     ax.set_title("Homopolymer length distribution", **title_kw)
     post_process_ax(ax)
-
     return fig
 
 
@@ -173,9 +170,7 @@ def plot_ends_base_content_curve(endBaseQual_dict):
         ys = (np.array(data["G"]) + np.array(data["C"])) / data['S']
         ys *= 100
         ax.plot(xs, ys, color='tab:brown', ls='-', label="G+C")
-
         ax.grid(axis='both', **grid_kw)
-        
         if key == "HeadBaseContent_dict":
             ax.set_xlim(0, xs.max() + 1)
             ax.set_xlabel("Distance from 5' end")
@@ -186,11 +181,9 @@ def plot_ends_base_content_curve(endBaseQual_dict):
             ax.set_xlabel("Distance from 3' end")
             ax.legend(loc='upper left')
             ax.set_title("Base content near 3' end", **title_kw)
-            
         ax.yaxis.set_major_formatter(mtick.PercentFormatter())
         ax.set_ylabel("Frequency of base")
         post_process_ax(ax)
-    
     return fig1, fig2
 
 def plot_ends_base_quality_curve(endBaseQual_dict):
@@ -211,9 +204,7 @@ def plot_ends_base_quality_curve(endBaseQual_dict):
             ax.plot(xs, ys, color=color, ls='-', label=base)
         ys = sum(np.array(quality_values) for key, quality_values in data.items() if key in ("A", "T", "C", "G")) / sum(np.array(base_counts) for key, base_counts in data['S'].items() if key in ("A", "T", "C", "G"))
         ax.plot(xs, ys, color='tab:brown', ls='-', label="Overall")
-
         ax.grid(axis='both', **grid_kw)
-        
         if key == "HeadQualContent_dict":
             ax.set_xlim(0, xs.max() + 1)
             ax.set_xlabel("Distance from 5' end")
@@ -227,7 +218,6 @@ def plot_ends_base_quality_curve(endBaseQual_dict):
             
         ax.set_ylabel("Mean base quality")
         post_process_ax(ax)
-
     return fig1, fig2
 
 def plot_read_percent_qualtiy_curve(allBaseQual_dict):
@@ -244,7 +234,6 @@ def plot_read_percent_qualtiy_curve(allBaseQual_dict):
     return fig
 
 def fq_figure_action(args):
-    
     pickle_path = args['fastq_pickle_path']
     if not os.path.isfile(pickle_path):
         raise IOError(f"Unable to find FASTQ stats file: {pickle_path}")
@@ -255,47 +244,36 @@ def fq_figure_action(args):
     homopolymer_dict = fq_datum_dict['homopolymer_dict']
     endBaseQual_dict = fq_datum_dict['endBaseQual_dict']
     allBaseQual_dict = fq_datum_dict['allBaseQual_dict']
-
     output_folder = args['report_dir']
+    # read_length_biostat
     fig = plot_length_Nx_average_bar(seq_qual_dict)
     fig.savefig(os.path.join(output_folder, 'read_length_biostat.barplot.png'))
-
+    # read_gc_histplot
     fig = plot_gc_content_frequency_distribution(seq_qual_dict)
     fig.savefig(os.path.join(output_folder, 'read_gc_histplot.barplot.png'))
-
-
+    # read_quality_histplot
     fig = plot_read_quality_frequency_distritution(seq_qual_dict)
     fig.savefig(os.path.join(output_folder, 'read_quality_histplot.barplot.png'))
-
-
+    # read_length_histplot_nolog
     fig = plot_read_length_frequency_distribution(seq_qual_dict)
     fig.savefig(os.path.join(output_folder, 'read_length_histplot_nolog.barplot.png'))
-
-
+    # read_length_cumulative
     fig = plot_read_length_cumulative_distribution(seq_qual_dict)
     fig.savefig(os.path.join(output_folder, 'read_length_cumulative.barplot.png'))
-
+    # read_length_quality_cross
     fig = plot_length_quality_2d_histogram(seq_qual_dict)
     fig.savefig(os.path.join(output_folder, 'read_length_quality_cross.scatterplot.png'))
-
+    # read_relative_position_avg_qual
     fig = plot_read_percent_qualtiy_curve(allBaseQual_dict)
     fig.savefig(os.path.join(output_folder, 'read_relative_position_avg_qual.lineplot.png'))
-
+    # read_head_base_content
     fig1, fig2 = plot_ends_base_content_curve(endBaseQual_dict)
     fig1.savefig(os.path.join(output_folder, 'read_head_base_content.lineplot.png'))
     fig2.savefig(os.path.join(output_folder, 'read_tail_base_content.lineplot.png'))
-
-
+    # read_head_base_quality
     fig1, fig2 = plot_ends_base_quality_curve(endBaseQual_dict)
     fig1.savefig(os.path.join(output_folder, 'read_head_base_quality.lineplot.png'))
     fig2.savefig(os.path.join(output_folder, 'read_tail_base_quality.lineplot.png'))
-
+    # read_homopolymer_frequency
     fig = plot_homopolymer_frequency(homopolymer_dict)
     fig.savefig(os.path.join(output_folder, 'read_homopolymer_frequency.lineplot.png'))
-
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-#     parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
-#     args = vars(parser.parse_args())
-#     fq_figure_action(args)

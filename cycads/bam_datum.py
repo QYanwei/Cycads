@@ -36,9 +36,6 @@ def try_extend_sequence_homopolymer(start_pos, end_pos, sequence, base_homopolym
     return start_pos, end_pos
 
 def parsing_homopolymer_error_event(hpm_min_length, hpm_max_length, shift_length, new_ref, new_seq, homopolymer_aln_event_stat_dict):
-#    print(new_ref)
-#    print(new_seq)
-#    print(len(new_ref) - len(new_seq))
     start_init, end_init = -1, -1
     hpm_map, hpm_mis, hpm_ins, hpm_del = 0, 0, 0, 0
     # homopolymers regular expression pattern
@@ -251,7 +248,6 @@ def bam_datum_action(args):
         'hpm_expansion': 0,
         'hpm_contraction': 0,
     }
-    
     # analyzing data
     bam_path = args['bam']
     print(f"Analyzing {bam_path}")
@@ -286,7 +282,6 @@ def bam_datum_action(args):
                 parsing_alignment_events(hpm_min_length, hpm_max_length, hpm_shift_length, raw_ref, raw_seq, cigar_tuples, overall_aln_event_sum_dict, overall_aln_event_stat_dict, query_aln_event_stat_dict, homopolymer_aln_event_stat_dict)
             else:
                 continue
-                
     # structure write
     merge_alignment_dict = {
         'overall_aln_event_sum_dict': overall_aln_event_sum_dict,
@@ -294,21 +289,6 @@ def bam_datum_action(args):
         'query_aln_event_stat_dict': query_aln_event_stat_dict,
         'homopolymer_aln_event_stat_dict': homopolymer_aln_event_stat_dict
     }
-
     output_path = args['bam_pickle_path']
     with open(output_path, 'wb') as picklefile:
         pickle.dump(merge_alignment_dict, picklefile)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
-    parser.add_argument("-hpmindelmax", "--homopolymer_indel_max", type=int, default=4, required=False, help="homopolymer max indel shift")
-
-    parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-    parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="Prefix of output file name")
-
-    # initiated dict
-    args = vars(parser.parse_args())
-    bam_datum_action(args)
-
-

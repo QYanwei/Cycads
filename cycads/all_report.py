@@ -45,7 +45,7 @@ def generate_fq_report_strings(args, output_folder):
         table_list.append(N50(seq_qual_dict["LEN"]))
         table_list.append(round(mean(seq_qual_dict["QUAL2"]), 2))
         table_list.append(round(max(seq_qual_dict["QUAL2"]), 2))
-        table_list.append(min(seq_qual_dict["QUAL2"]))
+        table_list.append(round(min(seq_qual_dict["QUAL2"]), 2))
     fq_table_string = "<thead><tr>"
     for i in table_name:
         fq_table_string += "<th>{}</th>".format(i)

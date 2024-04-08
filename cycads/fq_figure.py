@@ -120,23 +120,22 @@ def plot_length_quality_2d_histogram(seq_qual_dict):
     return fig
     
 
-def plot_homopolymer_frequency(homopolymer_dict):
-    homopolymer_len_max = 10
+def plot_homopolymer_frequency(homopolymer_dict, args):
+    homopolymer_len_max = args['max_homopolymer_size']
+    homopolymer_len_min = args['min_homopolymer_size']
     homopolymer_range_dict = {'A': {}, 'G': {}, 'C': {}, 'T': {} }
+    xs = list(range( homopolymer_len_min, homopolymer_len_max + 1))
     for b in homopolymer_dict.keys():
-        for i in homopolymer_dict[b].keys():
-            if int(i) <= homopolymer_len_max:
-                homopolymer_range_dict[b][int(i)] = homopolymer_dict[b][i]
-            elif int(i) > homopolymer_len_max:
-                if i not in homopolymer_range_dict[b].keys():
-                    homopolymer_range_dict[b][homopolymer_len_max] = homopolymer_dict[b][i]
-                else:
-                    homopolymer_range_dict[b][homopolymer_len_max] += homopolymer_dict[b][i]
+        for x in xs:
+            if x <= homopolymer_len_max and x not in homopolymer_dict[b].keys():
+                homopolymer_range_dict[b][x] = 0
+            elif x <= homopolymer_len_max and x in homopolymer_dict[b].keys():
+                homopolymer_range_dict[b][x] = homopolymer_dict[b][x]
+            elif x > homopolymer_len_max and x in homopolymer_dict[b].keys():
+                homopolymer_range_dict[b][homopolymer_len_max] += homopolymer_dict[b][x]
             else:
                 pass
-    xs = list(range(2, homopolymer_len_max + 1))
     fig, ax = plt.subplots(**figure_kw)
-
     for base in ("A", "T", "C", "G"):
         ys = [homopolymer_range_dict[base][x] for x in xs]
         color = palette[base]
@@ -187,7 +186,6 @@ def plot_ends_base_content_curve(endBaseQual_dict):
     return fig1, fig2
 
 def plot_ends_base_quality_curve(endBaseQual_dict):
-
     for key in ("HeadQualContent_dict", "TailQualContent_dict"):
         fig, ax = plt.subplots(**figure_kw)
         if key == "HeadQualContent_dict":
@@ -275,5 +273,5 @@ def fq_figure_action(args):
     fig1.savefig(os.path.join(output_folder, 'read_head_base_quality.lineplot.png'))
     fig2.savefig(os.path.join(output_folder, 'read_tail_base_quality.lineplot.png'))
     # read_homopolymer_frequency
-    fig = plot_homopolymer_frequency(homopolymer_dict)
+    fig = plot_homopolymer_frequency(homopolymer_dict, args)
     fig.savefig(os.path.join(output_folder, 'read_homopolymer_frequency.lineplot.png'))

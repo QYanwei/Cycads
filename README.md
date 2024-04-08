@@ -49,7 +49,7 @@ The example below generates HTML report from `test/ecoli.fq.gz`:
 ## Parameters details
 
   ```
-                      === Cycads 0.4.0 ===
+                            === Cycads 0.4.0 ===
 ============================================================================
             Quality control & Data filtering & Error analysis
                             for Long-read sequencing

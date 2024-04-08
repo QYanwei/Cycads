@@ -105,7 +105,6 @@ def plot_query_identity_rate_densities(query_aln_event_stat_dict):
     ax.set_yticks([])
     ax.set_ylabel("Density")
     ax.set_title("Distribution of per-read identity", **title_kw)
-    ax.legend(loc='upper left')
     post_process_ax(ax)
     return fig
 

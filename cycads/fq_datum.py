@@ -14,13 +14,11 @@ def readGCcontent(seq, seq_len):
     C = seq.count("C")
     G = seq.count("G")
     return (C+G)/len(seq)
-
 def readAvgQscore(quali, seq_len):
     value_list = Counter(list(quali))
     value_sum = sum([k * v for k, v in value_list.items()])
     seq_qscore = value_sum / seq_len
     return seq_qscore
-
 def endBaseHeadParse(seq, shift_length, endBaseQual_dict):
     i = 0
     for b in seq[:shift_length]:
@@ -60,7 +58,6 @@ def allBaseQualParse(quali, split_part_num, allBaseQual_dict):
             allBaseQual_dict['PercentBaseQual_dict']['Q'][j] += qv_in_percentage_pos[j]
         allBaseQual_dict['PercentBaseQual_dict']['S'] += 1
     return allBaseQual_dict
-
 def endBaseQualParse(seq, quali, args, endBaseQual_dict):
     if len(seq) > (args["check_terminal_bases"] + args["check_terminal_bases"]):
         endBaseQual_dict = endBaseHeadParse(seq, args["check_terminal_bases"], endBaseQual_dict)
@@ -103,7 +100,6 @@ def kmerSpectrumParse(fq_path, kmer_size, output_dir):
     else:
         print('please determining the input file suffix is fastq or fq or fq.gz!')
 # kmerSpectrumParse('../test/ecoli.fq.gz', 5, '../test/')
-
 def readParse(number, name, seq, quali, seqdict):
     seq_len = len(seq)
     seqdict['ID'].append(number)
@@ -145,7 +141,6 @@ def sampling_analyser(args):
         endBaseQual_dict = endBaseQualParse(read.seq, read.quali, args, endBaseQual_dict)
         allBaseQual_dict = allBaseQualParse(read.quali, split_part_num, allBaseQual_dict)
     return seqdict, homopolymer_dict, endBaseQual_dict, allBaseQual_dict
-
 def overall_analyser(args):
     seqdict = dict({'ID': [], 'GC': [], 'LEN': [], 'QUAL1': [], 'QUAL2': []})  # QUAL1: read basecall Q, QUAL2: read average Q
     homopolymer_size_min = args["min_homopolymer_size"]
@@ -191,7 +186,6 @@ def get_fq_datum(args):
             'allBaseQual_dict': allBaseQual_dict
         }
         return overall_fq_datum_dict
-
 def fq_datum_action(args):
     merged_fq_datum_dict = get_fq_datum(args)
     with open(args['fastq_pickle_path'], "wb") as f:

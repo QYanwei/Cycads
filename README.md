@@ -49,6 +49,20 @@ The example below generates HTML report from `test/ecoli.fq.gz`:
 ## Parameters details
 
   ```
+                      === Cycads 0.4.0 ===
+============================================================================
+            Quality control & Data filtering & Error analysis
+                            for Long-read sequencing
+============================================================================
+
+usage: cycads [-h] [-f FASTQ_PATH] [-b BAM_PATH] [-r REFERENCE_PATH] [-o OUTPUT_DIR] [-n SAMPLE_NAME] [-s N] [--seed SEED] [-T N] [-F] [-e N] [-Q MIN_BASE_QUALITY]
+              [--min_length MIN_READ_LENGTH] [--max_length MAX_READ_LENGTH] [--trim_5_end N] [--trim_3_end N] [-d TARGET_DEPTH] [-g GENOME_SIZE]
+              [--min_homopolymer_size MIN_HOMOPOLYMER_SIZE] [--max_homopolymer_size MAX_HOMOPOLYMER_SIZE] [--max_homopolymer_indel_size MAX_HOMOPOLYMER_INDEL_SIZE]
+              [--alignment_threads THREADS] [--sort_threads THREADS] [--minimap2_arguments ARGUMENTS] [--minimap2_path MINIMAP2_PATH] [--samtools_path SAMTOOLS_PATH]
+              [--pyfastx_path PYFASTX_PATH]
+
+A tool for quality control & error profile analysis of long-read sequencing data
+
 options:
   -h, --help            show this help message and exit
 
@@ -80,9 +94,9 @@ Filtering:
   -F, --filter          Output filtered FASTQ file. Analyses are always based on the input FASTQ file. (default: False)
   -e N, --extract N     Randomly extract N reads from the input FASTQ file. (default: None)
   -Q MIN_BASE_QUALITY, --min_base_quality MIN_BASE_QUALITY
-                        Remove reads with mean base quality less than MIN_BASE_QUALITY. (default: 10)
+                        Remove reads with mean base quality less than MIN_BASE_QUALITY. (default: 7)
   --min_length MIN_READ_LENGTH
-                        Remove reads shorter than MIN_READ_LENGTH. (default: 1000)
+                        Remove reads shorter than MIN_READ_LENGTH. (default: 1)
   --max_length MAX_READ_LENGTH
                         Remove reads longer than MAX_READ_LENGTH. (default: 1000000000)
   --trim_5_end N        Trim N bases from the 5' end of each read. (default: 0)
@@ -113,8 +127,8 @@ Alignment:
                         Alignment arguments to be passed to minimap2. (default: -ax map-ont --secondary=no --MD --eqx -I 10G)
 
 Dependencies:
-  Arguments for custom paths to external binary dependencies. Cycads searches for binary dependencies in the following order: 1. arguments specified here; 2. the `dependencies` folder in Cycads
-  installation path; 3. the system $PATH environmental variable.
+  Arguments for custom paths to external binary dependencies. Cycads searches for binary dependencies in the following order: 1. arguments specified here; 2. the `dependencies` folder
+  in Cycads installation path; 3. the system $PATH environmental variable.
 
   --minimap2_path MINIMAP2_PATH
                         Path to Minimap2. (default: None)
@@ -122,6 +136,7 @@ Dependencies:
                         Path to samtools. (default: None)
   --pyfastx_path PYFASTX_PATH
                         Path to pyfastx. (default: None)
+
 
   ```
 

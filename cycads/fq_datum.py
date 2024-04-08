@@ -198,17 +198,3 @@ def fq_datum_action(args):
         filewidth = len(merged_fq_datum_dict['seq_qual_dict']['ID']) + 60
         pickle.dump(merged_fq_datum_dict, f)
 
-# if __name__ == "__main__" :
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("-fq",    "--fastq",     required=True,  help="sequences.fq/fq.gz")
-#     parser.add_argument("-P", "--platform", required=False, help="cyclone")
-#     parser.add_argument("-M", "--mode", type=str, default="overall", required=False, help="if you want fast, please set to sampling")
-#     parser.add_argument("-Hshift", "--head_shift_length", type=int, default=200, required=False, help="check head bases quality")
-#     parser.add_argument("-Tshift", "--tail_shift_length", type=int, default=200, required=False, help="check tail bases quality")
-#     parser.add_argument("-kmer", "--kmer_size_frequency",     type=int, default=5, required=False, help="observe kmer size specturm")
-#     parser.add_argument("-hpmin", "--homopolymer_min_length", type=int, default=2, required=False, help="observe minium homopolymer")
-#     parser.add_argument("-hpmax", "--homopolymer_max_length", type=int, default=9, required=False, help="observe maxium homopolymer")
-#     parser.add_argument("-o", "--output_dir", default='cycads_report', required=False, help="Output direcotry")
-#     parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
-#     args = vars(parser.parse_args())
-#     fq_datum_action(args)

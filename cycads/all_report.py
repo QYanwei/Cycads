@@ -10,7 +10,6 @@ from . import __version__
 def get_template_path(template_name):
     path = pkg_resources.resource_filename('cycads', f'resources/{template_name}.j2')
     return path
-
 # import html template
 def import_jinja_template(template_file): # TODO: enable custom template for advanced users
     try:
@@ -20,8 +19,6 @@ def import_jinja_template(template_file): # TODO: enable custom template for adv
     except (FileNotFoundError, IOError, jinja2.exceptions.TemplateNotFound, jinja2.exceptions.TemplateSyntaxError):
         raise IOError(f"Template file {template_file} not found, non-readable or invalid\n")
     return template
-
-
 def N50(list_read_length):
     # Calculate the total length of the sequences
     total_length = sum(list_read_length)
@@ -91,7 +88,6 @@ def generate_fq_report_strings(args, output_folder):
             fq_plots_string += "</td>"
         fq_plots_string += "</tr>"
     return fq_table_string, fq_plots_string
-    
 # bam report data
 def generate_bam_report_string(args, output_folder):
     table_list = [args["sample_name"]]
@@ -120,7 +116,6 @@ def generate_bam_report_string(args, output_folder):
     for i in table_list:
         bam_table_string += "<th>{}</th>".format(i)
     bam_table_string += "</tr><thead>"
-
     plots_list = [["query_all_error_item.barplot.png",
                    "query_all_substitution_errors.barplot.png"],
                   ["query_deletion_frequency.barplot.png",
@@ -143,19 +138,15 @@ def generate_bam_report_string(args, output_folder):
             bam_plots_string += "</td>"
         bam_plots_string += "</tr>"
     return bam_table_string, bam_plots_string
-
 def generate_report_html(args, output_folder, flag):
     output_path = os.path.join(output_folder, "summary.html")
-
     # set the basic report infortion
     report_title = "CycloneSEQ quality reporter"
     report_subtitle = "Created on {} with {} {}".format(datetime.datetime.now().strftime("%d/%m/%y"), "Cycads", __version__)
     pwd_config_file = os.path.realpath(__file__)
     if flag == 0:
         fq_table_string, fq_plots_string = generate_fq_report_strings(args, output_folder)
-
         template_file = get_template_path("template_fq_report")
-        
         template = import_jinja_template(template_file)
         rendering = template.render(
            fq_table=fq_table_string,
@@ -165,7 +156,6 @@ def generate_report_html(args, output_folder, flag):
         # Write to HTML file
         with open(output_path, "w") as fp:
             fp.write(rendering)
-        
     elif flag == 1:
         bam_table_string, bam_plots_string = generate_bam_report_string(args, output_folder)
         template_file = get_template_path("template_bam_report")
@@ -178,13 +168,11 @@ def generate_report_html(args, output_folder, flag):
             report_subtitle=report_subtitle)
         # Write to HTML file
         with open(output_path, "w") as fp:
-            fp.write(rendering)
-        
+            fp.write(rendering) 
     elif flag == 2:
         fq_table_string, fq_plots_string = generate_fq_report_strings(args, output_folder)
         bam_table_string, bam_plots_string = generate_bam_report_string(args, output_folder)
         template_file = get_template_path("template_all_report")
-        
         template = import_jinja_template(template_file)
         rendering = template.render(
             fq_table=fq_table_string,
@@ -196,7 +184,6 @@ def generate_report_html(args, output_folder, flag):
         # Write to HTML file
         with open(output_path, "w") as fp:
             fp.write(rendering)
-
     abs_output_path = os.path.abspath(output_path)
     print(f"HTML report written to {abs_output_path}")
 
@@ -212,11 +199,3 @@ def generate_html(args):
         generate_report_html(args, output_folder, 1)
     else:
         raise IOError(f"Unable to find {fq_pickle} or {bam_pickle}")
-
-
-# if __name__ == '__main__':
-#      parser = argparse.ArgumentParser()
-#      parser.add_argument("-o", "--output_dir", default='./', required=False, help="Output direcotry")
-#      parser.add_argument("-n", "--sample_name", default='cycads_report', required=False, help="prefix of output file name")
-#      args = vars(parser.parse_args())
-#      generate_html(args)

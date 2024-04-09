@@ -39,8 +39,9 @@ def plot_length_Nx_average_bar(seq_qual_dict):
     ax.axhline(average_length, color='k', ls='--', label='Mean read length')
     ax.legend(loc='upper right')
     ax.set_xlabel("")
-    ax.set_ylabel("Read length (bp)")
+    ax.set_ylabel("Read length (bp)", **labelsize_kw)
     ax.grid(axis='y', **grid_kw)
+    ax.tick_params(axis='both', **ticksize_kw)
     ax.set_title("Read length Nx metrics", **title_kw)
     post_process_ax(ax)
     return fig
@@ -51,10 +52,11 @@ def plot_gc_content_frequency_distribution(seq_qual_dict):
     ax.hist(gc_percentage, bins=np.arange(0, 100, 1), density=True, **hist_kw)
     ax.xaxis.set_major_formatter(mtick.PercentFormatter())
     ax.set_xlim(0, 100)
-    ax.set_xlabel("Read GC content")
+    ax.set_xlabel("Read GC content", **labelsize_kw)
     ax.set_xticks(list(range(0, 101, 10)))
-    ax.set_ylabel("Density")
+    ax.set_ylabel("Density", **labelsize_kw)
     ax.set_yticks([])
+    ax.tick_params(axis='both', **ticksize_kw)
     ax.set_title("Read GC content distribution", **title_kw)
     post_process_ax(ax)
     return fig
@@ -66,10 +68,11 @@ def plot_read_quality_frequency_distritution(seq_qual_dict):
     xmax = ceil(quality_values.max())
     bins = np.arange(xmin, xmax + 1, 0.5)
     ax.hist(quality_values, bins=bins, density=True, **hist_kw)
-    ax.set_xlabel("Mean per-read base quality")
+    ax.set_xlabel("Mean per-read base quality", **labelsize_kw)
     ax.set_xlim(xmin, xmax)
-    ax.set_ylabel("Density")
+    ax.set_ylabel("Density", **labelsize_kw)
     ax.set_yticks([])
+    ax.tick_params(axis='both', **ticksize_kw)
     ax.set_title("Mean base quality distribution", **title_kw)
     post_process_ax(ax)
     return fig
@@ -80,9 +83,10 @@ def plot_read_length_frequency_distribution(seq_qual_dict):
     fig, ax = plt.subplots(**figure_kw)
     ax.hist(lengths/1000, bins=100, **hist_kw)
     ax.set_xlim(left=0)
-    ax.set_xlabel("Read length (kb)")
-    ax.set_ylabel("Density")
+    ax.set_xlabel("Read length (kb)", **labelsize_kw)
+    ax.set_ylabel("Density", **labelsize_kw)
     ax.set_yticks([])
+    ax.tick_params(axis='both', **ticksize_kw)
     ax.set_title("Read length distribution", **title_kw)
     post_process_ax(ax)
     return fig
@@ -97,10 +101,11 @@ def plot_read_length_cumulative_distribution(seq_qual_dict):
     ax.plot(xs, ys)
     ax.set_ylim(0, 100)
     ax.set_xlim(left=0)
-    ax.set_xlabel("Min. read length (kb)")
-    ax.set_ylabel("Cumulative fraction of bases")
+    ax.set_xlabel("Min. read length (kb)", **labelsize_kw)
+    ax.set_ylabel("Cumulative fraction of bases", **labelsize_kw)
     ax.yaxis.set_major_formatter(mtick.PercentFormatter())
     ax.grid(axis='both', **grid_kw)
+    ax.tick_params(axis='both', **ticksize_kw)
     ax.set_title("Cumulative fraction of bases vs. read length", **title_kw)
     post_process_ax(ax)
     return fig
@@ -113,9 +118,10 @@ def plot_length_quality_2d_histogram(seq_qual_dict):
     ax.hist2d(lengths, quality_values, bins=(50, 50), cmap='Blues')
     ax.set_xlim(lengths.min(), lengths.max())
     ax.set_ylim(quality_values.min(), quality_values.max())
-    ax.set_xlabel("Read length (kb)")
-    ax.set_ylabel("Mean per-read base quality")
-    ax.set_title("Joint distribution of read length and mean base quality", **title_kw)
+    ax.set_xlabel("Read length (kb)", **labelsize_kw)
+    ax.set_ylabel("Mean per-read base quality", **labelsize_kw)
+    ax.set_title("Read length VS mean base quality", **title_kw)
+    ax.tick_params(axis='both', **ticksize_kw)
     post_process_ax(ax)
     return fig
     
@@ -142,10 +148,11 @@ def plot_homopolymer_frequency(homopolymer_dict, args):
         ax.plot(xs, ys, label=base)
     ax.legend(loc='upper right')
     ax.set_xlim(min(xs), max(xs))
-    ax.set_xlabel("Homopolymer length")
+    ax.set_xlabel("Homopolymer length", **labelsize_kw)
     ax.set_yscale("log")
-    ax.set_ylabel("Total number of occurances")
+    ax.set_ylabel("Total number of occurances", **labelsize_kw)
     ax.set_title("Homopolymer length distribution", **title_kw)
+    ax.tick_params(axis='both', **ticksize_kw)
     post_process_ax(ax)
     return fig
 
@@ -172,16 +179,17 @@ def plot_ends_base_content_curve(endBaseQual_dict):
         ax.grid(axis='both', **grid_kw)
         if key == "HeadBaseContent_dict":
             ax.set_xlim(0, xs.max() + 1)
-            ax.set_xlabel("Distance from 5' end")
+            ax.set_xlabel("Distance from 5' end", **labelsize_kw)
             ax.legend(loc='upper right')
             ax.set_title("Base content near 5' end", **title_kw)
         else:
             ax.set_xlim(xs.max() + 1, 0)
-            ax.set_xlabel("Distance from 3' end")
+            ax.set_xlabel("Distance from 3' end", **labelsize_kw)
             ax.legend(loc='upper left')
             ax.set_title("Base content near 3' end", **title_kw)
         ax.yaxis.set_major_formatter(mtick.PercentFormatter())
-        ax.set_ylabel("Frequency of base")
+        ax.set_ylabel("Frequency of base", **labelsize_kw)
+        ax.tick_params(axis='both', **ticksize_kw)
         post_process_ax(ax)
     return fig1, fig2
 
@@ -205,16 +213,17 @@ def plot_ends_base_quality_curve(endBaseQual_dict):
         ax.grid(axis='both', **grid_kw)
         if key == "HeadQualContent_dict":
             ax.set_xlim(0, xs.max() + 1)
-            ax.set_xlabel("Distance from 5' end")
+            ax.set_xlabel("Distance from 5' end", **labelsize_kw)
             ax.legend(loc='lower right')
             ax.set_title("Base content near 5' end", **title_kw)
         else:
             ax.set_xlim(xs.max() + 1, 0)
-            ax.set_xlabel("Distance from 3' end")
+            ax.set_xlabel("Distance from 3' end", **labelsize_kw)
             ax.legend(loc='lower left')
             ax.set_title("Base content near 3' end", **title_kw)
             
-        ax.set_ylabel("Mean base quality")
+        ax.tick_params(axis='both', **ticksize_kw)
+        ax.set_ylabel("Mean base quality", **labelsize_kw)
         post_process_ax(ax)
     return fig1, fig2
 
@@ -224,10 +233,11 @@ def plot_read_percent_qualtiy_curve(allBaseQual_dict):
     fig, ax = plt.subplots(**figure_kw)
     ax.plot(xs, quality_values, clip_on=False, color='steelblue')
     ax.set_xlim(0, 100)
-    ax.set_xlabel("Relative position in read")
-    ax.set_ylabel("Mean base quality")
-    ax.set_title("Mean base quality vs. relative position in read", **title_kw)
+    ax.set_xlabel("Relative position in read", **labelsize_kw)
+    ax.set_ylabel("Mean base quality", **labelsize_kw)
+    ax.set_title("Mean base quality in Read relative pos.", **title_kw)
     ax.grid(axis='both', **grid_kw)
+    ax.tick_params(axis='both', **ticksize_kw)
     post_process_ax(ax)
     return fig
 

@@ -26,9 +26,10 @@ def plot_substitution_frequency(overall_aln_event_stat_dict):
     ticks = list(range(len(tick_labels)))
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
-    ax.set_xlabel("Substitution type")
-    ax.set_ylabel("Frequency of substitutions")
+    ax.set_xlabel("Substitution type", **labelsize_kw)
+    ax.set_ylabel("Frequency of substitutions", **labelsize_kw)
     ax.set_title("Summary of substitutions by type" , **title_kw)
+    ax.tick_params(axis='both', **ticksize_kw)   
     post_process_ax(ax)
     return fig
 
@@ -67,14 +68,15 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     fig1 = fig
     sns.barplot(ax=ax, data=Ins_dataframe, color='steelblue')
     ax.grid(axis='y', **grid_kw)
-    ax.set_xlabel("Insertion size (bp)")
+    ax.set_xlabel("Insertion size (bp)", **labelsize_kw)
     ticks = list(range(0, indel_len_max))
     tick_labels = [str(x+1) for x in ticks]
     tick_labels[-1] += "+"
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
-    ax.set_ylabel("Frequency of insertions")
+    ax.set_ylabel("Frequency of insertions", **labelsize_kw)
     ax.set_title("Size distribution of insertions", **title_kw)
+    ax.tick_params(axis='both', **ticksize_kw)   
     post_process_ax(ax)
     # Deletion data prepare
     Del_dataframe = pd.DataFrame(indel_range_dict['Deletion'], index=[0])
@@ -86,9 +88,10 @@ def plot_insertion_deletion_frequency(overall_aln_event_stat_dict):
     ax.grid(axis='y', **grid_kw)
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels)
-    ax.set_xlabel("Deletion size (bp)")
-    ax.set_ylabel("Freqency of deletions")
+    ax.set_xlabel("Deletion size (bp)", **labelsize_kw)
+    ax.set_ylabel("Freqency of deletions", **labelsize_kw)
     ax.set_title("Size distribution of insertions", **title_kw)
+    ax.tick_params(axis='both', **ticksize_kw)   
     post_process_ax(ax)
     return fig1, fig2
 
@@ -100,11 +103,13 @@ def plot_query_identity_rate_densities(query_aln_event_stat_dict):
     # query identity plotting
     fig, ax = plt.subplots(**figure_kw)
     sns.kdeplot(data=qry_idy_df.T, fill=True, alpha=.5, linewidth=0)
-    ax.set_xlabel("Per-read identity")
+    ax.set_xlabel("Per-read identity", **labelsize_kw)
     ax.set_xlim(right=1)
     ax.set_yticks([])
-    ax.set_ylabel("Density")
+    ax.set_ylabel("Density", **labelsize_kw)
     ax.set_title("Distribution of per-read identity", **title_kw)
+    ax.tick_params(axis='both', **ticksize_kw)
+    ax.legend().remove()
     post_process_ax(ax)
     return fig
 
@@ -141,9 +146,10 @@ def plot_overall_homopolymer_length_event_frequency(homopolymer_aln_event_stat_d
     ax.legend(loc='upper left')
     ax.set_xlim(xs.min(), xs.max())
     ax.set_ylim(0, 1)
-    ax.set_xlabel("Homopolymer length (bp)")
-    ax.set_ylabel("Fraction of homopolymers")
+    ax.set_xlabel("Homopolymer length (bp)", **labelsize_kw)
+    ax.set_ylabel("Fraction of homopolymers", **labelsize_kw)
     ax.set_title("Summary of homopolymer errors" , **title_kw)
+    ax.tick_params(axis='both', **ticksize_kw)   
     post_process_ax(ax)
     return fig
 
@@ -161,11 +167,12 @@ def plot_overall_alignment_frequency(overall_aln_event_sum_dict):
     fig, ax = plt.subplots(**figure_kw)
     ax.bar(x, all_aln_rates, width, label='Overall error rate', color='steelblue')
     ax.grid(axis='y', **grid_kw)
-    ax.set_ylabel('Error rate (%)')
+    ax.set_ylabel('Error rate (%)', **labelsize_kw)
     ax.set_xticks(x)
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(labels, **labelsize_kw)
     ax.legend(loc='upper right')
     ax.set_title("Error rates by type" , **title_kw)
+    ax.tick_params(axis='both', **ticksize_kw)   
     post_process_ax(ax)
     return fig
 

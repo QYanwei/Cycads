@@ -17,7 +17,7 @@ cycads --help
 ```
 
 
-## Quick start 
+## Quick start
 
 The example below generates HTML report from `test/ecoli.fq.gz`:
 
@@ -27,11 +27,13 @@ The example below generates HTML report from `test/ecoli.fq.gz`:
 
 ## Usages
 
-* FASTQ quality control 
-  ``` 
+* FASTQ quality control
+  ```
   cycads --fastq test/ecoli.fq.gz --output_dir test/fastq_output
   ```
-* FASTQ quality control and filtering
+* FASTQ filtering
+
+  Should set the custom filtering parameter value by users
   ```
   cycads --fastq test/ecoli.fq.gz --filter --output_dir test/fastq_output
   ```
@@ -39,7 +41,7 @@ The example below generates HTML report from `test/ecoli.fq.gz`:
   ```
   cycads --fastq test/ecoli.fq.gz --reference test/ecoli.reference.fasta --output_dir test/alignment_output
   ```
-  
+
 * Alignment-based error analysis based on a pre-existing BAM file
   ```
   cycads --bam test/test.bam --output_dir test/bam_output
@@ -49,17 +51,17 @@ The example below generates HTML report from `test/ecoli.fq.gz`:
 ## Parameters details
 
   ```
-                            === Cycads 0.4.0 ===
+                           === Cycads 0.4.0 ===
 ============================================================================
             Quality control & Data filtering & Error analysis
                             for Long-read sequencing
 ============================================================================
 
-usage: cycads [-h] [-f FASTQ_PATH] [-b BAM_PATH] [-r REFERENCE_PATH] [-o OUTPUT_DIR] [-n SAMPLE_NAME] [-s N] [--seed SEED] [-T N] [-F] [-e N] [-Q MIN_BASE_QUALITY]
-              [--min_length MIN_READ_LENGTH] [--max_length MAX_READ_LENGTH] [--trim_5_end N] [--trim_3_end N] [-d TARGET_DEPTH] [-g GENOME_SIZE]
-              [--min_homopolymer_size MIN_HOMOPOLYMER_SIZE] [--max_homopolymer_size MAX_HOMOPOLYMER_SIZE] [--max_homopolymer_indel_size MAX_HOMOPOLYMER_INDEL_SIZE]
-              [--alignment_threads THREADS] [--sort_threads THREADS] [--minimap2_arguments ARGUMENTS] [--minimap2_path MINIMAP2_PATH] [--samtools_path SAMTOOLS_PATH]
-              [--pyfastx_path PYFASTX_PATH]
+usage: cycads [-h] [-f FASTQ_PATH] [-b BAM_PATH] [-r REFERENCE_PATH] [-o OUTPUT_DIR] [-n SAMPLE_NAME] [-p PLATFORM] [-s N] [--seed SEED] [-T N] [-F] [-e N]
+              [-Q MIN_BASE_QUALITY] [--min_length MIN_READ_LENGTH] [--max_length MAX_READ_LENGTH] [--trim_5_end N] [--trim_3_end N] [-d TARGET_DEPTH]
+              [-g GENOME_SIZE] [--min_homopolymer_size MIN_HOMOPOLYMER_SIZE] [--max_homopolymer_size MAX_HOMOPOLYMER_SIZE]
+              [--max_homopolymer_indel_size MAX_HOMOPOLYMER_INDEL_SIZE] [--alignment_threads THREADS] [--sort_threads THREADS] [--minimap2_arguments ARGUMENTS]
+              [--minimap2 MINIMAP2] [--samtools SAMTOOLS] [--pyfastx PYFASTX]
 
 A tool for quality control & error profile analysis of long-read sequencing data
 
@@ -79,6 +81,8 @@ I/O:
                         Output direcotry. (default: cycads_output)
   -n SAMPLE_NAME, --sample_name SAMPLE_NAME
                         Sample name displayed in output reports. (default: sample)
+  -p PLATFORM, --platform PLATFORM
+                        Design for CycloneSEQ data, also adopt to ONT and PB data. (default: cyclone)
 
 FASTQ:
   Arguments for FASTQ analyses. Only effective when FASTQ_PATH is supplied.
@@ -127,22 +131,60 @@ Alignment:
                         Alignment arguments to be passed to minimap2. (default: -ax map-ont --secondary=no --MD --eqx -I 10G)
 
 Dependencies:
-  Arguments for custom paths to external binary dependencies. Cycads searches for binary dependencies in the following order: 1. arguments specified here; 2. the `dependencies` folder
-  in Cycads installation path; 3. the system $PATH environmental variable.
+  Arguments for custom paths to external binary dependencies. Cycads searches for binary dependencies in the following order: 1. arguments specified here; 2.
+  the `dependencies` folder in Cycads installation path; 3. the system $PATH environmental variable.
 
-  --minimap2_path MINIMAP2_PATH
-                        Path to Minimap2. (default: None)
-  --samtools_path SAMTOOLS_PATH
-                        Path to samtools. (default: None)
-  --pyfastx_path PYFASTX_PATH
-                        Path to pyfastx. (default: None)
-
+  --minimap2 MINIMAP2   Path to Minimap2. (default: None)
+  --samtools SAMTOOLS   Path to samtools. (default: None)
+  --pyfastx PYFASTX     Path to pyfastx. (default: None)
 
   ```
 
 
 ## Example output
 
+Result folder example:
 
+  ```
+  .
+  ├── aligned_reads.bam
+  ├── aligned_reads.bam.bai
+  ├── bam.pickle
+  ├── fastq_summary.txt
+  ├── fq.pickle
+  ├── HTML_report
+  │   ├── query_all_error_item.barplot.png
+  │   ├── query_all_substitution_errors.barplot.png
+  │   ├── query_deletion_frequency.barplot.png
+  │   ├── query_events_curve_idy.displot.png
+  │   ├── query_homopolymer_length_event.lineplot.png
+  │   ├── query_insertion_frequency.barplot.png
+  │   ├── read_gc_histplot.barplot.png
+  │   ├── read_head_base_content.lineplot.png
+  │   ├── read_head_base_quality.lineplot.png
+  │   ├── read_homopolymer_frequency.lineplot.png
+  │   ├── read_length_biostat.barplot.png
+  │   ├── read_length_cumulative.barplot.png
+  │   ├── read_length_histplot_nolog.barplot.png
+  │   ├── read_length_quality_cross.scatterplot.png
+  │   ├── read_quality_histplot.barplot.png
+  │   ├── read_relative_position_avg_qual.lineplot.png
+  │   ├── read_tail_base_content.lineplot.png
+  │   ├── read_tail_base_quality.lineplot.png
+  │   └── summary.html
+  ├── input.symlink.fastq.gz -> /path/to/test/ecoli.fq.gz
+  └── input.symlink.fastq.gz.fxi
 
+  1 directory, 26 files
+  ```
+Please donwload the **HTML_report** folder and open the **summary.html** to check the result with Web Browser, such as Google Chrome and so on.
+
+## Report demo
+* Sequencing summary
+
+![Graphical abstract](cycads/resources/sequncing_summary_report.png)
+
+* Mapping summary
+
+![Graphical abstract](cycads/resources/mapping_summary_report.png)
 

@@ -29,7 +29,7 @@ def plot_substitution_frequency(overall_aln_event_stat_dict):
     ax.set_xlabel("Substitution type", **labelsize_kw)
     ax.set_ylabel("Frequency of substitutions", **labelsize_kw)
     ax.set_title("Summary of substitutions by type" , **title_kw)
-    ax.tick_params(axis='both', **ticksize_kw)   
+    ax.tick_params(axis='both', labelsize=10)
     post_process_ax(ax)
     return fig
 

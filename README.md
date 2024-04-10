@@ -22,29 +22,29 @@ cycads --help
 The example below generates HTML report from `test/ecoli.fq.gz`:
 
   ```
-  cycads --fastq test/ecoli.fq.gz --output_dir test/fastq_output
+  cycads --fastq test/ecoli.fq.gz --output_dir test --sample_name fastq_output
   ```
 
 ## Usages
 
 * FASTQ quality control
   ```
-  cycads --fastq test/ecoli.fq.gz --output_dir test/fastq_output
+  cycads --fastq test/ecoli.fq.gz --output_dir test --sample_name fastq_output
   ```
 * FASTQ filtering
 
   Should set the custom filtering parameter value by users
   ```
-  cycads --fastq test/ecoli.fq.gz --filter --output_dir test/fastq_output
+  cycads --fastq test/ecoli.fq.gz --filter --output_dir test --sample_name fastq_output
   ```
 * FASTQ quality control and alignment-based error analysis
   ```
-  cycads --fastq test/ecoli.fq.gz --reference test/ecoli.reference.fasta --output_dir test/alignment_output
+  cycads --fastq test/ecoli.fq.gz --reference test/ecoli.reference.fasta --output_dir test --sample_name alignment_output
   ```
 
 * Alignment-based error analysis based on a pre-existing BAM file
   ```
-  cycads --bam test/test.bam --output_dir test/bam_output
+  cycads --bam test/test.bam --output_dir test --sample_name bam_output
   ```
 
 

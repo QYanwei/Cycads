@@ -188,3 +188,9 @@ Please donwload the **HTML_report** folder and open the **summary.html** to chec
 
 ![Graphical abstract](cycads/resources/mapping_summary_report.png)
 
+## Citation
+
+https://github.com/QYanwei/Cycads
+
+
+

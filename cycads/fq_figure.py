@@ -115,7 +115,7 @@ def plot_length_quality_2d_histogram(seq_qual_dict):
     quality_values = np.array(seq_qual_dict['QUAL2'])
 
     fig, ax = plt.subplots(**figure_kw)
-    ax.hist2d(lengths, quality_values, bins=(50, 50), cmap='Blues')
+    ax.hist2d(lengths, quality_values, bins=(100, 100), cmap='Blues')
     ax.set_xlim(lengths.min(), lengths.max())
     ax.set_ylim(quality_values.min(), quality_values.max())
     ax.set_xlabel("Read length (kb)", **labelsize_kw)

@@ -91,7 +91,7 @@ def generate_fq_report_strings(args, output_folder):
 # bam report data
 def generate_bam_report_string(args, output_folder):
     table_list = [args["sample_name"]]
-    table_name = ["SampleName", "TotalReads", "MappedReads", "Indentity(%)","TotalErr(%)", "MismatchErr(%)", "InsertionErr(%)", "DeletionErr(%)", "HomopolymerErr(%)"]
+    table_name = ["SampleName", "MappingRate(%)", "Indentity(%)","TotalErr(%)", "MismatchErr(%)", "InsertionErr(%)", "DeletionErr(%)", "HomopolymerErr(%)"]
     bam_pickle = args['bam_pickle_path']
     with open(bam_pickle, 'rb') as picklefile:
         bam_datum_dict = pickle.load(picklefile)
@@ -106,8 +106,7 @@ def generate_bam_report_string(args, output_folder):
         hpm_evt = overall_event_dict['hpm_substitution'] + overall_event_dict['hpm_contraction'] + overall_event_dict['hpm_expansion']
         hpm_dif = round(hpm_evt/ all_evt * 100, 2)
 #        non_hpm_dif = round(all_dif - hpm_dif, 2)
-        table_list.append(overall_event_dict['total_reads'])
-        table_list.append(overall_event_dict['mapped_reads'])
+        table_list.append(round(overall_event_dict['mapped_reads']/overall_event_dict['total_reads'] * 100, 2)
         table_list.extend([ all_idy, all_dif, all_mis, all_ins, all_del, hpm_dif])
     bam_table_string = "<thead><tr>"
     for i in table_name:

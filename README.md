@@ -12,7 +12,7 @@ Cycads is a tool for quality control & error profile analysis of long-read seque
 git clone --depth 1 https://github.com/QYanwei/Cycads.git
 conda env create --file Cycads/environment.yml --name cycads_env
 conda activate cycads_env
-cd cycads && pip install .
+cd Cycads && pip install .
 cycads --help
 ```
 
